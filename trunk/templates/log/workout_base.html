@@ -1,0 +1,47 @@
+{% extends 'denik/base.html' %}
+{% block javascripts %}
+    <script type="text/javascript" src="/site_media/denik/js/mochikit/Base.js"></script>
+    <script type="text/javascript" src="/site_media/denik/js/mochikit/DOM.js"></script>
+    <script type="text/javascript" src="/site_media/denik/js/mochikit/Style.js"></script>
+    <script type="text/javascript" src="/site_media/denik/js/mochikit/Iter.js"></script>
+    <script type="text/javascript" src="/site_media/denik/js/mochikit/Signal.js"></script>
+    <script type="text/javascript" src="/site_media/denik/js/mochikit/Logging.js"></script>
+    <script type="text/javascript" src="/site_media/denik/js/mochikit/Async.js"></script>
+    <script type="text/javascript" src="/site_media/denik/js/mochikit/Format.js"></script>
+
+    <script type="text/javascript" src="/site_media/denik/js/BrowserCompat.js"></script>
+    <script type="text/javascript" src="/site_media/denik/js/workout.js"></script>
+    {% block customHeader %}
+    {% endblock %}
+{% endblock %}
+
+{% block pageBody %}
+<div id="header">
+<h1>Deník atleta<span></span></h1>
+
+<h2 class="textversion">Hlavní menu</h2>
+<ul id="mainMenu">
+{% block mainMenu %}
+    <li class="active"><a><span class="tl"></span>Deník<span class="tr"></span></a></li>
+    <li><a href=""><span class="tl"></span>Plán<span class="tr"></span></a></li>
+    <li><a href=""><span class="tl"></span>Závody<span class="tr"></span></a></li>
+    <li><a href=""><span class="tl"></span>Statistika<span class="tr"></span></a></li>
+</ul>
+{% endblock %}
+
+<h2 class="textversion">Informace o uživateli</h2>
+<ul id="userInfo">
+    <li>{% if user.first_name and user.last_name %}{{ user.first_name }} {{ user.last_name }}
+        {% else %}{{ user.username }}{% endif %}</li>
+    <li><a href="/denik/settings/">Nastavení</a></li>
+    <li><a href="/denik/logout/">Odhlásit</a></li>
+</ul>
+</div>
+{% block content %}
+{% endblock %}
+<div id="footer">
+<p>
+&copy; 2007 Luděk Cigler. Written by <a href="http://www.vim.org/">Vim</a>!
+</p>
+</div>
+{% endblock %}

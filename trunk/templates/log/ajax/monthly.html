@@ -1,0 +1,69 @@
+{% load denik_filters %}
+<h2 class="textversion">Tréninkový deník, {{first_day|date:"F"|lower}} {{first_day|date:"Y"}}</h2>
+<ul class="pagerMenu">
+    <li class="previous"><a href="/denik/month/{{previous_year}}/{{previous_month|stringformat:"02d"}}/">Předchozí měsíc</a></li>
+    <li class="next"><a href="/denik/month/{{next_year}}/{{next_month|stringformat:"02d"}}/">Další měsíc</a></li>
+</ul>
+<table id="monthlyView" cellspacing="0">
+    <thead>
+        <tr>
+            <th><span class="textversion">Týden</span></th>
+            <th>Pondělí</th>
+            <th>Úterý</th>
+            <th>Středa</th>
+            <th>Čtvrtek</th>
+            <th>Pátek</th>
+            <th>Sobota</th>
+            <th>Neděle</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for week_data in month_data %}
+            <tr>
+                <th>{{week_data.week}}</th>
+                {% for day_data in week_data.days %}
+
+                    {% if day_data %}
+                <td class="day_{{day_data.day|date:"Y/m/d"}}">
+                    <p>
+                    <a href="" class="editDay textversion" title="Upravit trénink pro tento den"><img src="/site_media/denik/images/icons/properties_small.png" alt="Upravit tento den" width="16" height="16" /></a>
+                    </p>
+                    <ul>
+                        <li class="day">{{day_data.day|date:"j"}}</li>
+                        {% if day_data.workouts|length_is:"0" %}
+                        <li>Volno</li>
+                        {% else %}
+                        <li><ul class="phases">
+                            {% for workout in day_data.workouts %}
+                                {% if workout.workoutitem_set.all|length_is:"0" %}
+                                <li>Prázdná fáze</li>
+                                {% else %}
+                                <li>
+                                    {% for phase_item in workout.workoutitem_set.all %}
+                                    {{phase_item.type}}{% if forloop.last|is_not %}, {% endif %}
+                                    {% endfor %}
+                                </li>
+                                {% endif %}
+                                <li class="km">{{workout.total_km}} km</li>
+                            {% endfor %}
+                        </ul></li>
+
+                        {% endif %}
+                    </ul>
+                    
+                </td>
+                    {% else %}
+                <td class="empty">
+                    &nbsp;
+                </td>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<ul class="pagerMenu">
+    <li class="previous"><a href="/denik/month/{{previous_year}}/{{previous_month|stringformat:"02d"}}/">Předchozí měsíc</a></li>
+    <li class="next"><a href="/denik/month/{{next_year}}/{{next_month|stringformat:"02d"}}/">Další měsíc</a></li>
+</ul>

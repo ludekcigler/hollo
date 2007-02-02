@@ -1,0 +1,21 @@
+{% load denik_tags %}
+{% extends 'denik/workout.html' %}
+
+{% block title %}
+Měsíční pohled :: Tréninkový deník
+{% endblock %}
+
+{% block customHeader %}
+    <script type="text/javascript" src="/site_media/denik/js/monthlyView.js"></script>
+{% endblock %}
+
+{% block workoutSummary %}
+<h2>Měsíční souhrn</h2>
+<p>
+Lorem ipsum
+</p>
+{% endblock %}
+
+{% block workoutView %}
+{% include 'denik/ajax/monthly.html' %}
+{% endblock %}

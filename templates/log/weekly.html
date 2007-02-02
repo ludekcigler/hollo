@@ -1,0 +1,17 @@
+{% extends 'denik/workout.html' %}
+
+{% block title %}
+Týdenní pohled :: Tréninkový deník
+{% endblock %}
+
+{% block customHeader %}
+    <script type="text/javascript" src="/site_media/denik/js/weeklyView.js"></script>
+{% endblock %}
+
+{% block workoutSummary %}
+{% include 'denik/ajax/weekly_summary.html' %}
+{% endblock %}
+
+{% block workoutView %}
+{% include 'denik/ajax/weekly.html' %}
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends 'denik/workout_base.html' %}
+{% load denik_tags %}
+
+{% block content %}
+
+<form id="viewSelection" action="" method="post">
+<div class="tl"></div>
+<div class="tr"></div>
+<div class="bl"></div>
+<div class="br"></div>
+<fieldset>
+<label for="viewType">Pohled</label>
+<select id="viewType" name="viewType">
+    <option {% ifequal viewType "weekly" %}selected="selected" {% endifequal %}value="weekly">Týdenní</option>
+    <option {% ifequal viewType "monthly" %}selected="selected" {% endifequal %}value="monthly">Měsíční</option>
+</select>
+<label for="week">Týden</label>
+<input type="text" size="2" id="week" name="week" value="{{ first_day|date:"W" }}" />
+<label for="month">Měsíc</label>
+<select id="month" name="month">
+    {% select_month first_day.month %}
+</select>
+<label for="year">Rok</label>
+<select id="year" name="year">
+    {% select_year 2000 2010 first_day.year %}
+</select>
+<button type="submit" id="viewSelectionSubmit">Zobrazit</button>
+</fieldset>
+</form>
+
+<div id="workoutSummary"><div>
+{% block workoutSummary %}
+{% endblock %}
+</div></div>
+
+<div id="workoutView">
+{% block workoutView %}
+{% endblock %}
+</div>
+
+{% endblock %}

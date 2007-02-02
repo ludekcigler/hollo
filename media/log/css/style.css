@@ -1,0 +1,465 @@
+body {
+    font-size: 0.8em;
+    font-family: "Verdana", Helvetica, sans-serif;
+    padding: 0;
+    margin: 0;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+img {
+    border: none;
+}
+
+table {
+    border-spacing: 0;
+}
+
+table thead th:first-child {
+    background-image: url('/site_media/denik/images/corners/top_left_small.png');
+    background-repeat: no-repeat;
+    background-position: top left;
+}
+
+table thead th:last-child {
+    background-image: url('/site_media/denik/images/corners/top_right_small.png');
+    background-repeat: no-repeat;
+    background-position: top right;
+}
+
+.jsInfo {
+    display: none;
+}
+
+#footer {
+    border-top: 1px solid #CCC;
+    font-size: 0.7em;
+    margin: 3em 70% 0 0;
+    padding: 1em;
+    clear: both;
+}
+
+#body {
+    margin: 0 1.2em 1.2em;
+}
+
+
+h1, h2, h3, h4 {
+    font-family: "Trebuchet MS";
+}
+
+h1 {
+    font-size: 1.2em;
+    position: absolute;
+    left: 1em;
+    bottom: 0.2em;
+    margin: 0;
+    color: #666;
+}
+
+h1 span {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    background-image: url('/site_media/denik/images/main_logo.png');
+    background-repeat: no-repeat;
+    background-position: top left;
+    display: block;
+    width: 260px;
+    height: 55px;
+}
+
+h2 {
+    font-size: 1.5em;
+}
+
+fieldset {
+    border: none;
+}
+
+.textversion {
+    display: none;
+}
+
+.pagerMenu {
+    list-style: none;
+    margin: 0.4em 0;
+    padding: 0;
+    position: relative;
+    text-align: right;
+}
+
+.pagerMenu li {
+    display: inline;
+    padding: 0;
+    margin: 0;
+}
+
+.pagerMenu .previous {
+    padding-right: 0;
+    margin-right: 0.5em;
+}
+
+.pagerMenu .previous a:before {
+    content: "< ";
+    
+}
+
+.pagerMenu .next a:after {
+    content: " >";
+}
+
+div.tr, div.tl, div.br, div.bl, span.tr, span.tl, span.br, span.bl {
+    display: block;
+    position: absolute;
+    width: 4px;
+    height: 4px;
+}
+
+div.tl, span.tl {
+    background: url('/site_media/denik/images/corners/top_left_small.png') no-repeat top left;
+    top: 0;
+    left: 0;
+}
+
+div.tr, span.tr {
+    background: url('/site_media/denik/images/corners/top_right_small.png') no-repeat top right;
+    top: 0;
+    right: 0;
+}
+
+div.bl, span.bl {
+    background: url('/site_media/denik/images/corners/bottom_left_small.png') no-repeat bottom left;
+    bottom: 0;
+    left: 0;
+}
+
+div.br, span.br {
+    background: url('/site_media/denik/images/corners/bottom_right_small.png') no-repeat bottom right;
+    bottom: 0;
+    right: 0;
+}
+
+#header {
+    margin: 0;
+    padding: 0;
+    position: relative;
+    min-height: 80px;
+}
+
+
+#header ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+#userInfo {
+    position: absolute;
+    right: 0;
+    top: 0.4em;
+}
+
+#userInfo li {
+    display: block;
+    float: left;
+    border-left: 1px solid black;
+    padding: 0 0.4em;
+}
+
+#userInfo li:first-child {
+    border-left: none;
+    font-weight: bold;
+}
+
+
+#mainMenu {
+    position: absolute;
+    right: 2em;
+    bottom: 0;
+    font-size: 1.1em;
+    font-family: "Trebuchet MS", sans-serif;
+}
+
+#mainMenu li {
+    display: block;
+    float: left;
+    padding: 0;
+}
+
+#mainMenu a {
+    display: block;
+    text-decoration: none;
+    padding: 0.2em 0.5em;
+    color: white;
+    background-color: lightsteelblue;
+    font-weight: bold;
+    border-right: 4px solid white;
+    position: relative;
+}
+
+#mainMenu li.active a {
+    background-color: steelblue;
+    font-weight: bold;
+    color: white;
+}
+
+#mainMenu a:hover {
+    background-color: midnightblue;
+}
+
+#viewSelection {
+    color: white;
+    margin: 0;
+    padding: 0.8em;
+    background-color: steelblue;
+    position: relative;
+}
+
+#viewSelection fieldset {
+    margin: 0;
+    padding: 0;
+}
+
+#viewSelection select, #viewSelection input {
+    margin-right: 0.5em;
+}
+
+
+#workoutSummary {
+    width: 35%;
+    float: right;
+    margin: 1em 0 0;
+}
+
+#workoutSummary div {
+    padding: 0 1em;
+}
+
+#workoutSummary div div.workout {
+    padding: 0;
+    border-bottom: 1px solid gray;
+}
+
+#workoutSummary div.workout p {
+    margin: 0;
+    min-height: 30px;
+    height: 1em;
+}
+
+#workoutSummary p a {
+    display: block;
+    text-decoration: none;
+    float: right;
+    vertical-align: middle;
+    line-height: 1.8em;
+    height: 1.8em;
+    padding: 0.05em 0.3em;
+    color: #333;
+    margin: 0.1em 0;
+}
+
+#workoutSummary p a img {
+    width: 1.8em;
+    height: 1.8em;
+}
+
+#workoutSummary p a span {
+    line-height: 1.8em;
+    vertical-align: top;
+}
+
+#workoutSummary p a:hover {
+    background-color: #E9E9FF;
+}
+
+#workoutSummary h2 {
+    margin: 0 0 0.5em;
+}
+
+#workoutSummary table {
+    margin: 0.3em 0;
+    width: 100%;
+}
+
+#workoutSummary table thead th {
+    border-bottom: 1px solid gray;
+    text-align: left;
+    background-color: #E9E9FF;
+}
+
+#workoutSummary table th, #workoutSummary table td {
+    padding: 0.1em 0.3em;
+}
+
+#workoutSummary table .type {
+    width: 10%;
+}
+
+#workoutSummary table td.km {
+    text-align: right;
+    width: 5%;
+}
+
+#workoutSummary .workout ul {
+    margin: 0.5em 0;
+    padding: 0;
+    list-style: none;
+}
+
+#workoutSummary .workout ul li {
+    padding: 0 2em;
+}
+
+#workoutSummary .workout ul li.totalKm {
+    background-image: url("/site_media/denik/images/icons/km_small.png");
+    background-repeat: no-repeat;
+}
+
+#workoutSummary .workout ul li.weather {
+    background-image: url("/site_media/denik/images/icons/weather_small.png");
+    background-repeat: no-repeat;
+}
+
+#workoutView {
+    margin: 1em 35% 0 0;
+    border-right: 1px dotted #666;
+    padding: 0 1.2em 0 0;
+}
+
+#workoutView table {
+    width: 100%;
+}
+#weeklyView tbody td {
+    padding: 0.05em 0.5em;
+}
+
+#weeklyView thead th, #monthlyView thead th {
+    background-color: #E9E9FF;
+    text-align: left;
+    padding: 0.05em 0.5em;
+}
+
+#weeklyView {
+    position: relative;
+}
+
+#weeklyView tbody th {
+    font-size: 1.8em;
+    font-weight: bold;
+    font-family: "Trebuchet MS", sans-serif;
+    color: #999;
+    text-align: center;
+    padding: 0.2em 0.5em;
+    width: 1.5em;
+}
+
+#weeklyView tbody th span {
+    font-size: 0.5em;
+    color: black;
+    display: block;
+}
+
+#weeklyView tbody td.phase {
+    width: 1em;
+    text-align: center;
+}
+
+#weeklyView tbody td.type {
+    width: 3em;
+}
+
+#weeklyView tbody td.km {
+    width: 1em;
+    text-align: right;
+}
+
+#weeklyView tbody td {
+    border-top: 1px dotted #CCC;
+}
+
+#weeklyView tbody tr.highlighted td, #weeklyView tbody tr.highlighted th {
+    background-color: #E9E9FF;
+    cursor: pointer;
+}
+
+
+#weeklyView tbody tr.firstFromDay td, #weeklyView tbody tr.firstFromDay th {
+    border-top: 1px solid #666;
+}
+
+#weeklyView tr.firstFromPhase td, #weeklyView tr.firstFromPhase th {
+    border-top: 1px solid #CCC;
+}
+
+#weeklyView, #monthlyView {
+    margin: 0;
+    border-bottom: 1px solid gray;
+}
+
+#monthlyView tbody td ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+#monthlyView .day {
+    font-family: "Trebuchet MS", sans-serif;
+    font-size: 1.4em;
+    font-weight: bold;
+    color: #666;
+}
+
+#monthlyView tbody td, #monthlyView tbody th {
+    padding: 0.3em;
+    border-top: 1px solid gray;
+}
+
+#monthlyView tbody td {
+    border-left: 1px dotted gray;
+    vertical-align: top;
+    width: 13.2%;
+}
+
+#monthlyView tbody td:hover {
+    background-color: #E9E9FF;
+    cursor: pointer;
+}
+
+#monthlyView tbody td.empty:hover {
+    background-color: white;
+    cursor: auto;
+}
+
+#monthlyView .km {
+    color: #666;
+}
+
+#monthlyView tbody th {
+    font-family: "Trebuchet MS", sans-serif;
+    padding: 0.35em;
+    width: 3%;
+}
+
+#monthlyView tbody td p {
+    margin: 0;
+    padding: 0;
+    float: right;
+}
+
+#monthlyView tbody a.editDay {
+    text-decoration: none;
+}
+
+#monthlyView tbody a.editDay img {
+    border: none;
+}
+
+#workoutEditFormWindow {
+    position: fixed;
+    overflow: auto;
+    background-color: white;
+    border: 2px solid black;
+}

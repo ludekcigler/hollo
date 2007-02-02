@@ -1,0 +1,16 @@
+#header {
+    height: 80px;
+}
+
+#workoutView table {
+    width: 99%;
+}
+
+.pagerMenu {
+    height: 1px;
+    width: 99%;
+}
+
+div.tl, div.bl, div.br, span.tr, span.tl, span.br, span.bl {
+    display: none;
+}

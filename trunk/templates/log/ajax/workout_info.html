@@ -1,4 +1,4 @@
-{% load denik_filters %}
+{% load log_filters %}
 <div>
 <h2>{{day|date:"j"}}. {{day|date:"F Y"|lower}}</h2>
 {% for w in workouts %}
@@ -31,17 +31,17 @@
     {% if w.weather|length_is:"0"|is_not %}<li class="weather">{{w.weather}}&nbsp;</li>{% endif %}
 </ul>
 <p>
-    <a href="" class="editWorkout" id="editWorkout_{{ w.date|date:"Y/m/d" }}_{{ w.id }}">
-        <img src="/site_media/denik/images/icons/properties_middle.png" width="22" height="22" /><span> Upravit fázi</span>
+    <a href="" class="editWorkout" id="editWorkout_{{ w.date|date:"Y-m-d" }}_{{ w.id }}">
+        <img src="/site_media/log/images/icons/properties_middle.png" width="22" height="22" /><span> Upravit fázi</span>
     </a>
-    <a href="/denik/workout/remove/{{ w.id }}/" class="removeWorkout" id="removeWorkout_{{ w.date|date:"Y/m/d" }}_{{ w.id }}">
-        <img src="/site_media/denik/images/icons/remove_middle.png" width="22" height="22" /><span> Odstranit fázi</span>
+    <a href="/log/workout/remove/{{ w.id }}/" class="removeWorkout" id="removeWorkout_{{ w.date|date:"Y-m-d" }}_{{ w.id }}">
+        <img src="/site_media/log/images/icons/remove_middle.png" width="22" height="22" /><span> Odstranit fázi</span>
     </a>
 </p>
 </div>
 {% endfor %}
 <p>
-    <a href="" class="addWorkout" id="addWorkout_{{ day|date:"Y/m/d" }}">
-        <img src="/site_media/denik/images/icons/add_middle.png" width="22" height="22" /><span>Přidat fázi</span>
+    <a href="" class="addWorkout" id="addWorkout_{{ day|date:"Y-m-d" }}">
+        <img src="/site_media/log/images/icons/add_middle.png" width="22" height="22" /><span>Přidat fázi</span>
     </a>
 </p>

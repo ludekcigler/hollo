@@ -1,6 +1,11 @@
 {% extends 'log/workout_base.html' %}
 {% load log_tags %}
 
+{% block mainMenu %}
+    <li><a href="/log/month/{{ first_day|date:"Y" }}/{{ first_day|date:"m" }}/">Deník</a><span class="tl"></span><span class="tr"></span></li>
+    <li class="active"><a>Závody</a><span class="tl"></span><span class="tr"></span></li>
+{% endblock %}
+
 {% block content %}
 <div id="viewSelection">
 <div class="tl"></div>
@@ -11,11 +16,9 @@
 <fieldset>
 <label for="viewType">Pohled</label>
 <select id="viewType" name="viewType">
-    <option {% ifequal viewType "weekly" %}selected="selected" {% endifequal %}value="weekly">Týdenní</option>
     <option {% ifequal viewType "monthly" %}selected="selected" {% endifequal %}value="monthly">Měsíční</option>
+    <option {% ifequal viewType "yearly" %}selected="selected" {% endifequal %}value="yearly">Roční</option>
 </select>
-<label for="week">Týden</label>
-<input type="text" size="2" id="week" name="week" value="{{ first_day|date:"W" }}" />
 <label for="month">Měsíc</label>
 <select id="month" name="month">
     {% select_month first_day.month %}
@@ -29,13 +32,14 @@
 </form>
 </div>
 
-<div id="workoutSummary"><div>
-{% block workoutSummary %}
+<div id="competitionSummary"><div>
+{% block competitionSummary %}
 {% endblock %}
-</div></div>
+</div>
+</div>
 
-<div id="workoutView">
-{% block workoutView %}
+<div id="competitionView">
+{% block competitionView %}
 {% endblock %}
 </div>
 

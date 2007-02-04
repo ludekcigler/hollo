@@ -1,8 +1,8 @@
-{% load denik_filters %}
+{% load log_filters %}
 <h2 class="textversion">Tréninkový deník, {{first_day|date:"W"}}. týden, {{first_day|date:"Y"}}</h2>
 <ul class="pagerMenu">
-    <li class="previous"><a href="/denik/week/{{previous_year}}/{{previous_week|stringformat:"02d"}}/">Předchozí týden</a></li>
-    <li class="next"><a href="/denik/week/{{next_year}}/{{next_week|stringformat:"02d"}}/">Další týden</a></li>
+    <li class="previous"><a href="/log/week/{{previous_year}}/{{previous_week|stringformat:"02d"}}/">Předchozí týden</a></li>
+    <li class="next"><a href="/log/week/{{next_year}}/{{next_week|stringformat:"02d"}}/">Další týden</a></li>
 </ul>
 <div id="weeklyView">
 <table cellspacing="0">
@@ -17,7 +17,7 @@
     </thead>
     <tbody>
         {% for day_data in week_data %}
-            <tr class="firstFromDay firstFromPhase day_{{ day_data.day|date:"Y/m/d" }}">
+            <tr class="firstFromDay firstFromPhase day_{{ day_data.day|date:"Y-m-d" }}">
                 <th class="day" scope="row" rowspan="{{ day_data.num_day_rows }}">
                     {{ day_data.day|date:"D"|trunc:"2" }} <span>{{ day_data.day|date:"j.n" }}</span>
                 </th>
@@ -32,7 +32,7 @@
                         {% if workout.workoutitem_set.all|length_is:"0" %}
                             {% if forloop.first|is_not %}
                             {# If this is not the first phase, we need to produce the row header #}
-            <tr class="firstFromPhase day_{{ day_data.day|date:"Y/m/d" }}">
+            <tr class="firstFromPhase day_{{ day_data.day|date:"Y-m-d" }}">
                             {% endif %}
                 <td class="phase">{{ forloop.counter }}</td>
                 <td colspan="3">Tato fáze nemá žádné položky..</td>
@@ -42,10 +42,10 @@
 
                             {% for item in workout.workoutitem_set.all|dictsort:"sequence" %}
                                 {% if forloop.first|is_not %}
-            <tr class="day_{{ day_data.day|date:"Y/m/d" }}">
+            <tr class="day_{{ day_data.day|date:"Y-m-d" }}">
                                 {% endif %}
                                 {% if forloop.parentloop.first|is_not and forloop.first %}
-            <tr class="{% if forloop.first %}firstFromPhase{% endif %} day_{{ day_data.day|date:"Y/m/d" }}">
+            <tr class="{% if forloop.first %}firstFromPhase{% endif %} day_{{ day_data.day|date:"Y-m-d" }}">
                                 {% endif %}
 
                                 {% if forloop.first %}
@@ -70,6 +70,6 @@
 </div>
 
 <ul class="pagerMenu">
-    <li class="previous"><a href="/denik/week/{{previous_year}}/{{previous_week|stringformat:"02d"}}/">Předchozí týden</a></li>
-    <li class="next"><a href="/denik/week/{{next_year}}/{{next_week|stringformat:"02d"}}/">Další týden</a></li>
+    <li class="previous"><a href="/log/week/{{previous_year}}/{{previous_week|stringformat:"02d"}}/">Předchozí týden</a></li>
+    <li class="next"><a href="/log/week/{{next_year}}/{{next_week|stringformat:"02d"}}/">Další týden</a></li>
 </ul>

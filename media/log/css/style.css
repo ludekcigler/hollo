@@ -17,18 +17,6 @@ table {
     border-spacing: 0;
 }
 
-table thead th:first-child {
-    background-image: url('/site_media/denik/images/corners/top_left_small.png');
-    background-repeat: no-repeat;
-    background-position: top left;
-}
-
-table thead th:last-child {
-    background-image: url('/site_media/denik/images/corners/top_right_small.png');
-    background-repeat: no-repeat;
-    background-position: top right;
-}
-
 .jsInfo {
     display: none;
 }
@@ -63,7 +51,7 @@ h1 span {
     position: absolute;
     bottom: 0;
     left: 0;
-    background-image: url('/site_media/denik/images/main_logo.png');
+    background-image: url('/site_media/log/images/main_logo.png');
     background-repeat: no-repeat;
     background-position: top left;
     display: block;
@@ -119,25 +107,25 @@ div.tr, div.tl, div.br, div.bl, span.tr, span.tl, span.br, span.bl {
 }
 
 div.tl, span.tl {
-    background: url('/site_media/denik/images/corners/top_left_small.png') no-repeat top left;
+    background: url('/site_media/log/images/corners/top_left_small.png') no-repeat top left;
     top: 0;
     left: 0;
 }
 
 div.tr, span.tr {
-    background: url('/site_media/denik/images/corners/top_right_small.png') no-repeat top right;
+    background: url('/site_media/log/images/corners/top_right_small.png') no-repeat top right;
     top: 0;
     right: 0;
 }
 
 div.bl, span.bl {
-    background: url('/site_media/denik/images/corners/bottom_left_small.png') no-repeat bottom left;
+    background: url('/site_media/log/images/corners/bottom_left_small.png') no-repeat bottom left;
     bottom: 0;
     left: 0;
 }
 
 div.br, span.br {
-    background: url('/site_media/denik/images/corners/bottom_right_small.png') no-repeat bottom right;
+    background: url('/site_media/log/images/corners/bottom_right_small.png') no-repeat bottom right;
     bottom: 0;
     right: 0;
 }
@@ -174,7 +162,6 @@ div.br, span.br {
     font-weight: bold;
 }
 
-
 #mainMenu {
     position: absolute;
     right: 2em;
@@ -184,26 +171,25 @@ div.br, span.br {
 }
 
 #mainMenu li {
-    display: block;
+    border-left: 4px solid white;
     float: left;
+    background-color: steelblue;
     padding: 0;
+    position: relative;
 }
 
 #mainMenu a {
     display: block;
     text-decoration: none;
-    padding: 0.2em 0.5em;
     color: white;
-    background-color: lightsteelblue;
     font-weight: bold;
-    border-right: 4px solid white;
+    background-color: lightsteelblue;
+    padding: 0.2em 0.6em;
     position: relative;
 }
 
 #mainMenu li.active a {
     background-color: steelblue;
-    font-weight: bold;
-    color: white;
 }
 
 #mainMenu a:hover {
@@ -212,13 +198,12 @@ div.br, span.br {
 
 #viewSelection {
     color: white;
-    margin: 0;
-    padding: 0.8em;
     background-color: steelblue;
+    padding: 0.6em;
     position: relative;
 }
 
-#viewSelection fieldset {
+#viewSelection form, #viewSelection fieldset {
     margin: 0;
     padding: 0;
 }
@@ -227,14 +212,13 @@ div.br, span.br {
     margin-right: 0.5em;
 }
 
-
-#workoutSummary {
+#workoutSummary, #competitionSummary {
     width: 35%;
     float: right;
     margin: 1em 0 0;
 }
 
-#workoutSummary div {
+#workoutSummary div, #competitionSummary div {
     padding: 0 1em;
 }
 
@@ -314,22 +298,22 @@ div.br, span.br {
 }
 
 #workoutSummary .workout ul li.totalKm {
-    background-image: url("/site_media/denik/images/icons/km_small.png");
+    background-image: url("/site_media/log/images/icons/km_small.png");
     background-repeat: no-repeat;
 }
 
 #workoutSummary .workout ul li.weather {
-    background-image: url("/site_media/denik/images/icons/weather_small.png");
+    background-image: url("/site_media/log/images/icons/weather_small.png");
     background-repeat: no-repeat;
 }
 
-#workoutView {
+#workoutView, #competitionView {
     margin: 1em 35% 0 0;
     border-right: 1px dotted #666;
     padding: 0 1.2em 0 0;
 }
 
-#workoutView table {
+#workoutView table, #competitionView table {
     width: 100%;
 }
 #weeklyView tbody td {
@@ -339,7 +323,7 @@ div.br, span.br {
 #weeklyView thead th, #monthlyView thead th {
     background-color: #E9E9FF;
     text-align: left;
-    padding: 0.05em 0.5em;
+/*    padding: 0.05em 0.5em;*/
 }
 
 #weeklyView {
@@ -380,7 +364,7 @@ div.br, span.br {
     border-top: 1px dotted #CCC;
 }
 
-#weeklyView tbody tr.highlighted td, #weeklyView tbody tr.highlighted th {
+tbody tr.highlighted td, tbody tr.highlighted th, tbody td.highlighted {
     background-color: #E9E9FF;
     cursor: pointer;
 }
@@ -423,16 +407,6 @@ div.br, span.br {
     width: 13.2%;
 }
 
-#monthlyView tbody td:hover {
-    background-color: #E9E9FF;
-    cursor: pointer;
-}
-
-#monthlyView tbody td.empty:hover {
-    background-color: white;
-    cursor: auto;
-}
-
 #monthlyView .km {
     color: #666;
 }
@@ -462,4 +436,54 @@ div.br, span.br {
     overflow: auto;
     background-color: white;
     border: 2px solid black;
+}
+
+#loginForm {
+    background-color: steelblue;
+    color: white;
+    float: left;
+    width: 19.5em;
+    margin: 0 0 1em;
+}
+
+#loginForm form {
+    margin: 0 1em;
+}
+
+#loginForm h2 {
+    margin: 0.5em 1em;
+    border-bottom: 1px solid white;
+}
+
+#loginForm button {
+    float: right;
+    margin: 0.2em 0 0.6em;
+}
+
+#loginForm input {
+    width: 15em;
+}
+
+#versionNumber {
+    width: 120px;
+    height: 120px;
+    position: absolute;
+    right: 3em;
+    top: 0;
+    background-image: url('/site_media/log/images/version_number.png');
+    background-repeat: no-repeat;
+}
+
+#welcome {
+    margin-left: 21em;
+    min-height: 25em;
+    border-left: 1px dotted gray;
+    padding: 0 1em;
+}
+
+#loginHeader {
+    height: 80px;
+    position: relative;
+    border-bottom: 1px solid #333;
+    margin: 0 0 1em;
 }

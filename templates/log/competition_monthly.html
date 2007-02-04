@@ -1,0 +1,12 @@
+{% extends 'log/competition_base.html' %}
+{% block title %}
+Závody {{ first_day|date:"F Y"|lower }} :: Hollo
+{% endblock %}
+
+{% block competitionSummary %}
+{% include 'log/ajax/competition_monthly_summary.html' %}
+{% endblock %}
+
+{% block competitionView %}
+{% include 'log/ajax/competition_monthly.html' %}
+{% endblock %}

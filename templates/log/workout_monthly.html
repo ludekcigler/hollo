@@ -1,12 +1,12 @@
-{% load denik_tags %}
-{% extends 'denik/workout.html' %}
+{% load log_tags %}
+{% extends 'log/workout.html' %}
 
 {% block title %}
 Měsíční pohled :: Tréninkový deník
 {% endblock %}
 
 {% block customHeader %}
-    <script type="text/javascript" src="/site_media/denik/js/monthlyView.js"></script>
+    <script type="text/javascript" src="/site_media/log/js/workout_monthly_view.js"></script>
 {% endblock %}
 
 {% block workoutSummary %}
@@ -17,5 +17,5 @@ Lorem ipsum
 {% endblock %}
 
 {% block workoutView %}
-{% include 'denik/ajax/monthly.html' %}
+{% include 'log/ajax/workout_monthly.html' %}
 {% endblock %}

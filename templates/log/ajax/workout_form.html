@@ -1,6 +1,6 @@
-{% load denik_tags %}
+{% load log_tags %}
 <p><a href="" id="workoutEditFormClose">Zavřít</a></p>
-<form id="workoutEdit" action="/denik/workout/{{ form_action }}/" method="POST">
+<form id="workoutEdit" action="/log/workout/{{ form_action }}/" method="POST">
     <fieldset>
         <input type="hidden" name="day" value="{{ day|date:"Y-m-d" }}" />
         <input type="hidden" name="id" value="{{ workout.id }}" />
@@ -31,18 +31,18 @@
                         <input type="text" name="workout_km_{{ forloop.counter0 }}" value="{{ phase_item.km }}" class="workoutKm"/>
                     </td>
                     <td>
-                        <a href="" class="removeWorkoutItem"><img src="/site_media/denik/images/icons/remove_small.png" width="16" height="16" /></a>
+                        <a href="" class="removeWorkoutItem"><img src="/site_media/log/images/icons/remove_small.png" width="16" height="16" /></a>
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
         <p>
-            <a href="" id="addWorkoutItem"><img src="/site_media/denik/images/icons/add_small.png" width="16" height="16" /> Přidat část tréninku</a>
+            <a href="" id="addWorkoutItem"><img src="/site_media/log/images/icons/add_small.png" width="16" height="16" /> Přidat část tréninku</a>
         </p>
         <p><label for="weather">Počasí</label><input type="text" id="weather" name="weather" value="{{ workout.weather }}" /></p>
     </fieldset>
     <fieldset>
-        <button type="submit" id="workoutSubmit"><img src="/site_media/denik/images/icons/save_small.png" width="16" height="16" /> Uložit</button>
+        <button type="submit" id="workoutSubmit"><img src="/site_media/log/images/icons/save_small.png" width="16" height="16" /> Uložit</button>
     </fieldset>
 </form>

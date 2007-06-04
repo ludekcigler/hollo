@@ -3,19 +3,16 @@
 
 {% block content %}
 <div id="viewSelection">
-<div class="tl"></div>
-<div class="tr"></div>
-<div class="bl"></div>
-<div class="br"></div>
-<form action="" method="post">
+<form action="/log/workout/change_view/" method="post">
 <fieldset>
+<legend class="textversion">Zobrazení deníku</legend>
 <label for="viewType">Pohled</label>
 <select id="viewType" name="viewType">
     <option {% ifequal viewType "weekly" %}selected="selected" {% endifequal %}value="weekly">Týdenní</option>
     <option {% ifequal viewType "monthly" %}selected="selected" {% endifequal %}value="monthly">Měsíční</option>
 </select>
 <label for="week">Týden</label>
-<input type="text" size="2" id="week" name="week" value="{{ first_day|date:"W" }}" />
+<input type="text" size="2" id="week" name="week" value="{{ first_day|date:"W" }}">
 <label for="month">Měsíc</label>
 <select id="month" name="month">
     {% select_month first_day.month %}

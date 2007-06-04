@@ -1,5 +1,6 @@
 {% extends 'log/base.html' %}
 {% block javascripts %}
+    <script type="text/javascript" src="/site_media/log/js/competition.js"></script>
     <script type="text/javascript" src="/site_media/log/js/workout.js"></script>
     {% block customHeader %}
     {% endblock %}
@@ -12,8 +13,8 @@
 <h2 class="textversion">Hlavní menu</h2>
 <ul id="mainMenu">
 {% block mainMenu %}
-    <li class="active"><a>Deník</a><span class="tl"></span><span class="tr"></span></li>
-    <li><a href="/log/competition/month/{{ first_day|date:"Y" }}/{{ first_day|date:"m" }}/">Závody</a><span class="tl"></span><span class="tr"></span></li>
+    <li class="active"><a>Deník</a></li>
+    <li><a href="/log/competition/month/{{ first_day|date:"Y" }}/{{ first_day|date:"m" }}/">Závody</a></li>
 {% endblock %}
 </ul>
 
@@ -27,9 +28,4 @@
 </div>
 {% block content %}
 {% endblock %}
-<div id="footer">
-<p>
-&copy; 2007 Luděk Cigler. Written by <a href="http://www.vim.org/">Vim</a>!
-</p>
-</div>
 {% endblock %}

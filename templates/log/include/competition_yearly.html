@@ -1,0 +1,28 @@
+<h2>{{ first_day|date:"Y" }} :: Přehled závodů</h2>
+{% for m in months %}
+    <h3>{{ m.first_day|date:"F" }}</h3>
+    {% if m.competitions %}
+    <table cellspacing="0">
+        <thead>
+            <tr>
+                <th>Datum</th>
+                <th>Disciplína</th>
+                <th>Výkon</th>
+                <th>Místo</th>
+            </tr>
+         </thead>
+         <tbody>
+            {% for c in m.competitions %}
+            <tr>
+                <th>{{ c.day|date:"d.m." }}</th>
+                <td>{{ c.event }}</td>
+                <td>{{ c.result }}</td>
+                <td>{{ c.place }}</td>
+            </tr>
+            {% endfor %}
+         </tbody>
+    </table>
+    {% else %}
+        <p>V tomto měsíci nejsou žádné závody.</p>
+    {% endif %}
+{% endfor %}

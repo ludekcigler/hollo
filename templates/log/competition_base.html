@@ -1,9 +1,17 @@
 {% extends 'log/workout_base.html' %}
+{% block customHeader %}
+    <script type="text/javascript"> 
+        $(document).ready(function () {
+            $('#viewSelectionSubmit').click(hollo.competition.change_view);
+            $('#viewType').change(function() { hollo.competition.select_view(this.value); });
+        });
+    </script>
+{% endblock %}
 {% load log_tags %}
 
 {% block mainMenu %}
-    <li><a href="/log/month/{{ first_day|date:"Y" }}/{{ first_day|date:"m" }}/">Deník</a><span class="tl"></span><span class="tr"></span></li>
-    <li class="active"><a>Závody</a><span class="tl"></span><span class="tr"></span></li>
+    <li><a href="/log/workout/month/{{ first_day|date:"Y" }}/{{ first_day|date:"m" }}/">Deník</a></li>
+    <li class="active"><a>Závody</a></li>
 {% endblock %}
 
 {% block content %}
@@ -12,8 +20,9 @@
 <div class="tr"></div>
 <div class="bl"></div>
 <div class="br"></div>
-<form action="" method="post">
+<form action="/log/competition/change_view/" method="post">
 <fieldset>
+<legend class="textversion">Zobrazení závodů</legend>
 <label for="viewType">Pohled</label>
 <select id="viewType" name="viewType">
     <option {% ifequal viewType "monthly" %}selected="selected" {% endifequal %}value="monthly">Měsíční</option>

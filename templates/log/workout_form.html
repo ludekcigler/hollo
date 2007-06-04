@@ -1,0 +1,9 @@
+{% extends 'log/base.html' %}
+{% block title %}{{ form_action_desc|capfirst }} trénink :: Tréninkový deník{% endblock %}
+{% block pageBody %}
+{% include 'log/include/workout_form.html' %}
+{% endblock %}
+
+{% block customMetaTags %}
+    <meta http-equiv="Cache-Control" content="no-cache">
+{% endblock %}

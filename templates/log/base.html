@@ -1,25 +1,35 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>{% block title %}{% endblock %}</title>
-    <link href="/site_media/log/css/style.css" rel="stylesheet" type="text/css" />
-	<link rel='shortcut icon' type='image/x-icon' href='/site_media/log/images/icon.ico' />
+    <link href="/site_media/log/css/style.css" rel="stylesheet" type="text/css">
+	<link rel="shortcut icon" type="image/x-icon" href="/site_media/log/images/icon.ico">
     <!--[if lte IE 6]>
     <link href="/site_media/log/css/style_ie.css" rel="stylesheet" type="text/css" />
     <![endif]-->
+    {% comment %}
     <script type="text/javascript" src="/site_media/log/js/jquery.js"></script>
     <script type="text/javascript" src="/site_media/log/js/jq-corner.js"></script>
     <script type="text/javascript" src="/site_media/log/js/jquery.debug.js"></script>
+    <script type="text/javascript" src="/site_media/log/js/jqDnR.js"></script>
 
     <script type="text/javascript" src="/site_media/log/js/utils.js"></script>
 {% block javascripts %}
 {% endblock %}
+    {% endcomment %}
+    {% block customMetaTags %}
+    {% endblock %}
 </head>
 <body>
 <div id="body">
 {% block pageBody %}
 {% endblock %}
+<div id="footer">
+<p>
+&copy; 2007 Luděk Cigler. Written in <a href="http://www.vim.org/">Vim</a>!
+</p>
+</div>
 </div>
 </body>
 </html>

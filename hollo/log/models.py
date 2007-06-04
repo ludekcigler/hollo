@@ -38,7 +38,10 @@ class Athlete(models.Model):
         return self.full_name
 
     def _get_full_name(self):
-        return "%s %s" % (self.user.first_name, self.user.last_name)
+        if self.user.first_name and self.user.last_name:
+            return "%s %s" % (self.user.first_name, self.user.last_name)
+        else:
+            return str(self.user)
 
     full_name = property(_get_full_name, doc = 'Full name of the Athlete')
 
@@ -67,6 +70,9 @@ class TrackEvent(models.Model):
     result_pattern = models.CharField(maxlength = 150)
     result_ordering = models.BooleanField(choices = ((False, 'ASC'), (True, 'DESC')))
 
+    def __str__(self):
+        return self.name
+
     class Admin:
         list_display = ('name', 'result_pattern', 'result_ordering')
 
@@ -74,26 +80,27 @@ class Competition(models.Model):
     """
     A competition where the athlete took part
     """
-    date = models.DateField()
+    athlete = models.ForeignKey('Athlete')
+    day = models.DateField()
     place = models.CharField(maxlength = 100)
     event = models.ForeignKey('TrackEvent')
     result = models.CharField(maxlength = 100)
     note = models.TextField()
 
     class Admin:
-        list_display = ('date', 'place', 'event', 'result')
+        pass
 
 class Workout(models.Model):
     """
     One workout phase; consists of multiple workout items
     """
-    date = models.DateField()
+    day = models.DateField()
     athlete = models.ForeignKey('Athlete')
     weather = models.CharField(maxlength=100, blank=True)
     note = models.TextField()
 
     def __str__(self):
-        return "%s, %s" % (str(self.athlete), self.date,)
+        return "%s, %s" % (str(self.athlete), self.day,)
 
     def _get_total_km(self):
         try:
@@ -109,7 +116,7 @@ class Workout(models.Model):
     num_workout_items = property(_get_num_workout_items, 'Number of workout items in the workout')
 
     class Admin:
-        list_display = ('date', 'athlete', 'weather')
+        list_display = ('day', 'athlete', 'weather')
 
 class WorkoutType(models.Model):
     """

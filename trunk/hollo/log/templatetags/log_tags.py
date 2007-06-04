@@ -55,11 +55,30 @@ def select_month(context, selected_month):
 def select_workout_type(context, selected_type):
     choices = []
     for type in models.WorkoutType.objects.all():
-        selected = (type.abbr == selected_type)
-        choices.append({'value': type.abbr, 'selected': selected, 'name': type.abbr})
+        selected = (type == selected_type)
+        choices.append({'value': type, 'selected': selected, 'name': type.abbr})
 
     return {'choices': choices}
 
+@register.inclusion_tag('tags/option.html', takes_context=True)
+def select_competition_event(context, selected_event):
+    choices = []
+    for event in models.TrackEvent.objects.all():
+        selected = (event.name == selected_event)
+        choices.append({'value': event.name, 'selected': selected, 'name': event.name})
+
+    return {'choices': choices}
+
+
+@register.simple_tag
+def workout_weekly_view_num_day_rows(workouts, competitions):
+    if len(workouts) > 0:
+        num_workout_rows = reduce(lambda x, y: x + y, 
+                [max(w.workoutitem_set.count(), 1) for w in workouts])
+    else:
+        num_workout_rows = 0
+
+    return str(max(num_workout_rows + competitions.count(), 1))
 
 def resolve_variable_or_string(s, context):
     """

@@ -82,6 +82,19 @@ def adjust_date(year, month, day):
             month = 1
     return year, month, day
 
+
+def next_month(year, month):
+    if month == 12:
+        return year + 1, 1
+    else:
+        return year, month + 1
+
+def previous_month(year, month):
+    if month == 1:
+        return year - 1, 12
+    else:
+        return year, month - 1
+
 if __name__ == "__main__":
     for d in xrange(1, 8):
         print iso_week_day_to_gregorian(2002, 14, d)

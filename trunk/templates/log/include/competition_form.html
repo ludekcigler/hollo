@@ -1,0 +1,30 @@
+{% load log_tags %}
+<div id="competitionForm">
+<h2>{{ form_action_desc|capfirst }} závod</h2>
+<form id="competitionEdit" action="/log/competition/{{ form_action }}/?continue={{ continue|urlencode }}" method="post">
+    <fieldset class="buttonSet">
+        <legend class="textversion">Uložit</legend>
+        <button type="submit" name="submitOk" class="ok" value="ok">Uložit</button>
+        <button type="submit" name="submitCancel" class="cancel" value="cancel">Zrušit</button>
+    </fieldset>
+    <fieldset>
+        <legend class="textversion">Závod</legend>
+        <label for="competitionEvent">Disciplína</label>
+        <select name="event" id="competitionEvent" class="competition_event">
+            {% select_competition_event competition.event %}
+        </select>
+
+        <label for="competitionResult">Výkon</label>
+        <input type="text" name="result" id="competitionResult" value="{{ competition.result }}" class="competition_result" >
+
+        <label for="competitionPlace">Místo</label>
+        <input type="text" name="place" id="competitionPlace" value="{{ competition.place }}" class="competition_place">
+
+        <label for="competitionNote">Poznámka</label>
+        <textarea name="note" id="competitionNote" class="competition_note" rows="4" cols="30">{{ competition.note }}</textarea>
+
+        <input type="hidden" name="day" value="{{ day|date:"Y-m-d" }}">
+        <input type="hidden" name="id" value="{{ competition.id }}">
+    </fieldset>
+</form>
+</div>

@@ -1,0 +1,85 @@
+{% load log_filters %}
+<h2>{{day|date:"j"}}. {{day|date:"F Y"|lower}}</h2>
+{% for w in workouts %}
+<div class="workout">
+{% ifnotequal num_workouts 1 %}
+<h3>{{forloop.counter}}. fáze</h3>
+{% endifnotequal %}
+{% if w.workoutitem_set.all|length_is:"0" %}
+<p>Tato fáze nemá žádné položky</p>
+{% else %}
+<table cellspacing="0">
+    <thead>
+        <tr>
+        <th class="type">Typ</th>
+        <th class="desc">Popis</th>
+        <th class="km">Km</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for i in w.workoutitem_set.all|dictsort:"sequence" %}
+    <tr>
+        <td class="type">{{i.type}}</td>
+        <td class="desc">{{i.desc}}</td>
+        <td class="km">{{i.km}}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+<ul>
+    {% if w.total_km %}<li class="totalKm">{{w.total_km}} km</li>{% endif %}
+    {% if w.weather|length_is:"0"|is_not %}<li class="weather">{{w.weather}}&nbsp;</li>{% endif %}
+</ul>
+<p class="workoutInfoButtons">
+    <a href="/log/workout/edit/{{ w.day|date:"Y/m/d" }}/{{ w.id }}/" class="editWorkout"
+        id="editWorkout_{{ w.day|date:"Y-m-d" }}_{{ w.id }}">Upravit fázi</a>
+    <a href="/log/workout/remove/{{ w.id }}/" class="removeWorkout"
+        id="removeWorkout_{{ w.day|date:"Y-m-d" }}_{{ w.id }}">Odstranit fázi</a>
+</p>
+</div>
+{% endfor %}
+<p class="workoutInfoButtons">
+    <a href="/log/workout/add/{{day|date:"Y/m/d"}}/" class="addWorkout"
+        id="addWorkout_{{ day|date:"Y-m-d" }}">Přidat fázi</a>
+</p>
+{% if competitions|length_is:"0"|is_not %}
+<h3>Závody</h3>
+<div class="competition">
+<table cellspacing="0" class="competition">
+    <thead>
+        <tr>
+            <th scope="col">Disciplína</th>
+            <th scope="col">Výkon</th>
+            <th scope="col">Místo</th>
+            <th scope="col">&nbsp;</th>
+            <th scope="col">&nbsp;</th>
+        </tr>
+    </thead>
+    <tbody>
+{% for c in competitions %}
+        <tr>
+            <td>{{ c.event }}</td>
+            <td>{{ c.result }}</td>
+            <td>{{ c.place }}</td>
+            <td>
+                <a href="/log/competition/edit/{{ c.day|date:"Y/m/d" }}/{{ c.id }}/" class="editCompetition" 
+                id="editCompetition_{{ c.day|date:"Y-m-d" }}_{{ c.id }}" title="Upravit závod">
+                <span>Upravit závod</span></a>
+            </td>
+            <td>
+                <a href="/log/competition/remove/{{ c.id }}/" class="removeCompetition" 
+                    id="removeCompetition_{{ c.day|date:"Y-m-d" }}_{{ c.id }}" title="Odstranit závod">
+                    <span>Odstranit závod</span></a>
+            </td>
+        </tr>
+{% endfor %}
+    </tbody>
+</table>
+</div>
+{% endif %}
+<p class="workoutInfoButtons">
+    <a href="/log/competition/add/{{ day|date:"Y/m/d" }}/" class="addCompetition"
+        id="addCompetition_{{ day|date:"Y-m-d" }}">Přidat závod</a>
+</p>

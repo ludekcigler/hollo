@@ -27,5 +27,23 @@ hollo.utils = {
             } 
         }
         return '';
+    },
+
+    show_edit_form: function (responseText, code, response) {
+        // Insert the div for workout form
+        if ($('#editFormWindow').length == 0) {
+            var d = document.createElement('div');
+            d.id = 'editFormWindow';
+            $('body')[0].appendChild(d);
+        }
+        
+        var w = $('#editFormWindow');
+        w.css('width', 0.7 * window.innerWidth);
+        w.css('height', 0.7 * window.innerHeight);
+        w.css('top', 0.15 * window.innerHeight);
+        w.css('left', 0.15 * window.innerWidth);
+        w.css('display', 'block');
+        
+        w.html(responseText);
     }
 }

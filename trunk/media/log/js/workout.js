@@ -23,6 +23,7 @@ hollo.workout = {
         $('#workoutSummary a.editWorkout').click(hollo.workout.show_edit_form);
         $('#workoutSummary a.removeWorkout').click(hollo.workout.remove);
         $('#workoutSummary a.addWorkout').click(hollo.workout.show_add_form);
+        $('#workoutSummary a.addCompetition').click(hollo.competition.show_add_form);
     },
 
     show_edit_form: function(evt) {
@@ -46,22 +47,7 @@ hollo.workout = {
     },
 
     show_form_callback: function (responseText, code, response) {
-        // Insert the div for workout form
-        if ($('#workoutEditFormWindow').length == 0) {
-            var d = document.createElement('div');
-            d.id = 'workoutEditFormWindow';
-            $('body')[0].appendChild(d);
-        }
-        
-        var w = $('#workoutEditFormWindow');
-        w.css('width', 0.7 * window.innerWidth);
-        w.css('height', 0.7 * window.innerHeight);
-        w.css('top', 0.15 * window.innerHeight);
-        w.css('left', 0.15 * window.innerWidth);
-        w.css('display', 'block');
-        
-        w.html(responseText);
-
+        hollo.utils.show_edit_form(responseText, code, response);
         hollo.workout.assign_form_signals();
     },
 
@@ -104,9 +90,10 @@ hollo.workout = {
     },
 
     assign_form_signals: function () {
-        $('#workoutEditFormWindow .removeWorkoutItem').click(hollo.workout.remove_item);
-        $('#workoutEditFormWindow #addWorkoutItem').click(hollo.workout.add_item);
-        $('#workoutEditFormWindow #workoutEditFormClose').click(hollo.workout.close_form);
+        $('#editFormWindow .removeWorkoutItem').click(hollo.workout.remove_item);
+        $('#editFormWindow #addWorkoutItem').click(hollo.workout.add_item);
+        $('#editFormWindow #workoutEditFormClose').click(hollo.workout.close_form);
+        $('#editFormWindow').jqDrag('.jqDrag').jqResize('.jqResize');
     },
 
     remove_item: function (evt) {
@@ -119,8 +106,8 @@ hollo.workout = {
     },
 
     add_item: function (evt) {
-        var row = $('#workoutEditFormWindow table tbody tr')[0].cloneNode(true);
-        $('#workoutEditFormWindow table tbody').append(row);
+        var row = $('#editFormWindow table tbody tr')[0].cloneNode(true);
+        $('#editFormWindow table tbody').append(row);
         $(row).find('.removeWorkoutItem').click(hollo.workout.remove_item);
         
         $('#numWorkoutItems')[0].value = $('#workoutEdit table tbody tr').length;
@@ -128,13 +115,13 @@ hollo.workout = {
     },
 
     close_form: function (evt) {
-        $('#workoutEditFormWindow .removeWorkoutItem').unbind();
-        $('#workoutEditFormWindow #addWorkoutItem').unbind();
-        $('#workoutEditFormWindow #workoutEditFormClose').unbind();
-        $('#workoutEditFormWindow').remove();
+        $('#editFormWindow .removeWorkoutItem').unbind();
+        $('#editFormWindow #addWorkoutItem').unbind();
+        $('#editFormWindow #workoutEditFormClose').unbind();
+        $('#editFormWindow').remove();
         evt.preventDefault();
     }
-}
+};
 
 $(document).ready(function () {
     $('#viewSelectionSubmit').click(hollo.workout.change_view);

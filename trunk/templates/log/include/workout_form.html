@@ -1,0 +1,56 @@
+{% load log_tags %}
+<div id="workoutForm">
+<h2>{{ form_action_desc|capfirst }} trénink</h2>
+<form id="workoutEdit" action="/log/workout/{{ form_action }}/?continue={{ continue|urlencode }}" method="post">
+    <fieldset class="buttonSet">
+        <legend class="textversion">Uložit</legend>
+        <button type="submit" name="submitOk" class="ok" value="ok">Uložit</button>
+        <button type="submit" name="submitCancel" class="cancel" value="cancel">Zrušit</button>
+    </fieldset>
+    <fieldset class="workoutItems">
+        <legend>Části tréninku</legend>
+        <input type="hidden" name="day" value="{{ day|date:"Y-m-d" }}">
+        <input type="hidden" name="id" value="{{ workout.id }}">
+        <input type="hidden" name="num_workout_items" id="numWorkoutItems" value="{{ phase_items|length }}">
+        <ol>
+                {% for phase_item in phase_items %}
+                <li>
+                    <ul>
+                        <li><label for="workout_type_{{ forloop.counter0 }}">Typ</label>
+                        <select name="workout_type_{{ forloop.counter0 }}" 
+                            class="workoutType" id="workout_type_{{ forloop.counter0 }}">
+                            {% if phase_item %}
+                                {% select_workout_type phase_item.type %}
+                            {% else %}
+                                {% select_workout_type "Roz" %}
+                            {% endif %}
+                        </select>
+                        </li>
+                        <li>
+                        <label for="workout_desc_{{ forloop.counter0 }}">Popis</label>
+                        <input type="text" id="workout_desc_{{ forloop.counter0 }}"
+                            name="workout_desc_{{ forloop.counter0 }}" class="workoutDesc" value="{{ phase_item.desc }}">
+                        </li>
+                        <li>
+                        <label for="workout_km_{{ forloop.counter0 }}">Km</label>
+                        <input type="text" id="workout_km_{{ forloop.counter0 }}"
+                            name="workout_km_{{ forloop.counter0 }}" value="{{ phase_item.km }}" class="workoutKm">
+                        </li>
+                        <li>
+                            <label>&nbsp;</label>
+                        <input type="image" name="submitRemoveWorkoutItem_{{ forloop.counter0 }}" src="/site_media/log/images/icons/remove_small.png" alt="Smazat" title="Smazat část tréninku" class="removeWorkoutItem" size="16;16" value="removeWorkoutItem_{{ forloop.counter0 }}">
+                        </li>
+                    </ul>
+                </li>
+                {% endfor %}
+        </ol>
+        <p class="addWorkoutItem">
+        <button type="submit" name="submitAddWorkoutItem" value="addWorkoutItem" id="addWorkoutItem">Přidat část tréninku</button>
+        </p>
+    </fieldset>
+    <fieldset class="workoutWeather">
+        <legend class="textversion">Další informace</legend>
+        <label for="weather">Počasí</label><input type="text" id="weather" name="weather" value="{{ workout.weather }}" />
+    </fieldset>
+</form>
+</div>

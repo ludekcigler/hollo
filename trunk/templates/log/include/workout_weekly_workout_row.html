@@ -1,0 +1,31 @@
+{% load log_filters %}
+{% load log_tags %}
+{% if workout.workoutitem_set.all|length_is:"0" %}
+    {% if forloop.first|is_not %}
+        {# If this is not the first phase, we need to produce the row header #}
+    <tr class="firstFromPhase day_{{ day_data.day|date:"Y-m-d" }}">
+    {% endif %}
+        <td class="phase">{{ forloop.counter }}</td>
+           <td colspan="3">Tato fáze nemá žádné položky..</td>
+        </tr>
+
+{% else %}
+    {% for item in workout.workoutitem_set.all|dictsort:"sequence" %}
+        {% if forloop.first|is_not %}
+    <tr class="day_{{ day_data.day|date:"Y-m-d" }}">
+        {% endif %}
+        {% if forloop.parentloop.first|is_not and forloop.first %}
+    <tr class="{% if forloop.first %}firstFromPhase{% endif %} day_{{ day_data.day|date:"Y-m-d" }}">
+        {% endif %}
+
+        {% if forloop.first %}
+        <td class="phase" rowspan="{{ workout.workoutitem_set.count }}">{{ forloop.parentloop.counter }}</td>
+        {% endif %}
+        <td class="type">{{ item.type }}</td>
+        <td class="desc">{{ item.desc }}</td>
+        {% if forloop.first %}
+        <td rowspan="{{ workout.workoutitem_set.count }}" class="km">{{workout.total_km}}</td>
+        {% endif %}
+    </tr>
+    {% endfor %}
+{% endif %}

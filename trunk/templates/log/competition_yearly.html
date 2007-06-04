@@ -1,12 +1,12 @@
 {% extends 'log/competition_base.html' %}
 {% block title %}
-Závody {{ first_day|date:"F Y"|lower }} :: Hollo
+Závody {{ first_day|date:"Y" }} :: Hollo
 {% endblock %}
 
 {% block competitionSummary %}
-{% include 'log/include/competition_monthly_summary.html' %}
+{% include 'log/include/competition_yearly_summary.html' %}
 {% endblock %}
 
 {% block competitionView %}
-{% include 'log/include/competition_monthly.html' %}
+{% include 'log/include/competition_yearly.html' %}
 {% endblock %}

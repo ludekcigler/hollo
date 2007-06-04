@@ -3,14 +3,6 @@
 Přihlášení :: Tréninkový deník
 {% endblock %}
 
-{% block javascripts %}
-    <script type="text/javascript">
-    $(document).ready(function () {
-        $("#loginForm").corner('5px');
-    });
-    </script>
-{% endblock %}
-
 {% block pageBody %}
 <div id="loginHeader">
 <h1>Deník atleta<span></span></h1>
@@ -26,9 +18,9 @@ Přihlášení :: Tréninkový deník
 <form action="/log/auth/" method="POST">
 <fieldset>
 <label for="username">Uživatelské jméno</label>
-<input type="text" id="username" name="username" />
+<input type="text" id="username" name="username">
 <label for="password">Heslo</label>
-<input type="password" id="password" name="password" />
+<input type="password" id="password" name="password">
 </fieldset>
 <fieldset>
 <button type="submit">Přihlásit se</button>
@@ -46,10 +38,5 @@ Verze 0.1
     <h2>
     Vítejte v tréninkovém deníku!
     </h2>
-</div>
-<div id="footer">
-<p>
-&copy; 2007 Luděk Cigler. Written by <a href="http://www.vim.org/">Vim</a>!
-</p>
 </div>
 {% endblock %}

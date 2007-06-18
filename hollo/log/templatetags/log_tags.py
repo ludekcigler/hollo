@@ -60,6 +60,7 @@ def select_workout_type(context, selected_type):
 
     return {'choices': choices}
 
+
 @register.inclusion_tag('tags/option.html', takes_context=True)
 def select_competition_event(context, selected_event):
     choices = []
@@ -68,6 +69,27 @@ def select_competition_event(context, selected_event):
         choices.append({'value': event.name, 'selected': selected, 'name': event.name})
 
     return {'choices': choices}
+
+
+@register.inclusion_tag('tags/option.html', takes_context=True)
+def select_athlete_group(context, selected_group):
+    choices = [{'value': '', 'selected': False, 'name': '-- Žádná --'}]
+    for group in models.AthleteGroup.objects.all():
+        selected = (group == selected_group)
+        choices.append({'value': event.name, 'selected': selected, 'name': event.name})
+
+    return {'choices': choices}
+
+
+@register.inclusion_tag('tags/settings_submenu.html', takes_context=True)
+def settings_submenu(context, active_item):
+    return {'active_item': active_item, 
+            'person': context.has_key('person') and context['person'] or None,
+            'athlete': context.has_key('athlete') and context['athlete'] or None,
+            'coach': context.has_key('coach') and context['coach'] or None
+           }
+
+
 
 
 @register.simple_tag

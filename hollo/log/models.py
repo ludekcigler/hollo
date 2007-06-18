@@ -27,12 +27,15 @@ from django.db import models
 
 from django.contrib.auth.models import User
 
-class Athlete(models.Model):
+class Person(models.Model):
     """
-    Single athlete.
+    Single user of the log
     """
     user = models.OneToOneField(User)
-    club = models.CharField(maxlength = 100)
+    # An avatar of the user
+    image = models.FileField(upload_to='avatars', blank=True, null=True)
+    # List of athletes which the person is allowed to watch
+    watched_athletes = models.ManyToManyField('Athlete', related_name='watched_athletes', blank=True)
 
     def __str__(self):
         return self.full_name
@@ -44,37 +47,92 @@ class Athlete(models.Model):
             return str(self.user)
 
     full_name = property(_get_full_name, doc = 'Full name of the Athlete')
+    id = property(lambda self: self.user.id, doc='Id of the underlying user')
 
     class Admin:
-        list_display = ('user', 'club')
+        list_display = ('user',)
+
+
+class Athlete(models.Model):
+    """
+    Single athlete
+    """
+    person = models.OneToOneField(Person)
+    # Name of the club
+    club = models.CharField(maxlength = 100, blank=True)
+    # Group of athletes this person belongs to
+    group = models.ForeignKey('AthleteGroup', blank=True, null=True)
+    # List of persons who are not allowed to request authorization
+    # for the athlete
+    blocked_persons = models.ManyToManyField('Person', related_name='blocked_persons', blank=True)
+
+    def __str__(self):
+        return str(self.person)
+
+    class Admin:
+        pass
+
+class Coach(models.Model):
+    """
+    Coach of an athlete group
+    """
+    person = models.OneToOneField(Person)
+
+    def __str__(self):
+        return str(self.person)
+
+    class Admin:
+        pass
 
 class AthleteGroup(models.Model):
     """
     Group of athletes
     """
     name = models.CharField(maxlength = 100)
-    coach = models.ForeignKey('Athlete', related_name = 'coach')
-    athletes = models.ManyToManyField('Athlete')
-
-    class Admin:
-        list_display = ('name', 'coach')
-        fields = (
-                 (None, {'fields': ('name', 'coach', 'athletes')}),
-                 )
-
-class TrackEvent(models.Model):
-    """
-    One event on the track (or outside..), e.g. 100m, Javelin etc.
-    """
-    name = models.CharField(maxlength = 30, primary_key = True)
-    result_pattern = models.CharField(maxlength = 150)
-    result_ordering = models.BooleanField(choices = ((False, 'ASC'), (True, 'DESC')))
+    coaches = models.ManyToManyField('Coach')
 
     def __str__(self):
         return self.name
 
     class Admin:
-        list_display = ('name', 'result_pattern', 'result_ordering')
+        pass
+
+class AuthorizationRequest(models.Model):
+    """
+    A request for authorization
+    """
+    person = models.ForeignKey('Person')
+    athlete = models.ForeignKey('Athlete')
+    message = models.CharField(maxlength=160, blank=True, default='')
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Admin:
+        pass
+
+class TrackEvent(models.Model):
+    """
+    One event on the track (or outside..), e.g. 100m, Javelin etc.
+    """
+    name = models.CharField(maxlength=30, primary_key=True)
+    # Pattern to verify result on server-side (including named groups)
+    result_pattern = models.CharField(maxlength=150, default='^.*$')
+    # Pattern to verify result on client side (using JS)
+    js_result_pattern = models.CharField(maxlength=150, default='^.*$')
+    # Order of results
+    result_type = models.CharField(maxlength=1,
+                    choices=(('T', 'Time'), ('L', 'Length'), ('P', 'Points')))
+
+    # Ordering of the track events
+    order = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+    class Admin:
+        list_display = ('name', 'result_pattern', 'result_type')
+
+    class Meta:
+        ordering = ['order']
 
 class Competition(models.Model):
     """
@@ -82,10 +140,10 @@ class Competition(models.Model):
     """
     athlete = models.ForeignKey('Athlete')
     day = models.DateField()
-    place = models.CharField(maxlength = 100)
+    place = models.CharField(maxlength = 100, default='')
     event = models.ForeignKey('TrackEvent')
     result = models.CharField(maxlength = 100)
-    note = models.TextField()
+    note = models.TextField(blank=True, default='')
 
     class Admin:
         pass
@@ -96,8 +154,9 @@ class Workout(models.Model):
     """
     day = models.DateField()
     athlete = models.ForeignKey('Athlete')
-    weather = models.CharField(maxlength=100, blank=True)
-    note = models.TextField()
+    weather = models.CharField(maxlength=100, blank=True, default='')
+    note = models.TextField(blank=True, default='')
+    rating = models.SmallIntegerField(default=3)
 
     def __str__(self):
         return "%s, %s" % (str(self.athlete), self.day,)
@@ -124,12 +183,16 @@ class WorkoutType(models.Model):
     """
     abbr = models.CharField(maxlength = 10)
     name = models.CharField(maxlength = 30)
+    order = models.DateField(auto_now_add=True)
 
     def __str__(self):
         return self.abbr
 
     class Admin:
         pass
+
+    class Meta:
+        ordering = ['order']
 
 class WorkoutItem(models.Model):
     """
@@ -139,7 +202,7 @@ class WorkoutItem(models.Model):
     sequence = models.IntegerField()
     type = models.ForeignKey('WorkoutType')
     desc = models.TextField()
-    km = models.FloatField(decimal_places = 2, max_digits = 5, default = None, blank = True)
+    km = models.FloatField(decimal_places=2, max_digits=5, default=None, blank=True)
 
     def __str__(self):
         return "%s: %s, %s" % (str(self.workout), self.type.abbr, self.desc,)

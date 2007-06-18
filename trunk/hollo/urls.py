@@ -34,41 +34,47 @@ urlpatterns = patterns('',
 
     # log URL
     (r'^log/$', 'hollo.log.views.index'),
-    (r'^log/login/$', 'hollo.log.views.athlete_login'),
-    (r'^log/logout/$', 'hollo.log.views.athlete_logout'),
-    (r'^log/auth/$', 'hollo.log.views.athlete_auth'),
+    (r'^log/login/$', 'hollo.log.views.user.login'),
+    (r'^log/logout/$', 'hollo.log.views.user.logout'),
+    (r'^log/auth/$', 'hollo.log.views.user.auth'),
 
-    (r'^log/workout/week/(?P<year>\d{4})/(?P<week>\d{2})/$', 'hollo.log.views.workout_view_week'),
-    (r'^log/workout/week/(?P<year>\d{4})/(?P<week>\d{2})/day/(?P<detail_year>\d{4})/(?P<detail_month>\d{2})/(?P<detail_day>\d{2})/$', 
-        'hollo.log.views.workout_view_week'),
-    (r'^log/workout/month/(?P<year>\d{4})/(?P<month>\d{2})/$', 'hollo.log.views.workout_view_month'),
-    (r'^log/workout/month/(?P<year>\d{4})/(?P<month>\d{2})/(?P<detail_day>\d{2})/$', 'hollo.log.views.workout_view_month'),
+    (r'^log/workout/week/(?P<year>\d{4})/(?P<week>\d{,2})/$', 'hollo.log.views.workout.weekly_view'),
+    (r'^log/workout/week/(?P<year>\d{4})/(?P<week>\d{,2})/day/(?P<detail_year>\d{4})/(?P<detail_month>\d{2})/(?P<detail_day>\d{2})/$', 
+        'hollo.log.views.workout.weekly_view'),
+    (r'^log/workout/month/(?P<year>\d{4})/(?P<month>\d{2})/$', 'hollo.log.views.workout.monthly_view'),
+    (r'^log/workout/month/(?P<year>\d{4})/(?P<month>\d{2})/(?P<detail_day>\d{2})/$', 'hollo.log.views.workout.monthly_view'),
 
-    (r'^log/workout/add_submit/$', 'hollo.log.views.workout_add_submit'),
-    (r'^log/workout/edit_submit/$', 'hollo.log.views.workout_edit_submit'),
-    (r'^log/workout/remove/(?P<workout_id>\d+)/$', 'hollo.log.views.workout_remove'),
-    (r'^log/workout/add/(?P<year>\d{4})/(?P<month>\d{2})/(?P<day>\d{2})/$', 'hollo.log.views.workout_add_form'),
-    (r'^log/workout/edit/(?P<year>\d{4})/(?P<month>\d{2})/(?P<day>\d{2})/(?P<workout_id>\d+)/$', 'hollo.log.views.workout_edit_form'),
+    (r'^log/workout/add_submit/$', 'hollo.log.views.workout.add_submit'),
+    (r'^log/workout/edit_submit/$', 'hollo.log.views.workout.edit_submit'),
+    (r'^log/workout/remove/(?P<workout_id>\d+)/$', 'hollo.log.views.workout.remove_workout'),
+    (r'^log/workout/add/(?P<year>\d{4})/(?P<month>\d{2})/(?P<day>\d{2})/$', 'hollo.log.views.workout.add_form'),
+    (r'^log/workout/edit/(?P<year>\d{4})/(?P<month>\d{2})/(?P<day>\d{2})/(?P<workout_id>\d+)/$', 'hollo.log.views.workout.edit_form'),
 
-    (r'^log/workout/change_view/$', 'hollo.log.views.workout_change_view'),
+    (r'^log/workout/change_view/$', 'hollo.log.views.workout.change_view'),
 
-    (r'^log/competition/add/$', 'hollo.log.views.competition_add'),
-    (r'^log/competition/edit/$', 'hollo.log.views.competition_edit'),
+    (r'^log/competition/add_submit/$', 'hollo.log.views.competition.add_form'),
+    (r'^log/competition/edit_submit/$', 'hollo.log.views.competition.edit_form'),
 
-    (r'^log/competition/remove/(?P<competition_id>\d+)/$', 'hollo.log.views.competition_remove'),
+    (r'^log/competition/remove/(?P<competition_id>\d+)/$', 'hollo.log.views.competition.remove_competition'),
 
-    (r'^log/competition/month/(?P<year>\d{4})/(?P<month>\d{2})/$', 'hollo.log.views.competition_view_month'),
+    (r'^log/competition/month/(?P<year>\d{4})/(?P<month>\d{2})/$', 'hollo.log.views.competition.monthly_view'),
     (r'^log/competition/month/(?P<year>\d{4})/(?P<month>\d{2})/(?P<competition_id>\d+)/$',
-        'hollo.log.views.competition_view_month'),
+        'hollo.log.views.competition.monthly_view'),
 
-    (r'^log/competition/year/(?P<year>\d{4})/$', 'hollo.log.views.competition_view_year'),
+    (r'^log/competition/year/(?P<year>\d{4})/$', 'hollo.log.views.competition.yearly_view'),
     (r'^log/competition/year/(?P<year>\d{4})/(?P<competition_id>\d+)/$', 
-        'hollo.log.views.competition_view_year'),
+        'hollo.log.views.competition.yearly_view'),
 
-    (r'^log/competition/change_view/$', 'hollo.log.views.competition_change_view'),
+    (r'^log/competition/change_view/$', 'hollo.log.views.competition.change_view'),
 
-    (r'^log/competition/add/(?P<year>\d{4})/(?P<month>\d{2})/(?P<day>\d{2})/$', 'hollo.log.views.competition_add_form'),
-    (r'^log/competition/edit/(?P<year>\d{4})/(?P<month>\d{2})/(?P<day>\d{2})/(?P<competition_id>\d+)/$', 'hollo.log.views.competition_edit_form'),
+    (r'^log/competition/add/(?P<year>\d{4})/(?P<month>\d{2})/(?P<day>\d{2})/$', 'hollo.log.views.competition.add_form'),
+    (r'^log/competition/edit/(?P<year>\d{4})/(?P<month>\d{2})/(?P<day>\d{2})/(?P<competition_id>\d+)/$', 'hollo.log.views.competition.edit_form'),
+
+    # Settings views
+    (r'^log/settings/$', 'hollo.log.views.settings.index'),
+    (r'^log/settings/user/$', 'hollo.log.views.settings.user'),
+    (r'^log/settings/my_athletes/$', 'hollo.log.views.settings.my_athletes'),
+    (r'^log/settings/friends/$', 'hollo.log.views.settings.friends'),
 
     # Ajax methods
     (r'^log/ajax/workout/add/$', 'hollo.log.views.workout_add_ajax'),

@@ -1,0 +1,61 @@
+{% extends 'log/include/settings_base.html' %}
+{% load log_tags %}
+{% block settingsContent %}
+{% settings_submenu "user" %}
+<form id="settingsUserForm" class="settingsForm" action="/log/settings/user/save/" method="post">
+    <fieldset class="buttonSet">
+        <legend class="textversion">Uložit</legend>
+        <button type="submit" name="submitOk" class="ok" value="ok">Uložit</button>
+        <button type="submit" name="submitCancel" class="cancel" value="cancel">Zrušit</button>
+    </fieldset>
+    <fieldset>
+        <legend class="textversion">Informace o uživateli</legend>
+        <table cellspacing="0">
+            <tbody>
+                <tr>
+                    <th scope="row"><label for="settingsFirstName">Jméno</label></th>
+                    <td><input type="text" name="firstName" id="settingsFirstName" value="{{ user.first_name }}"></td>
+                </tr>
+                <tr>
+                    <th scope="row"><label for="settingsLastName">Příjmení</label></th>
+                    <td><input type="text" name="lastName" id="settingsLastName" value="{{ user.last_name }}"></td>
+                </tr>
+                <tr>
+                    <th scope="row"><label for="settingsEmail">Email</label></th>
+                    <td><input type="text" name="email" id="settingsEmail" value="{{ user.email }}"></td>
+                </tr>
+                <tr>
+                    <th scope="row"><label>Obrázek</label></th>
+                    <td>
+                        {% if person.image %}
+                        <img src="{{ person.get_image_url }}" width="96" height="96" alt="{{ user.id }}" >
+                        <a href="/log/settings/user/edit_image/" title="Upravit obrázek" >Upravit</a>
+                        <a href="/log/settings/user/remove_image/" title="Smazat obrázek" >Smazat</a>
+                        {% else %}
+                        <a href="/log/settings/user/edit_image/" title="Nahrát obrázek">Nahrát obrázek</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row"><label>Heslo</label></th>
+                    <td><a href="/log/settings/user/change_password/" title="Změnit heslo">Změnit heslo</a></td>
+                </tr>
+                {% if athlete %}
+                <tr>
+                    <th scope="row"><label for="settingsClub">Klub</label></th>
+                    <td><input type="text" name="club" id="settingsClub" value="{{ athlete.club }}"></td>
+                </tr>
+                <tr>
+                    <th scope="row"><label for="settingsGroup">Tréninková skupina</label></th>
+                    <td>
+                        <select name="group" id="settingsGroup">
+                        {% select_athlete_group athlete.group %}
+                        </select>
+                    </td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </fieldset>
+</form>
+{% endblock %}

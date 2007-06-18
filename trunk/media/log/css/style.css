@@ -17,6 +17,16 @@ table {
     border-spacing: 0;
 }
 
+table thead th:first-child {
+    border-radius-topleft: 5px;
+    -moz-border-radius-topleft: 5px;
+}
+
+table thead th:last-child {
+    border-radius-topright: 5px;
+    -moz-border-radius-topright: 5px;
+}
+
 .jsInfo {
     display: none;
 }
@@ -99,6 +109,36 @@ fieldset {
     content: " >";
 }
 
+div.tr, div.tl, div.br, div.bl, span.tr, span.tl, span.br, span.bl {
+    display: block;
+    position: absolute;
+    width: 4px;
+    height: 4px;
+}
+ 
+div.tl, span.tl {
+    background: url('/site_media/log/images/corners/top_left_small.png') no-repeat top left;
+    top: 0;
+    left: 0;
+}
+
+div.tr, span.tr {
+    background: url('/site_media/log/images/corners/top_right_small.png') no-repeat top right;
+    top: 0;
+    right: 0;
+}
+
+div.bl, span.bl {
+    background: url('/site_media/log/images/corners/bottom_left_small.png') no-repeat bottom left;
+    bottom: 0;
+    left: 0;
+}
+
+div.br, span.br {
+    background: url('/site_media/log/images/corners/bottom_right_small.png') no-repeat bottom right;
+    bottom: 0;
+    right: 0;
+}
 
 #header {
     margin: 0;
@@ -155,12 +195,14 @@ fieldset {
     background-color: lightsteelblue;
     padding: 0.2em 0.6em;
     position: relative;
+    border: none;
     -moz-border-radius-topleft: 5px;
     -moz-border-radius-topright: 5px;
     -webkit-border-radius-topleft: 5px;
     -webkit-border-radius-topright: 5px;
     border-radius-topleft: 5px;
     border-radius-topright: 5px;
+    margin-bottom: -1px;
 }
 
 #mainMenu li.active a {
@@ -454,6 +496,8 @@ tbody tr.highlighted td, tbody tr.highlighted th, tbody td.highlighted {
     float: left;
     width: 19.5em;
     margin: 0 0 1em;
+    -moz-border-radius: 6px;
+    border-radius: 6px;
 }
 
 #loginForm form {

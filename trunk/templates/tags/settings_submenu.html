@@ -1,0 +1,15 @@
+<ul id="settingsMenu">
+    <li {% ifequal active_item "user" %}class="active"{% endifequal %}>
+        <a href="/log/settings/user/" title="Obecné nastavení">Obecné</a>
+    </li>
+    {% if coach %}
+    <li {% ifequal active_item "my_athletes" %}class="active"{% endifequal %}>
+        <a href="/log/settings/my_athletes/" title="Moji svěřenci">Svěřenci</a>
+    </li>
+    {% endif %}
+    {% if athlete %}
+    <li {% ifequal active_item "friends" %}class="active"{% endifequal %}>
+        <a href="/log/settings/friends/" title="Moji kamarádi">Kamarádi</a>
+    </li>
+    {% endif %}
+</ul>

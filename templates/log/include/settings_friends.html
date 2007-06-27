@@ -1,0 +1,50 @@
+{% extends 'log/include/settings_base.html' %}
+{% load log_tags %}
+{% block settingsContent %}
+{% settings_submenu "friends" %}
+<h3 class="textversion">Kamarádi</h3>
+{% if athlete %}
+<h4>Moje skupina</h4>
+    <dl>
+    {% for ath_data in my_group_athletes %}
+        {% with ath_data.athlete as person %}
+        {% with ath_data.athlete.person.user.username as username %}
+        {% with ath_data.view_status as view_status %}
+            {% include 'log/include/settings_friends_row.html' %}
+        {% endwith %}
+        {% endwith %}
+        {% endwith %}
+    {% endfor %}
+    </dl>
+{% endif %}
+<h4>Ostatní</h4>
+<dl>
+{% for p in other_persons %}
+    {% with p.person as person %}
+    {% with p.person.user.username as username %}
+    {% with p.view_status as view_status %}
+        {% include 'log/include/settings_friends_row.html' %}
+    {% endwith %}
+    {% endwith %}
+    {% endwith %}
+{% endfor %}
+</dl>
+<a href="/settings/friends/add/">Sledovat atleta</a>
+{% if athlete %}
+    {% if blocked_persons|length_is:"0" %}{% else %}
+<h4>Blokovaní</h4>
+    {% endif %}
+<dl>
+{% for p in blocked_persons %}
+    {% with p as person %}
+    {% with p.user.username as username %}
+    {% with "True" as blocked %}
+        {% include 'log/include/settings_friends_row.html' %}
+    {% endwith %}
+    {% endwith %}
+    {% endwith %}
+{% endfor %}
+</dl>
+{% endif %}
+{% endblock %}
+

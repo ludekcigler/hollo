@@ -2,7 +2,8 @@
 {% load log_tags %}
 {% block settingsContent %}
 {% settings_submenu "user" %}
-<form id="settingsUserForm" class="settingsForm" action="/log/settings/user/save/" method="post">
+<h3 class="textversion">Obecné nastavení</h3>
+<form id="settingsUserForm" class="settingsForm" action="/settings/user/save/" method="post">
     <fieldset class="buttonSet">
         <legend class="textversion">Uložit</legend>
         <button type="submit" name="submitOk" class="ok" value="ok">Uložit</button>
@@ -28,17 +29,17 @@
                     <th scope="row"><label>Obrázek</label></th>
                     <td>
                         {% if person.image %}
-                        <img src="{{ person.get_image_url }}" width="96" height="96" alt="{{ user.id }}" >
-                        <a href="/log/settings/user/edit_image/" title="Upravit obrázek" >Upravit</a>
-                        <a href="/log/settings/user/remove_image/" title="Smazat obrázek" >Smazat</a>
+                        <img src="{{ person.get_image_url }}" width="36" height="36" alt="{{ user.id }}" >
+                        <a href="/settings/user/edit_image/" title="Upravit obrázek" >Upravit</a>
+                        <a href="/settings/user/remove_image/" title="Smazat obrázek" >Smazat</a>
                         {% else %}
-                        <a href="/log/settings/user/edit_image/" title="Nahrát obrázek">Nahrát obrázek</a>
+                        <a href="/settings/user/edit_image/" title="Nahrát obrázek">Nahrát obrázek</a>
                         {% endif %}
                     </td>
                 </tr>
                 <tr>
                     <th scope="row"><label>Heslo</label></th>
-                    <td><a href="/log/settings/user/change_password/" title="Změnit heslo">Změnit heslo</a></td>
+                    <td><a href="/settings/user/change_password/" title="Změnit heslo">Změnit heslo</a></td>
                 </tr>
                 {% if athlete %}
                 <tr>

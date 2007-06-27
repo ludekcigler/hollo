@@ -43,7 +43,7 @@ def auth(request):
     user = django.contrib.auth.authenticate(username=username, password=password)
     if user is not None and user.is_active:
         django.contrib.auth.login(request, user)
-        return http.HttpResponseRedirect('/log/')
+        return http.HttpResponseRedirect('/')
     else:
         return render_to_response('log/login.html', {'message': u"Soráč, ale zadal's špatně heslo.."})
 

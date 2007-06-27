@@ -1,0 +1,31 @@
+{% extends 'log/include/settings_base.html' %}
+{% load log_tags %}
+{% block settingsContent %}
+{% settings_submenu "friends" %}
+<h3 class="textversion">Kamarádi</h3>
+<h4>Sledovat atleta</h4>
+<h5>Moje skupina</h5>
+<table cellspacing="0">
+{% for a in person_group_athletes %}
+    <tr>
+        <td><img 
+            src="{{ a.person.get_image_filename|default:"/site_media/log/images/user_unknown.png" }}" 
+            width="22" height="22" alt="{{ a }}">
+        <td>{{ a }}</td>
+        <td><a href="/settings/friends/add/{{ a.person.user.username }}/">Sledovat</a></td>
+    </tr>
+{% endfor %}
+</table>
+<h5>Ostatní atleti</h5>
+<table cellspacing="0">
+{% for a in person_other_athletes %}
+    <tr>
+        <td><img 
+            src="{{ a.person.get_image_filename|default:"/site_media/log/images/user_unknown.png" }}" 
+            width="22" height="22" alt="{{ a }}">
+        <td>{{ a }}</td>
+        <td><a href="/settings/friends/add/{{ a.person.user.username }}/">Sledovat</a></td>
+    </tr>
+{% endfor %}
+</table>
+{% endblock %}

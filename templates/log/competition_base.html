@@ -10,17 +10,20 @@
 {% load log_tags %}
 
 {% block mainMenu %}
-    <li><a href="/log/workout/month/{{ first_day|date:"Y" }}/{{ first_day|date:"m" }}/">Deník</a></li>
+    <li><a href="/workout/{{ athlete.person.user.username }}/month/{{ first_day|date:"Y" }}/{{ first_day|date:"m" }}/">Deník</a></li>
     <li class="active"><a>Závody</a></li>
 {% endblock %}
 
 {% block content %}
 <div id="viewSelection">
-<div class="tl"></div>
-<div class="tr"></div>
-<div class="bl"></div>
-<div class="br"></div>
-<form action="/log/competition/change_view/" method="post">
+    <div id="athleteSelection">
+<h2 class="textversion">Zobrazený atlet</h2>
+    <a href="/change_athlete/competition/?old={{ athlete.person.user.username }}">
+        <img src="{{ athlete.person.get_image_url|default:"/site_media/log/images/user_unknown.png" }}" width="22" height="22" alt="{{ athlete }}" id="athleteImage">
+        <span id="athleteName">{{ athlete }}</span>
+    </a>
+    </div>
+<form action="/competition/{{ athlete.person.user.username }}/change_view/" method="post">
 <fieldset>
 <legend class="textversion">Zobrazení závodů</legend>
 <label for="viewType">Pohled</label>

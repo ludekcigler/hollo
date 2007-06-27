@@ -34,23 +34,32 @@ from django.core.exceptions import ObjectDoesNotExist
 from django import http 
 from django.template import loader, Context, RequestContext
 
-from hollo.log.views import login_required
+from hollo.log.views import login_required, athlete_view_allowed, athlete_edit_allowed
 from hollo.log import models
 from hollo.log import common
 
 @login_required
-def weekly_view(request, week, year, detail_year = None, detail_month = None, detail_day = None):
+@athlete_view_allowed
+def index(request, athlete_id):
+    year, week = datetime.date.today().isocalendar()[:2]
+    return http.HttpResponseRedirect('/workout/%s/week/%04d/%02d/' % (athlete_id, year, week))
+
+@login_required
+@athlete_view_allowed
+def weekly_view(request, athlete_id, week, year, detail_year = None, detail_month = None, detail_day = None):
     """
     View workout log for a single week
     """
+    athlete = models.Athlete.objects.get(person__user__username=athlete_id)
+
     week, year = int(week), int(year)
     week = min(datetime.date(year, 12, 28).isocalendar()[1], max(1, week))
     week_data = []
 
     for day in common.iso_week_gregorian_days(year, week):
-        workouts = models.Workout.objects.filter(athlete=request.user.id, \
+        workouts = models.Workout.objects.filter(athlete=athlete, \
                                                  day=day)
-        competitions = models.Competition.objects.filter(athlete=request.user.id,
+        competitions = models.Competition.objects.filter(athlete=athlete,
                                     day=day)
         data = {'day': day, 'workouts': workouts, 
                 'competitions': competitions
@@ -78,12 +87,14 @@ def weekly_view(request, week, year, detail_year = None, detail_month = None, de
     context = {'week': week, 'year': year, 'previous_week': previous_week, \
                'previous_year': previous_year, 'next_week': next_week, \
                'next_year': next_year, 'week_data': week_data, \
-               'first_day': first_day, 'viewType': 'weekly'}
+               'first_day': first_day, 'viewType': 'weekly',
+               'athlete': athlete,
+               'athlete_edit_allowed': athlete.allowed_edit_by(request.user)}
 
     if (detail_year and detail_month and detail_day):
         detail_year, detail_month, detail_day = int(detail_year), int(detail_month), int(detail_day)
         t = loader.get_template('log/workout_weekly_detail.html')
-        context.update(day_info(request.user.id, detail_year, detail_month, detail_day))
+        context.update(day_info(athlete, detail_year, detail_month, detail_day))
     else:
         t = loader.get_template('log/workout_weekly.html')
 
@@ -92,10 +103,13 @@ def weekly_view(request, week, year, detail_year = None, detail_month = None, de
 
 
 @login_required
-def monthly_view(request, month, year, detail_day = None):
+@athlete_view_allowed
+def monthly_view(request, athlete_id, month, year, detail_day = None):
     """
     View workout log for a single month
     """
+    athlete = models.Athlete.objects.get(person__user__username=athlete_id)
+
     year, month = int(year), int(month)
     month_data = []
     for week_row, week_number in itertools.izip(calendar.monthcalendar(year, month), \
@@ -104,9 +118,9 @@ def monthly_view(request, month, year, detail_day = None):
         for day in week_row:
             if day:
                 day_data = {'day': datetime.date(year, month, day),
-                            'workouts': models.Workout.objects.filter(athlete=request.user.id, 
+                            'workouts': models.Workout.objects.filter(athlete=athlete, 
                                                      day=datetime.date(year, month, day)), 
-                            'competitions': models.Competition.objects.filter(athlete=request.user.id, 
+                            'competitions': models.Competition.objects.filter(athlete=athlete, 
                                                      day=datetime.date(year, month, day))
                            }
                 week_data['days'].append(day_data)
@@ -130,10 +144,12 @@ def monthly_view(request, month, year, detail_day = None):
 
     data = {'month_data': month_data, 'previous_month': previous_month, 'previous_year': previous_year, \
             'next_month': next_month, 'next_year': next_year, \
-            'first_day': datetime.date(year, month, 1), 'viewType': 'monthly'}
+            'first_day': datetime.date(year, month, 1), 'viewType': 'monthly',
+            'athlete': athlete,
+            'athlete_edit_allowed': athlete.allowed_edit_by(request.user)}
 
     if detail_day:
-        data.update(day_info(request.user.id, year, month, int(detail_day)))
+        data.update(day_info(athlete, year, month, int(detail_day)))
         t = loader.get_template('log/workout_monthly_detail.html')
     else:
         t = loader.get_template('log/workout_monthly.html')
@@ -143,16 +159,17 @@ def monthly_view(request, month, year, detail_day = None):
 
 
 @login_required
-def change_view(request):
+@athlete_view_allowed
+def change_view(request, athlete_id):
     """
     Change the workout period which is displayed
     """
     if (request.POST['viewType'] == 'weekly'):
         week, year = int(request.POST['week']), int(request.POST['year'])
-        return http.HttpResponseRedirect('/log/workout/week/%04d/%02d/' % (year, week))
+        return http.HttpResponseRedirect('/workout/%s/week/%04d/%02d/' % (athlete_id, year, week))
     else:
         month, year = int(request.POST['month']), int(request.POST['year'])
-        return http.HttpResponseRedirect('/log/workout/month/%04d/%02d/' % (year, month))
+        return http.HttpResponseRedirect('/workout/%s/month/%04d/%02d/' % (athlete_id, year, month))
 
 
 def day_info(athlete, year, month, day):
@@ -167,17 +184,21 @@ def day_info(athlete, year, month, day):
 
 
 @login_required
-def add_form(request, year, month, day):
+@athlete_edit_allowed
+def add_form(request, athlete_id, year, month, day):
     """
     Return HTML add form for given day
     """
+    athlete = models.Athlete.objects.get(person__user__username=athlete_id)
+
     year, month, day = int(year), int(month), int(day)
     date = datetime.date(year, month, day)
 
     context = {
                'day': date, 
                'form_action': 'add/%04d/%02d/%02d' % (year, month, day),
-               'form_action_desc': 'Nový'}
+               'form_action_desc': 'Nový',
+               'athlete': athlete}
 
     # Look for submit key (we need it to determine which button was actually pressed)
     submit_button = None
@@ -195,7 +216,7 @@ def add_form(request, year, month, day):
         context.update({'continue': request.REQUEST['continue']})
 
         if (submit_button == 'Ok'):
-            return add_submit(request)
+            return add_submit(request, athlete_id)
         elif (submit_button == 'Cancel'):
             if request.REQUEST['continue']:
                 return http.HttpResponseRedirect(request.REQUEST['continue'])
@@ -235,14 +256,15 @@ def form_context_update(request, submit_button, workout_id = None):
     return {'workout': {'id': workout_id, 'weather': weather}, 'phase_items': phase_items}
 
 @login_required
-def add_submit(request):
+@athlete_edit_allowed
+def add_submit(request, athlete_id):
     """
     Add new workout for given day
     """
     num_workout_items = int(request.POST['num_workout_items'])
     
     day = datetime.date.fromtimestamp(calendar.timegm(time.strptime(request.POST['day'], '%Y-%m-%d')))
-    athlete = models.Athlete.objects.get(person=request.user.id)
+    athlete = models.Athlete.objects.get(person__user__username=athlete_id)
 
     workout = models.Workout(athlete=athlete, day=day, weather=request.POST['weather'])
     workout.save()
@@ -257,13 +279,16 @@ def add_submit(request):
 
 
 @login_required
-def edit_form(request, day, month, year, workout_id):
+@athlete_edit_allowed
+def edit_form(request, athlete_id, day, month, year, workout_id):
     """
     Return HTML fragment with edit form for given workout
     """
     year, month, day = int(year), int(month), int(day)
     workout_id = int(workout_id)
     date = datetime.date(year, month, day)
+
+    athlete = models.Athlete.objects.get(person__user__username=athlete_id)
 
     # Look for submit key (we need it to determine which button was actually pressed)
     submit_button = None
@@ -275,7 +300,8 @@ def edit_form(request, day, month, year, workout_id):
     context = {
                'day': date, 
                'form_action': 'edit/%04d/%02d/%02d/%d' % (year, month, day, workout_id),
-               'form_action_desc': 'Upravit'}
+               'form_action_desc': 'Upravit',
+               'athlete': athlete}
 
     if not submit_button:
         # Default, the submit key was not pressed before
@@ -286,17 +312,17 @@ def edit_form(request, day, month, year, workout_id):
 
         context.update({'workout': workout, 
                         'phase_items': workout.workoutitem_set.all(),
-                        'continue': request.META.get('HTTP_REFERER', '/log/')})
+                        'continue': request.META.get('HTTP_REFERER', '/')})
     else:
         context.update({'continue': request.REQUEST['continue']})
 
         if (submit_button == 'Ok'):
-            return edit_submit(request)
+            return edit_submit(request, athlete_id)
         elif (submit_button == 'Cancel'):
             if request.REQUEST['continue']:
                 return http.HttpResponseRedirect(request.REQUEST['continue'])
             else:
-                return http.HttpResponseRedirect('/log/')
+                return http.HttpResponseRedirect('/')
         else:
             context.update(form_context_update(request, submit_button, workout_id))
 
@@ -306,7 +332,8 @@ def edit_form(request, day, month, year, workout_id):
 
 
 @login_required
-def edit_submit(request):
+@athlete_edit_allowed
+def edit_submit(request, athlete_id):
     """
     Edit given workout
     """
@@ -324,7 +351,7 @@ def edit_submit(request):
     workout.workoutitem_set.all().delete()
     _workout_items_save(request, workout, num_workout_items)
 
-    redirectUrl = request.META.get('HTTP_REFERER', '/log/')
+    redirectUrl = request.META.get('HTTP_REFERER', '/')
     if (request.REQUEST.has_key('continue')):
         redirectUrl = request.REQUEST['continue']
 
@@ -344,7 +371,8 @@ def _workout_items_save(request, workout, num_workout_items):
     return True
 
 @login_required
-def remove_workout(request, workout_id):
+@athlete_edit_allowed
+def remove_workout(request, athlete_id, workout_id):
     """
     Remove specified workout from the DB
     """
@@ -357,4 +385,3 @@ def remove_workout(request, workout_id):
     
     workout.delete()
     return http.HttpResponseRedirect(request.META.get('HTTP_REFERER', ''))
-

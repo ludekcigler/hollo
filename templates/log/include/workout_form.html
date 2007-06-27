@@ -1,11 +1,11 @@
 {% load log_tags %}
 <div id="workoutForm">
 <h2>{{ form_action_desc|capfirst }} trénink</h2>
-<form id="workoutEdit" action="/log/workout/{{ form_action }}/?continue={{ continue|urlencode }}" method="post">
+<form id="workoutEdit" action="/workout/{{ athlete.person.user.username }}/{{ form_action }}/?continue={{ continue|urlencode }}" method="post">
     <fieldset class="buttonSet">
         <legend class="textversion">Uložit</legend>
-        <button type="submit" name="submitOk" class="ok" value="ok">Uložit</button>
-        <button type="submit" name="submitCancel" class="cancel" value="cancel">Zrušit</button>
+        <input type="submit" name="submitOk" class="ok button" value="Uložit">
+        <input type="submit" name="submitCancel" class="cancel button" value="Zrušit">
     </fieldset>
     <fieldset class="workoutItems">
         <legend>Části tréninku</legend>
@@ -45,7 +45,7 @@
                 {% endfor %}
         </ol>
         <p class="addWorkoutItem">
-        <button type="submit" name="submitAddWorkoutItem" value="addWorkoutItem" id="addWorkoutItem">Přidat část tréninku</button>
+        <input type="submit" name="submitAddWorkoutItem" value="Přidat část tréninku" id="addWorkoutItem" class="button">
         </p>
     </fieldset>
     <fieldset class="workoutWeather">

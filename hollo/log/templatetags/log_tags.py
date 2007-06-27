@@ -76,7 +76,7 @@ def select_athlete_group(context, selected_group):
     choices = [{'value': '', 'selected': False, 'name': '-- Žádná --'}]
     for group in models.AthleteGroup.objects.all():
         selected = (group == selected_group)
-        choices.append({'value': event.name, 'selected': selected, 'name': event.name})
+        choices.append({'value': group.name, 'selected': selected, 'name': group.name})
 
     return {'choices': choices}
 

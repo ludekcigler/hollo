@@ -14,7 +14,7 @@
 <ul id="mainMenu">
 {% block mainMenu %}
     <li class="active"><a>Deník</a></li>
-    <li><a href="/log/competition/month/{{ first_day|date:"Y" }}/{{ first_day|date:"m" }}/">Závody</a></li>
+    <li><a href="/competition/{{ athlete.person.user.username }}/month/{{ first_day|date:"Y" }}/{{ first_day|date:"m" }}/">Závody</a></li>
 {% endblock %}
 </ul>
 
@@ -22,8 +22,8 @@
 <ul id="userInfo">
     <li>{% if user.first_name and user.last_name %}{{ user.first_name }} {{ user.last_name }}
         {% else %}{{ user.username }}{% endif %}</li>
-    <li><a href="/log/settings/">Nastavení</a></li>
-    <li><a href="/log/logout/">Odhlásit</a></li>
+    <li><a href="/settings/">Nastavení</a></li>
+    <li><a href="/logout/">Odhlásit</a></li>
 </ul>
 </div>
 {% block content %}

@@ -3,7 +3,15 @@
 
 {% block content %}
 <div id="viewSelection">
-<form action="/log/workout/change_view/" method="post">
+    <div id="athleteSelection">
+<h2 class="textversion">Zobrazený atlet</h2>
+    <a href="/change_athlete/workout/?old={{ athlete.person.user.username }}">
+        <img src="{{ athlete.person.get_image_url|default:"/site_media/log/images/user_unknown.png" }}"
+        width="22" height="22" alt="{{ athlete }}" id="athleteImage">
+        <span id="athleteName">{{ athlete }}</span>
+    </a>
+    </div>
+<form action="/workout/{{ athlete.person.user.username }}/change_view/" method="post">
 <fieldset>
 <legend class="textversion">Zobrazení deníku</legend>
 <label for="viewType">Pohled</label>

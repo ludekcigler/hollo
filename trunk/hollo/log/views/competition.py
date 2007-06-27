@@ -34,29 +34,42 @@ from django.core.exceptions import ObjectDoesNotExist
 from django import http 
 from django.template import loader, Context, RequestContext
 
-from hollo.log.views import login_required
+from hollo.log.views import login_required, athlete_view_allowed, athlete_edit_allowed
 from hollo.log import models
 from hollo.log import common
 
 @login_required
-def monthly_view(request, year, month):
+@athlete_view_allowed
+def index(request, athlete_id):
+    today = datetime.date.today()
+    return http.HttpResponseRedirect('/competition/%s/month/%04d/%02d/' % (athlete_id, today.year, today.month))
+
+@login_required
+@athlete_view_allowed
+def monthly_view(request, athlete_id, year, month):
     year, month = int(year), int(month)
+    athlete = models.Athlete.objects.get(person__user__username=athlete_id)
 
     try:
-        competitions = models.Competition.objects.filter(athlete=request.user.id, \
+        competitions = models.Competition.objects.filter(athlete=athlete, \
                                 day__month=month, day__year=year).order_by('day')
     except ObjectDoesNotExist:
         competitions = []
 
     t = loader.get_template('log/competition_monthly.html')
     c = RequestContext(request, {'first_day': datetime.date(year, month, 1),\
-                                 'competitions': competitions, 'viewType': 'monthly'})
+                                 'competitions': competitions, 'viewType': 'monthly',
+                                 'athlete': athlete,
+                                 'athlete_edit_allowed': athlete.allowed_edit_by(request.user)
+                                 })
     return http.HttpResponse(t.render(c))
 
 
 @login_required
-def yearly_view(request, year):
+@athlete_view_allowed
+def yearly_view(request, athlete_id, year):
     year = int(year)
+    athlete = models.Athlete.objects.get(person__user__username=athlete_id)
 
     months = []
 
@@ -71,22 +84,28 @@ def yearly_view(request, year):
         months.append(month_data)
 
     t = loader.get_template('log/competition_yearly.html')
-    c = RequestContext(request, {'first_day': datetime.date(year, 1, 1), 'months': months, 'viewType': 'yearly'})
+    c = RequestContext(request, {'first_day': datetime.date(year, 1, 1), 'months': months, 'viewType': 'yearly',\
+                'athlete': athlete,
+                'athlete_edit_allowed': athlete.allowed_edit_by(request.user)
+                })
     return http.HttpResponse(t.render(c))
 
 
 @login_required
-def add_form(request, year, month, day):
+@athlete_edit_allowed
+def add_form(request, athlete_id, year, month, day):
     """
     Display competition add form for given day
     """
     year, month, day = int(year), int(month), int(day)
     date = datetime.date(year, month, day)
+    athlete = models.Athlete.objects.get(person__user__username=athlete_id)
 
     context = {'competition': {'event': ''}, 
                'day': date, 
                'form_action': 'add/%04d/%02d/%02d' % (year, month, day),
-               'form_action_desc': 'nový'}
+               'form_action_desc': 'nový',
+               'athlete': athlete}
 
     # Look for submit key (we need it to determine which button was actually pressed)
     submit_button = None
@@ -100,9 +119,9 @@ def add_form(request, year, month, day):
         if (submit_button == 'Ok'):
             return add_submit(request)
         elif (submit_button == 'Cancel'):
-            return http.HttpResponseRedirect(request.REQUEST['continue'] or '/log/')
+            return http.HttpResponseRedirect(request.REQUEST['continue'] or '/')
     else:
-        context.update({'continue': request.META.get('HTTP_REFERER', '/log/')})
+        context.update({'continue': request.META.get('HTTP_REFERER', '/')})
 
     t = loader.get_template('log/competition_form.html')
     c = RequestContext(request, context)
@@ -111,12 +130,13 @@ def add_form(request, year, month, day):
 
 
 @login_required
-def add_submit(request):
+@athlete_edit_allowed
+def add_submit(request, athlete_id):
     """
     Add new competition
     """
     day = datetime.date.fromtimestamp(calendar.timegm(time.strptime(request.POST['day'], '%Y-%m-%d')))
-    athlete = models.Athlete.objects.get(person=request.user.id)
+    athlete = models.Athlete.objects.get(person__user__username=athlete_id)
 
     #TODO: check the values
     try:
@@ -129,24 +149,27 @@ def add_submit(request):
                                      result=request.POST['result'], note=request.POST['note'])
     competition.save()
 
-    redirectUrl = request.META.get('HTTP_REFERER', '/log/')
+    redirectUrl = request.META.get('HTTP_REFERER', '/')
     if (request.REQUEST.has_key('continue')):
         redirectUrl = request.REQUEST['continue']
 
     return http.HttpResponseRedirect(redirectUrl)
 
 @login_required
-def edit_form(request, year, month, day, competition_id):
+@athlete_edit_allowed
+def edit_form(request, athlete_id, year, month, day, competition_id):
     """
     Displays form to edit a competition
     """
     year, month, day, competition_id = int(year), int(month), int(day), int(competition_id)
     date = datetime.date(year, month, day)
+    athlete = models.Athlete.objects.get(person__user__username=athlete_id)
 
     context = {'competition': {'event': ''}, 
                'day': date, 
                'form_action': 'edit/%04d/%02d/%02d/%d' % (year, month, day, competition_id),
-               'form_action_desc': 'Upravit'}
+               'form_action_desc': 'Upravit',
+               'athlete': athlete}
 
     # Look for submit key (we need it to determine which button was actually pressed)
     submit_button = None
@@ -158,16 +181,16 @@ def edit_form(request, year, month, day, competition_id):
     if submit_button:
         context.update({'continue': request.REQUEST['continue']})
         if submit_button == 'Ok':
-            return edit_submit(request)
+            return edit_submit(request, athlete_id)
         elif submit_button == 'Cancel':
-            return http.HttpResponseRedirect(request.REQUEST['continue'] or '/log/')
+            return http.HttpResponseRedirect(request.REQUEST['continue'] or '/')
     else:
         try:
             competition = models.Competition.objects.get(id=competition_id)
         except ObjectDoesNotExist:
             return http.HttpResponseNotFound()            
         context.update({'competition': competition,
-                        'continue': request.META.get('HTTP_REFERER', '/log/')})
+                        'continue': request.META.get('HTTP_REFERER', '/')})
 
     t = loader.get_template('log/competition_form.html')
     c = RequestContext(request, context)
@@ -176,7 +199,8 @@ def edit_form(request, year, month, day, competition_id):
 
 
 @login_required
-def edit_submit(request):
+@athlete_edit_allowed
+def edit_submit(request, athlete_id):
     """
     Edit a competition
     """
@@ -198,7 +222,7 @@ def edit_submit(request):
     competition.note = request.POST['note']
     competition.save()
 
-    redirectUrl = request.META.get('HTTP_REFERER', '/log/')
+    redirectUrl = request.META.get('HTTP_REFERER', '/')
     if (request.REQUEST.has_key('continue')):
         redirectUrl = request.REQUEST['continue']
 
@@ -206,7 +230,8 @@ def edit_submit(request):
 
 
 @login_required
-def remove_competition(request, competition_id):
+@athlete_edit_allowed
+def remove_competition(request, athlete_id, competition_id):
     """
     Remove a competition
     """
@@ -218,16 +243,4 @@ def remove_competition(request, competition_id):
         return http.HttpResponseNotFound()
     
     competition.delete()
-    return http.HttpResponseRedirect(request.META.get('HTTP_REFERER', ''))
-
-@login_required
-def change_view(request):
-    """
-    Change the competition period which is displayed
-    """
-    if (request.POST['viewType'] == 'monthly'):
-        month, year = int(request.POST['month']), int(request.POST['year'])
-        return http.HttpResponseRedirect('/log/competition/month/%04d/%02d/' % (year, month))
-    else:
-        year = int(request.POST['year'])
-        return http.HttpResponseRedirect('/log/competition/year/%04d/' % year)
+    return http.HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))

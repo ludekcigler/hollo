@@ -32,18 +32,22 @@
     {% if w.total_km %}<li class="totalKm">{{w.total_km}} km</li>{% endif %}
     {% if w.weather|length_is:"0"|is_not %}<li class="weather">{{w.weather}}&nbsp;</li>{% endif %}
 </ul>
+{% if athlete_edit_allowed %}
 <p class="workoutInfoButtons">
-    <a href="/log/workout/edit/{{ w.day|date:"Y/m/d" }}/{{ w.id }}/" class="editWorkout"
+    <a href="/workout/{{ athlete.person.user.username }}/edit/{{ w.day|date:"Y/m/d" }}/{{ w.id }}/" class="editWorkout"
         id="editWorkout_{{ w.day|date:"Y-m-d" }}_{{ w.id }}">Upravit fázi</a>
-    <a href="/log/workout/remove/{{ w.id }}/" class="removeWorkout"
+    <a href="/workout/{{ athlete.person.user.username }}/remove/{{ w.id }}/" class="removeWorkout"
         id="removeWorkout_{{ w.day|date:"Y-m-d" }}_{{ w.id }}">Odstranit fázi</a>
 </p>
+{% endif %}
 </div>
 {% endfor %}
+{% if athlete_edit_allowed %}
 <p class="workoutInfoButtons">
-    <a href="/log/workout/add/{{day|date:"Y/m/d"}}/" class="addWorkout"
+    <a href="/workout/{{ athlete.person.user.username }}/add/{{day|date:"Y/m/d"}}/" class="addWorkout"
         id="addWorkout_{{ day|date:"Y-m-d" }}">Přidat fázi</a>
 </p>
+{% endif %}
 {% if competitions|length_is:"0"|is_not %}
 <h3>Závody</h3>
 <div class="competition">
@@ -53,8 +57,10 @@
             <th scope="col">Disciplína</th>
             <th scope="col">Výkon</th>
             <th scope="col">Místo</th>
+            {% if athlete_edit_allowed %}
             <th scope="col">&nbsp;</th>
             <th scope="col">&nbsp;</th>
+            {% endif %}
         </tr>
     </thead>
     <tbody>
@@ -63,23 +69,27 @@
             <td>{{ c.event }}</td>
             <td>{{ c.result }}</td>
             <td>{{ c.place }}</td>
+            {% if athlete_edit_allowed %}
             <td>
-                <a href="/log/competition/edit/{{ c.day|date:"Y/m/d" }}/{{ c.id }}/" class="editCompetition" 
+                <a href="/competition/{{ athlete.person.user.username }}/edit/{{ c.day|date:"Y/m/d" }}/{{ c.id }}/" class="editCompetition" 
                 id="editCompetition_{{ c.day|date:"Y-m-d" }}_{{ c.id }}" title="Upravit závod">
                 <span>Upravit závod</span></a>
             </td>
             <td>
-                <a href="/log/competition/remove/{{ c.id }}/" class="removeCompetition" 
+                <a href="/competition/{{ athlete.person.user.username }}/remove/{{ c.id }}/" class="removeCompetition" 
                     id="removeCompetition_{{ c.day|date:"Y-m-d" }}_{{ c.id }}" title="Odstranit závod">
                     <span>Odstranit závod</span></a>
             </td>
+            {% endif %}
         </tr>
 {% endfor %}
     </tbody>
 </table>
 </div>
 {% endif %}
+{% if athlete_edit_allowed %}
 <p class="workoutInfoButtons">
-    <a href="/log/competition/add/{{ day|date:"Y/m/d" }}/" class="addCompetition"
+    <a href="/competition/{{ athlete.person.user.username }}/add/{{ day|date:"Y/m/d" }}/" class="addCompetition"
         id="addCompetition_{{ day|date:"Y-m-d" }}">Přidat závod</a>
 </p>
+{% endif %}

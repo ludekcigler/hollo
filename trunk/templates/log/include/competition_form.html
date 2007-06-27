@@ -1,13 +1,13 @@
 {% load log_tags %}
 <div id="competitionForm">
 <h2>{{ form_action_desc|capfirst }} závod</h2>
-<form id="competitionEdit" action="/log/competition/{{ form_action }}/?continue={{ continue|urlencode }}" method="post">
+<form id="competitionEdit" action="/competition/{{ athlete.person.user.username }}/{{ form_action }}/?continue={{ continue|urlencode }}" method="post">
     <fieldset class="buttonSet">
         <legend class="textversion">Uložit</legend>
-        <button type="submit" name="submitOk" class="ok" value="ok">Uložit</button>
-        <button type="submit" name="submitCancel" class="cancel" value="cancel">Zrušit</button>
+        <input type="submit" name="submitOk" class="ok button" value="Uložit">
+        <input type="submit" name="submitCancel" class="cancel button" value="Zrušit">
     </fieldset>
-    <fieldset>
+    <fieldset class="competition">
         <legend class="textversion">Závod</legend>
         <label for="competitionEvent">Disciplína</label>
         <select name="event" id="competitionEvent" class="competition_event">

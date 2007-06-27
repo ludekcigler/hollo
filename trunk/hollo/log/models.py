@@ -26,6 +26,7 @@ DB models for Hollo
 from django.db import models
 
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 
 class Person(models.Model):
     """
@@ -35,7 +36,7 @@ class Person(models.Model):
     # An avatar of the user
     image = models.FileField(upload_to='avatars', blank=True, null=True)
     # List of athletes which the person is allowed to watch
-    watched_athletes = models.ManyToManyField('Athlete', related_name='watched_athletes', blank=True)
+    watched_athletes = models.ManyToManyField('Athlete', related_name='watching_persons', blank=True)
 
     def __str__(self):
         return self.full_name
@@ -49,6 +50,36 @@ class Person(models.Model):
     full_name = property(_get_full_name, doc = 'Full name of the Athlete')
     id = property(lambda self: self.user.id, doc='Id of the underlying user')
 
+    def allowed_athletes(self):
+        """
+        Returns list of athletes which the person is authorized to view
+        """
+        retval = set(self.watched_athletes.all())
+        retval.update(Athlete.objects.filter(group__coaches__person=self))
+        retval.update(Athlete.objects.filter(person=self))
+        return list(retval)
+
+    def get_view_status(self, person):
+        """
+        Gets the status of an athlete with respect to a person
+        (is the athlete watched by the person, does he watch a person etc.)
+        """
+
+        view_status = {}
+        view_status['watching'] = (Athlete.objects.filter(watching_persons=self, person=person).count() > 0)
+        view_status['auth_request_from'] = (AuthorizationRequest.objects.filter( \
+                        person=person, athlete__person=self).count() > 0)
+        view_status['auth_request_to'] = (AuthorizationRequest.objects.filter( \
+                        person=self, athlete__person=person).count() > 0)
+        view_status['blocked'] = (Athlete.objects.filter( \
+                        blocked_persons=person, person=self).count() > 0)
+
+        view_status['coach'] = (Coach.objects.filter(person=person, athletegroups__athletes__person=self).\
+                                        count() > 0)
+        view_status['watched'] = (Athlete.objects.filter(watching_persons=person, person=self).count() > 0)
+
+        return view_status
+
     class Admin:
         list_display = ('user',)
 
@@ -61,13 +92,26 @@ class Athlete(models.Model):
     # Name of the club
     club = models.CharField(maxlength = 100, blank=True)
     # Group of athletes this person belongs to
-    group = models.ForeignKey('AthleteGroup', blank=True, null=True)
+    group = models.ForeignKey('AthleteGroup', related_name='athletes', blank=True, null=True)
     # List of persons who are not allowed to request authorization
     # for the athlete
-    blocked_persons = models.ManyToManyField('Person', related_name='blocked_persons', blank=True)
+    blocked_persons = models.ManyToManyField('Person', related_name='blocking_athletes', blank=True)
 
     def __str__(self):
         return str(self.person)
+
+    def allowed_edit_by(self, user):
+        """
+        Checks if the athlete is editable by a specified user
+        """
+        if self.person.user == user:
+            return True
+
+        try:
+            coach = Coach.objects.get(person__user=user)
+            return coach in self.group.coaches.all()
+        except ObjectDoesNotExist:
+            return False
 
     class Admin:
         pass
@@ -77,6 +121,12 @@ class Coach(models.Model):
     Coach of an athlete group
     """
     person = models.OneToOneField(Person)
+
+    def athletes(self):
+        """
+        Returns a list of all athletes that the coach is in charge with
+        """
+        return Athlete.objects.filter(group__coaches=self)
 
     def __str__(self):
         return str(self.person)
@@ -89,7 +139,7 @@ class AthleteGroup(models.Model):
     Group of athletes
     """
     name = models.CharField(maxlength = 100)
-    coaches = models.ManyToManyField('Coach')
+    coaches = models.ManyToManyField('Coach', related_name='athletegroups')
 
     def __str__(self):
         return self.name
@@ -101,10 +151,13 @@ class AuthorizationRequest(models.Model):
     """
     A request for authorization
     """
-    person = models.ForeignKey('Person')
-    athlete = models.ForeignKey('Athlete')
+    person = models.ForeignKey('Person', related_name='auth_request_from')
+    athlete = models.ForeignKey('Athlete', related_name='auth_request_to')
     message = models.CharField(maxlength=160, blank=True, default='')
     created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return "Authorization request from %s to %s" % (self.person, self.athlete)
 
     class Admin:
         pass

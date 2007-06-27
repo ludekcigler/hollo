@@ -2,7 +2,7 @@
                 {% load log_filters %}
                 <th class="day" scope="row" 
                     rowspan="{% workout_weekly_view_num_day_rows day_data.workouts day_data.competitions  %}">
-                    <a href="/log/workout/week/{{first_day|date:"Y"}}/{{first_day|date:"W"}}/day/{{day_data.day|date:"Y"}}/{{day_data.day|date:"m"}}/{{day_data.day|date:"d"}}/" title="Detail {{ day_data.day|date:"j.n"}}">
+                    <a href="/workout/{{ athlete.person.user.username }}/week/{{first_day|date:"Y"}}/{{first_day|date:"W"}}/day/{{day_data.day|date:"Y"}}/{{day_data.day|date:"m"}}/{{day_data.day|date:"d"}}/" title="Detail {{ day_data.day|date:"j.n"}}">
                     {{ day_data.day|date:"D"|trunc:"2" }} 
                     </a>
                     <span>{{ day_data.day|date:"j.n" }}</span>

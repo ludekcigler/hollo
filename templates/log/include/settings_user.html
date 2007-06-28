@@ -3,12 +3,7 @@
 {% block settingsContent %}
 {% settings_submenu "user" %}
 <h3 class="textversion">Obecné nastavení</h3>
-<form id="settingsUserForm" class="settingsForm" action="/settings/user/save/" method="post">
-    <fieldset class="buttonSet">
-        <legend class="textversion">Uložit</legend>
-        <button type="submit" name="submitOk" class="ok" value="ok">Uložit</button>
-        <button type="submit" name="submitCancel" class="cancel" value="cancel">Zrušit</button>
-    </fieldset>
+<form id="settingsUserForm" action="/settings/user/" method="post">
     <fieldset>
         <legend class="textversion">Informace o uživateli</legend>
         <table cellspacing="0">
@@ -50,13 +45,18 @@
                     <th scope="row"><label for="settingsGroup">Tréninková skupina</label></th>
                     <td>
                         <select name="group" id="settingsGroup">
-                        {% select_athlete_group athlete.group %}
+                        {% select_athlete_group athlete.group.id %}
                         </select>
                     </td>
                 </tr>
                 {% endif %}
             </tbody>
         </table>
+    </fieldset>
+    <fieldset class="buttonSet">
+        <legend class="textversion">Uložit</legend>
+        <button type="submit" name="submitOk" class="ok" value="ok">Uložit</button>
+        <button type="submit" name="submitCancel" class="cancel" value="cancel">Zrušit</button>
     </fieldset>
 </form>
 {% endblock %}

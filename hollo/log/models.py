@@ -28,13 +28,15 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 
+PERSON_IMAGE_UPLOAD_DIR = 'avatars'
+
 class Person(models.Model):
     """
     Single user of the log
     """
     user = models.OneToOneField(User)
     # An avatar of the user
-    image = models.FileField(upload_to='avatars', blank=True, null=True)
+    image = models.FileField(upload_to=PERSON_IMAGE_UPLOAD_DIR, blank=True, null=True)
     # List of athletes which the person is allowed to watch
     watched_athletes = models.ManyToManyField('Athlete', related_name='watching_persons', blank=True)
 

@@ -23,6 +23,11 @@
 Views for settings adjustments
 """
 
+import re
+import os
+import urllib
+
+import django
 from django.template import loader, Context, RequestContext
 from django.core.exceptions import ObjectDoesNotExist
 from django import http 
@@ -31,6 +36,7 @@ from hollo.log import views
 from hollo.log.views import login_required
 from hollo.log import models
 from hollo.log import common
+from hollo.settings import MEDIA_ROOT
 
 @login_required
 def index(request):
@@ -45,11 +51,38 @@ def user(request):
     """
     Display user-specific settings
     """
+    submit_button = common.get_submit_button(request.POST)
+    if submit_button == 'Cancel':
+        # Go to redirection page
+        return http.HttpResponseRedirect('/')
+
     person = models.Person.objects.get(user=request.user)
     athlete = models.Athlete.objects.filter(person__user=request.user).count() == 1 and \
                 models.Athlete.objects.get(person__user=request.user) or None
     coach = models.Coach.objects.filter(person__user=request.user).count() == 1 and \
                 models.Coach.objects.get(person__user=request.user) or None
+
+    if submit_button == 'Ok':
+        # The content was already submitted
+        person.user.first_name = request.POST['firstName']
+        person.user.last_name = request.POST['lastName']
+
+        try: django.core.validators.isValidEmail(request.POST['email'], request.POST)
+        except django.core.validators.ValidationError: return http.HttpResponseNotFound()
+        person.user.email = request.POST['email']
+
+        if athlete:
+            athlete.club = request.POST['club']
+            try:
+                athlete.group = models.AthleteGroup.objects.get(id=int(request.POST['group']))
+            except ObjectDoesNotExist:
+                athlete.group = None
+
+            athlete.save()
+        
+        person.save()
+        person.user.save()
+        return http.HttpResponseRedirect('/settings/user/')
 
     context = {'person': person, 'athlete': athlete, 'coach': coach}
 
@@ -57,16 +90,112 @@ def user(request):
     context = RequestContext(request, context)
     return http.HttpResponse(tpl.render(context))
 
+
 @login_required
 def user_remove_image(request):
     """
     Remove image for the user
     """
     person = models.Person.objects.get(user=request.user)
+    try:
+        # Remove old file
+        os.remove(person.get_image_filename())
+    except OSError:
+        # TODO: redirect to error page
+        pass
+
     person.image = None
     person.save()
 
-    return http.HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+    return http.HttpResponseRedirect(request.META.get('HTTP_REFERER', '/settings/user/'))
+
+@login_required
+def user_edit_image(request):
+    """
+    Show edit image form
+    """
+    context = RequestContext(request, {'continue': request.META.get('HTTP_REFERER', '/settings/user/')})
+    tpl = loader.get_template('log/settings_user_edit_image.html')
+    return http.HttpResponse(tpl.render(context))
+
+@login_required
+def user_upload_image(request):
+    """
+    Save uploaded image
+    """
+    redirectUrl = request.REQUEST.has_key('continue') and request.REQUEST['continue'] \
+                    or request.META.get('HTTP_REFERER', '/settings/user/')
+
+    submit_button = common.get_submit_button(request.POST)
+    if not submit_button or submit_button == 'Cancel' or not request.FILES.has_key('image'):
+        # Go to redirection page
+        return http.HttpResponseRedirect(redirectUrl)
+
+    image = request.FILES['image']
+    person = models.Person.objects.get(user=request.user)
+    # Check the MIME type of the uploaded file
+    if not re.match('^image/(jpeg|gif|png)$', image['content-type']):
+        # TODO: redirect to correct error page
+        return None
+
+    try:
+        # Write new file
+        image_directory = os.path.abspath(os.path.join(MEDIA_ROOT, models.PERSON_IMAGE_UPLOAD_DIR))
+        image_filename = common.get_unique_filename(image_directory, image['filename'])
+
+        image_file = open(os.path.abspath(os.path.join(image_directory, image_filename)), 'wb')
+        image_file.write(image['content'])
+        image_file.close()
+    except IOError:
+        # TODO: redirect to error page
+        raise
+
+    try:
+        # Remove old file
+        os.remove(person.get_image_filename())
+    except OSError:
+        # TODO: redirect to error page
+        pass
+
+    person.image = os.path.join(models.PERSON_IMAGE_UPLOAD_DIR, image_filename)
+    person.save()
+    
+    return http.HttpResponseRedirect(redirectUrl)
+
+@login_required
+def user_change_password(request):
+    """
+    Change password form
+    """
+    message = request.REQUEST.has_key('message') and request.REQUEST['message'] or None
+    context = RequestContext(request, \
+                {'continue': request.META.get('HTTP_REFERER', '/settings/user/'), \
+                 'message': message})
+    tpl = loader.get_template('log/settings_user_edit_password.html')
+    return http.HttpResponse(tpl.render(context))
+
+@login_required
+def user_submit_password(request):
+    """
+    Submit new password
+    """
+    cont = request.REQUEST.has_key('continue') and request.REQUEST['continue'] or ''
+    redirectUrl = cont or request.META.get('HTTP_REFERER', '/settings/user/')
+
+    submit_button = common.get_submit_button(request.POST)
+    if not submit_button or submit_button == 'Cancel':
+        # Go to redirection page
+        return http.HttpResponseRedirect(redirectUrl)
+
+    if request.POST['password'] != request.POST['passwordCheck']:
+        return http.HttpResponseRedirect('/settings/user/change_password/?continue=%s&message=%s' % \
+            (urllib.quote(cont), urllib.quote('Zadaná hesla si neodpovídají')))
+
+    person = models.Person.objects.get(user=request.user)
+    person.user.set_password(request.POST['password'])
+    person.save()
+
+    return http.HttpResponseRedirect(redirectUrl)
 
 @login_required
 def my_athletes(request):

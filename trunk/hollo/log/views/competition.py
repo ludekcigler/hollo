@@ -108,11 +108,7 @@ def add_form(request, athlete_id, year, month, day):
                'athlete': athlete}
 
     # Look for submit key (we need it to determine which button was actually pressed)
-    submit_button = None
-    for key in request.POST:
-        m = re.match('^submit([^\.]*).*$', key)
-        if m:
-            submit_button = m.group(1)
+    submit_button = common.get_submit_button(request.POST)
 
     if submit_button:
         context.update({'continue': request.REQUEST['continue']})
@@ -172,11 +168,7 @@ def edit_form(request, athlete_id, year, month, day, competition_id):
                'athlete': athlete}
 
     # Look for submit key (we need it to determine which button was actually pressed)
-    submit_button = None
-    for key in request.POST:
-        m = re.match('^submit([^\.]*).*$', key)
-        if m:
-            submit_button = m.group(1)
+    submit_button = common.get_submit_button(request.POST)
 
     if submit_button:
         context.update({'continue': request.REQUEST['continue']})

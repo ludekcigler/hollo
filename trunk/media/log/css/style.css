@@ -646,7 +646,7 @@ form fieldset.buttonSet {
     padding-top: 1em;
 }
 
-#workoutForm, #competitionForm, #settingsForm {
+#workoutForm, #competitionForm, .settingsForm {
     width: 60%;
     margin: 1em auto;
     background-repeat: no-repeat;
@@ -664,18 +664,18 @@ form fieldset.buttonSet {
     background-image: url('/site_media/log/images/icons/workout_form_large.png');
 }
 
-#settingsForm {
+.settingsForm {
     background-color: #FFF280;
     background-image: url('/site_media/log/images/icons/settings_form_large.png');
 }
 
-#workoutForm h2, #competitionForm h2, #settingsForm h2 {
+#workoutForm h2, #competitionForm h2, .settingsForm h2 {
     margin: 0.4em 80px 2em 0;
     border-bottom: 1px solid gray;
     padding: 0 0 0.4em 0.2em;
 }
 
-#settingsForm h2 {
+.settingsForm h2 {
     margin-bottom: 1em;
 }
 
@@ -732,7 +732,7 @@ form fieldset.buttonSet {
     width: 20em;
 }
 
-#workoutForm .buttonSet, #competitionForm .buttonSet, #settingsForm .buttonSet {
+#workoutForm .buttonSet, #competitionForm .buttonSet, .settingsForm .buttonSet {
     position: absolute;
     bottom: 0;
     right: 0;
@@ -740,7 +740,7 @@ form fieldset.buttonSet {
     width: 70%;
 }
 
-#workoutForm input.button, #competitionForm input.button, #settingsForm input.button {
+#workoutForm input.button, #competitionForm input.button, .settingsForm input.button {
    background-repeat: no-repeat;
    background-position: 5px center;
    padding: 0.2em 0.2em 0.2em 24px;
@@ -764,7 +764,7 @@ form fieldset.buttonSet {
     width: 60%;
 }
 
-#settingsContent {
+.settingsContent {
     background-color: #FFF9BF;
     -moz-border-radius: 6px;
 }

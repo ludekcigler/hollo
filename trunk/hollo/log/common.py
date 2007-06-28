@@ -19,6 +19,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ##
 
+import os
+import re
 import calendar
 import datetime
 import itertools
@@ -94,6 +96,25 @@ def previous_month(year, month):
         return year - 1, 12
     else:
         return year, month - 1
+
+def get_unique_filename(dir, filename):
+    """
+    Gets unique filename which is not present in the directory at the moment
+    """
+    while (os.path.exists(os.path.abspath(os.path.join(dir, filename)))):
+        filename = '_%s' % filename
+
+    return filename
+
+def get_submit_button(postContents):
+    """
+    Determine submit button in the HTTP POST contents
+    """
+    for key in postContents:
+        m = re.match('^submit([^\.]*).*$', key)
+        if m:
+            return m.group(1)
+    return None
 
 if __name__ == "__main__":
     for d in xrange(1, 8):

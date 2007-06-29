@@ -1,0 +1,18 @@
+{% extends 'log/include/settings_base.html' %}
+{% load log_tags %}
+{% block settingsContent %}
+{% settings_submenu "friends" %}
+<h3 class="textversion">Kamarádi</h3>
+<h4>Požadovat autorizaci</h4>
+<form action="/settings/friends/add_submit/{{ athlete.person.user.username }}/" method="post">
+    <fieldset>
+        <legend>Zpráva</legend>
+        <textarea name="message"></textarea>
+    </fieldset>
+    <fieldset class="buttonSet">
+        <legend class="textversion">Uložit</legend>
+        <input type="submit" name="submitOk" class="ok button" value="Odeslat">
+        <input type="submit" name="submitCancel" class="cancel button" value="Zrušit">
+    </fieldset>
+</form>
+{% endblock %}

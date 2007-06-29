@@ -7,10 +7,12 @@
 <h4>Moje skupina</h4>
     <dl>
     {% for ath_data in my_group_athletes %}
-        {% with ath_data.athlete as person %}
+        {% with ath_data.athlete.person as person %}
+        {% with ath_data.athlete as athlete %}
         {% with ath_data.athlete.person.user.username as username %}
         {% with ath_data.view_status as view_status %}
             {% include 'log/include/settings_friends_row.html' %}
+        {% endwith %}
         {% endwith %}
         {% endwith %}
         {% endwith %}
@@ -21,9 +23,11 @@
 <dl>
 {% for p in other_persons %}
     {% with p.person as person %}
+    {% with p.athlete as athlete %}
     {% with p.person.user.username as username %}
     {% with p.view_status as view_status %}
         {% include 'log/include/settings_friends_row.html' %}
+    {% endwith %}
     {% endwith %}
     {% endwith %}
     {% endwith %}
@@ -37,9 +41,11 @@
 <dl>
 {% for p in blocked_persons %}
     {% with p as person %}
+    {% with p.athlete as athlete %}
     {% with p.user.username as username %}
-    {% with "True" as blocked %}
+    {% with "True" as blocks %}
         {% include 'log/include/settings_friends_row.html' %}
+    {% endwith %}
     {% endwith %}
     {% endwith %}
     {% endwith %}

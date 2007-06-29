@@ -28,10 +28,42 @@
 </table>
 {% endif %}
 
-<ul>
-    {% if w.total_km %}<li class="totalKm">{{w.total_km}} km</li>{% endif %}
-    {% if w.weather|length_is:"0"|is_not %}<li class="weather">{{w.weather}}&nbsp;</li>{% endif %}
-</ul>
+<table cellspacing="0">
+    <caption class="textversion">Podrobnosti o tréninku</caption>
+    <tbody>
+    {% if w.total_km %}
+        <tr class="totalKm">
+            <th scope="row"><span class="textversion">Celková kilometráž</span></th>
+            <td>{{w.total_km}} km</td>
+        </tr>
+    {% endif %}
+    {% if w.weather|length_is:"0"|is_not %}
+    <tr class="weather">
+        <th scope="row"><span class="textversion">Počasí</span></th>
+        <td>{{w.weather}}&nbsp;</td>
+    </tr>
+    {% endif %}
+    <tr class="rating ratingSatisfaction">
+        <th scope="row"><span class="textversion">Spokojenost</span></th>
+        <td>
+        {% with w.rating_satisfaction as rating %}
+        {% with "yellow" as color %}
+        {% include 'log/widgets/rating.html' %}
+        {% endwith %}
+        {% endwith %}
+        </td>
+    </tr>
+    <tr class="rating ratingSatisfaction">
+        <th scope="row"><span class="textversion">Obtížnost</span></th>
+        <td>
+        {% with w.rating_difficulty as rating %}
+        {% with "red" as color %}
+        {% include 'log/widgets/rating.html' %}
+        {% endwith %}
+        {% endwith %}
+        </td>
+    </tr>
+</table>
 {% if athlete_edit_allowed %}
 <p class="workoutInfoButtons">
     <a href="/workout/{{ athlete.person.user.username }}/edit/{{ w.day|date:"Y/m/d" }}/{{ w.id }}/" class="editWorkout"

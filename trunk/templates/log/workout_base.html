@@ -22,6 +22,9 @@
 <ul id="userInfo">
     <li>{% if user.first_name and user.last_name %}{{ user.first_name }} {{ user.last_name }}
         {% else %}{{ user.username }}{% endif %}</li>
+    {% if auth_request_message %}
+    <li><a href="/settings/friends/auth_list/">{{ auth_request_message }}</a></li>
+    {% endif %}
     <li><a href="/settings/">Nastavení</a></li>
     <li><a href="/logout/">Odhlásit</a></li>
 </ul>

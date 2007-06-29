@@ -1,7 +1,11 @@
+{% load log_filters %}
         <dt>
         <img src="/site_media/log/images/user_unknown.png" width="22" height="22" alt="{{ person }}" >
         <span>{{ person }}</span></dt>
         <dd>
+        {% if view_status.watched|is_not and view_status.auth_request_from|is_not and athlete and view_status.blocked|is_not  %}
+            <a href="/settings/friends/add/{{ username }}/">Sledovat</a>
+        {% endif %}
         {% if view_status.watching %}
         <span>Vidí mě 
             <a href="/settings/friends/block/{{ username }}/" title="{{ person }} - blokovat"><img src="/site_media/log/images/icons/block_small.png" width="16" height="16" alt="Blokovat"></a>
@@ -24,7 +28,7 @@
             <a href="/settings/friends/auth_cancel/{{ username }}/" title="{{ person }} - zrušit požadavek na autorizaci"><img src="/site_media/log/images/icons/cancel_small.png" width="16" height="16" alt="Zrušit"></a>
         </span>
         {% endif %}
-        {% if view_status.blocked or blocked %}
+        {% if view_status.blocks or blocks %}
         <span>Blokován
             <a href="/settings/friends/unblock/{{ username }}/" title="{{ person }} - odblokovat"><img src="/site_media/log/images/icons/unblock_small.png" width="16" height="16" alt="Odblokovat"></a>
         </span>

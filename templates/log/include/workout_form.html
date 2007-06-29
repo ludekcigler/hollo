@@ -48,9 +48,12 @@
         <input type="submit" name="submitAddWorkoutItem" value="Přidat část tréninku" id="addWorkoutItem" class="button">
         </p>
     </fieldset>
-    <fieldset class="workoutWeather">
+    <fieldset class="workoutAdditionalInfo">
         <legend class="textversion">Další informace</legend>
-        <label for="weather">Počasí</label><input type="text" id="weather" name="weather" value="{{ workout.weather }}" />
+        <label for="weather">Počasí</label><input type="text" id="weather" name="weather" value="{{ workout.weather }}">
+        <label for="rating_satisfaction">Spokojenost</label><input type="text" id="rating_satisfaction" name="rating_satisfaction" value="{{ workout.rating_satisfaction|default:"3" }}">
+        <label for="rating_difficulty">Obtížnost</label><input type="text" id="rating_difficulty" name="rating_difficulty" value="{{ workout.rating_difficulty|default:"3" }}">
+        <label for="note">Poznámky</label><textarea name="note" id="note">{{ workout.note }}</textarea>
     </fieldset>
 </form>
 </div>

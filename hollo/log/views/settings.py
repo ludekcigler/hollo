@@ -222,24 +222,42 @@ def friends(request):
     except ObjectDoesNotExist:
         athlete = None
 
+    try:
+        coach = models.Coach.objects.get(person=person)
+    except ObjectDoesNotExist:
+        coach = None
+
     # Load athletes from my group, together with their status
 
     my_group_athletes = []
-    for ath in athlete.group.athletes.exclude(pk=athlete):
-        ath_data = {'athlete': ath, 'view_status': ath.person.get_view_status(athlete.person)}
-        my_group_athletes.append(ath_data)
+    if athlete:
+        for ath in athlete.group.athletes.exclude(pk=athlete):
+            ath_data = {'athlete': ath, 'view_status': ath.person.get_view_status(athlete.person)}
+            my_group_athletes.append(ath_data)
+
+        my_group_athletes.sort(cmp= \
+                            (lambda x, y: \
+                                cmp(x['athlete'].person.user.last_name, y['athlete'].person.user.last_name) \
+                                or \
+                                cmp(x['athlete'].person.user.first_name, y['athlete'].person.user.first_name)))
 
     blocked_persons = []
-    for bp in athlete.blocked_persons.all():
-        # If the person does not belong to the same group, show it as blocked
-        if not models.Athlete.objects.filter(person=bp, group=athlete.group):
-            blocked_persons.append(bp)
+    if athlete:
+        for bp in athlete.blocked_persons.all():
+            # If the person does not belong to the same group, show it as blocked
+            if not models.Athlete.objects.filter(person=bp, group=athlete.group):
+                blocked_persons.append(bp)
 
     # Other persons
-    watching_persons = models.Person.objects.filter(watched_athletes=athlete)
-    watched_athletes = models.Person.objects.filter(athlete__watching_persons=athlete.person)
-    auth_req_from = models.Person.objects.filter(auth_request_from__athlete=athlete)
-    auth_req_to = models.Person.objects.filter(athlete__auth_request_to__person=athlete.person)
+    if athlete:
+        watching_persons = models.Person.objects.filter(watched_athletes=athlete)
+        auth_req_from = models.Person.objects.filter(auth_request_from__athlete=athlete)
+    else:
+        watching_persons = []
+        auth_req_from = []
+
+    watched_athletes = models.Person.objects.filter(athlete__watching_persons=person)
+    auth_req_to = models.Person.objects.filter(athlete__auth_request_to__person=person)
     # Fetch watched athletes
     other_persons_set = set(watching_persons)
     other_persons_set.update(watched_athletes)
@@ -249,12 +267,23 @@ def friends(request):
     other_persons = []
     other_persons_ids = set()
     for op in other_persons_set:
+        try:
+            other_athlete = models.Athlete.objects.get(person=op)
+        except ObjectDoesNotExist:
+            other_athlete = None
+
         if not models.Athlete.objects.filter(person=op, group=athlete.group) and not op.id in other_persons_ids:
             other_persons_ids.add(op.id)
-            other_persons.append({'person': op, 'view_status': op.get_view_status(athlete.person)})
+            other_persons.append({'person': op, 'view_status': op.get_view_status(athlete.person), \
+                                  'athlete': other_athlete})
+
+    other_persons.sort(cmp=(lambda x, y: \
+                                cmp(x['person'].user.last_name, y['person'].user.last_name) or \
+                                cmp(x['person'].user.first_name, y['person'].user.first_name)))
 
     context = {'person': person,
                'athlete': athlete,
+               'coach': coach,
                'my_group_athletes': my_group_athletes,
                'blocked_persons': blocked_persons,
                'other_persons': other_persons}
@@ -269,13 +298,82 @@ def friends_add(request):
     Displays an "Add friend" page
     """
     person = models.Person.objects.get(user=request.user)
+    person_watched_athletes = set([a.person_id for a in person.watched_athletes.all()])
+    person_watched_athletes.update([req.athlete.person_id for req in person.auth_request_from.all()])
+    person_group_athletes = []
+    try:
+        athlete = models.Athlete.objects.get(person=person)
+
+        person_group_athletes = [a for a in athlete.group.athletes.all() \
+                                 if (a != athlete) and (not a.person_id in person_watched_athletes)
+                                 and (a.blocked_persons.filter(pk=person).count() == 0)]
+        # All other athlete from my group, except those that are not watched and those that do not block me
+        person_group_athletes.sort(cmp=(lambda x, y: \
+                                cmp(x['person'].person.user.last_name, y['person'].person.user.last_name) or \
+                                cmp(x['person'].person.user.first_name, y['person'].person.user.first_name)))
+
+    except ObjectDoesNotExist:
+        athlete = None
+
+    # All athletes which are not in my group, are not watched already and do not block me
+    person_other_athletes = [a for a in models.Athlete.objects.all() \
+                             if (not a in person_group_athletes) and (a != athlete) \
+                             and (not a.person_id in person_watched_athletes) \
+                             and (a.blocked_persons.filter(pk=person).count() == 0)]
+
+    person_other_athletes.sort(cmp=(lambda x, y: \
+                                cmp(x['person'].person.user.last_name, y['person'].person.user.last_name) or \
+                                cmp(x['person'].person.user.first_name, y['person'].person.user.first_name)))
+
+    context = {'person': person,
+               'athlete': athlete,
+               'person_group_athletes': person_group_athletes,
+               'person_other_athletes': person_other_athletes}
+
     tpl = loader.get_template('log/settings_friends_add.html')
-    context = RequestContext(request, {'person': person})
+    context = RequestContext(request, context)
+    return http.HttpResponse(tpl.render(context))
+
+@login_required
+def friends_add_edit_message(request, athlete_id):
+    """
+    Edit message for the authorization request
+    """
+    person = models.Person.objects.get(user=request.user)
+    athlete = models.Athlete.objects.get(person__user__username=athlete_id)
+
+    if athlete.blocked_persons.filter(pk=person).count() > 0:
+        # TODO: Not allowed to request authorization
+        return None
+    context = {'person': person, 'athlete': athlete}
+    context = RequestContext(request, context)
+    tpl = loader.get_template('log/settings_friends_add_message.html')
     return http.HttpResponse(tpl.render(context))
 
 @login_required
 def friends_add_submit(request, athlete_id):
-    pass    
+    """
+    Handle submit of authorization message
+    """
+    submit_button = common.get_submit_button(request.POST)
+    if submit_button == 'Cancel':
+        return http.HttpResponseRedirect('/settings/friends/')
+
+    try:
+        req = models.AuthorizationRequest()
+        req.person = request.user.person
+        req.athlete = models.Athlete.objects.get(person__user__username=athlete_id)
+        # Check if the user is not blocked
+        if req.athlete.blocked_persons.filter(pk=req.person).count() > 0:
+            # TODO: error handling (you are blocked)
+            return None
+        req.message = request.POST['message']
+    except ObjectDoesNotExist:
+        # TODO: error handling
+        return None
+
+    req.save()
+    return http.HttpResponseRedirect('/settings/friends/')
 
 @login_required
 def friends_remove(request, athlete_id):
@@ -350,6 +448,24 @@ def friends_unblock(request, person_id):
 
     return http.HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
+@login_required
+def friends_auth_list(request):
+    submit_button = common.get_submit_button(request.POST)
+    cont = request.REQUEST.has_key('continue') and request.REQUEST['continue'] \
+           or request.META.get('HTTP_REFERER', '/')
+    if submit_button == 'Ok':
+        return http.HttpResponseRedirect(cont)
+
+    try:
+        athlete = models.Athlete.objects.get(person__user=request.user)
+    except ObjectDoesNotExist:
+        # TODO: another error handling case...
+        return None
+
+    context = {'athlete': athlete, 'continue': cont}
+    context = RequestContext(request, context)
+    tpl = loader.get_template('log/settings_auth_requests.html')
+    return http.HttpResponse(tpl.render(context))
 
 def _remove_auth_request(person, athlete):
     try:

@@ -74,3 +74,14 @@ def is_not(value):
     Returns logical negation
     """
     return not(value)
+
+
+@register.filter
+def range_from(value, lower_bound):
+    value, lower_bound = int(value), int(lower_bound)
+    return range(lower_bound, value)
+
+@register.filter
+def range_to(value, upper_bound):
+    value, upper_bound = int(value), int(upper_bound)
+    return range(value, upper_bound)

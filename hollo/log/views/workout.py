@@ -34,7 +34,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from django import http 
 from django.template import loader, Context, RequestContext
 
-from hollo.log.views import login_required, athlete_view_allowed, athlete_edit_allowed
+from hollo.log.views import login_required, athlete_view_allowed, \
+                            athlete_edit_allowed, get_auth_request_message, \
+                            force_no_cache
 from hollo.log import models
 from hollo.log import common
 
@@ -46,6 +48,7 @@ def index(request, athlete_id):
 
 @login_required
 @athlete_view_allowed
+@force_no_cache
 def weekly_view(request, athlete_id, week, year, detail_year = None, detail_month = None, detail_day = None):
     """
     View workout log for a single week
@@ -89,7 +92,8 @@ def weekly_view(request, athlete_id, week, year, detail_year = None, detail_mont
                'next_year': next_year, 'week_data': week_data, \
                'first_day': first_day, 'viewType': 'weekly',
                'athlete': athlete,
-               'athlete_edit_allowed': athlete.allowed_edit_by(request.user)}
+               'athlete_edit_allowed': athlete.allowed_edit_by(request.user),
+               'auth_request_message': get_auth_request_message(request.user.person)}
 
     if (detail_year and detail_month and detail_day):
         detail_year, detail_month, detail_day = int(detail_year), int(detail_month), int(detail_day)
@@ -102,8 +106,20 @@ def weekly_view(request, athlete_id, week, year, detail_year = None, detail_mont
     return http.HttpResponse(t.render(c))
 
 
+def weekly_summary(athlete, year, week):
+    """
+    Returns a summary for a given athlete, year and week.
+    This includes:
+    - total number of workouts
+    - total km
+    - average satisfaction
+    """
+
+
+
 @login_required
 @athlete_view_allowed
+@force_no_cache
 def monthly_view(request, athlete_id, month, year, detail_day = None):
     """
     View workout log for a single month
@@ -146,7 +162,8 @@ def monthly_view(request, athlete_id, month, year, detail_day = None):
             'next_month': next_month, 'next_year': next_year, \
             'first_day': datetime.date(year, month, 1), 'viewType': 'monthly',
             'athlete': athlete,
-            'athlete_edit_allowed': athlete.allowed_edit_by(request.user)}
+            'athlete_edit_allowed': athlete.allowed_edit_by(request.user),
+            'auth_request_message': get_auth_request_message(request.user.person)}
 
     if detail_day:
         data.update(day_info(athlete, year, month, int(detail_day)))
@@ -235,6 +252,9 @@ def form_context_update(request, submit_button, workout_id = None):
 
     # Add new line to the form, maintaining all the form fields the user has entered
     weather = request.POST['weather']
+    note = request.POST['note']
+    rating_satisfaction = min(models.Workout.MAX_RATING, max(models.Workout.MIN_RATING, int(request.POST['rating_satisfaction'])))
+    rating_difficulty = min(models.Workout.MAX_RATING, max(models.Workout.MIN_RATING, int(request.POST['rating_difficulty'])))
     num_workout_items = int(request.POST['num_workout_items'])
     phase_items = []
     for sequence in xrange(0, num_workout_items):
@@ -249,7 +269,14 @@ def form_context_update(request, submit_button, workout_id = None):
         removedItem = int(re.match('^.*_(\d+)$', submit_button).group(1))
         phase_items = phase_items[0:removedItem] + phase_items[removedItem+1:]
 
-    return {'workout': {'id': workout_id, 'weather': weather}, 'phase_items': phase_items}
+    return {'workout': \
+                {'id': workout_id, \
+                'weather': weather, \
+                'note': note, \
+                'rating_satisfaction': rating_satisfaction, \
+                'rating_difficulty': rating_difficulty \
+                }, \
+            'phase_items': phase_items}
 
 @login_required
 @athlete_edit_allowed
@@ -262,7 +289,13 @@ def add_submit(request, athlete_id):
     day = datetime.date.fromtimestamp(calendar.timegm(time.strptime(request.POST['day'], '%Y-%m-%d')))
     athlete = models.Athlete.objects.get(person__user__username=athlete_id)
 
-    workout = models.Workout(athlete=athlete, day=day, weather=request.POST['weather'])
+    workout = models.Workout(athlete=athlete,
+                             day=day, 
+                             weather=request.POST['weather'],
+                             note=request.POST['note'],
+                             rating_satisfaction = min(models.Workout.MAX_RATING, max(models.Workout.MIN_RATING, int(request.POST['rating_satisfaction']))),
+                             rating_difficulty = min(models.Workout.MAX_RATING, max(models.Workout.MIN_RATING, int(request.POST['rating_difficulty']))))
+
     workout.save()
 
     _workout_items_save(request, workout, num_workout_items)
@@ -338,6 +371,9 @@ def edit_submit(request, athlete_id):
         return http.HttpResponseNotFound()
 
     workout.weather = request.POST['weather']
+    workout.note = request.POST['note']
+    workout.rating_satisfaction = min(models.Workout.MAX_RATING, max(models.Workout.MIN_RATING, int(request.POST['rating_satisfaction'])))
+    workout.rating_difficulty = min(models.Workout.MAX_RATING, max(models.Workout.MIN_RATING, int(request.POST['rating_difficulty'])))
     workout.save()
 
     workout.workoutitem_set.all().delete()

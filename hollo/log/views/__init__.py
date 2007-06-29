@@ -21,6 +21,7 @@
 
 import datetime
 import decorator
+import time
 
 from django.core.exceptions import ObjectDoesNotExist
 from django import http 
@@ -78,6 +79,17 @@ def athlete_edit_allowed(view, *args, **kwargs):
         return view(*args, **kwargs)
     else:
         raise "Now allowed to edit athlete"
+
+
+@decorator.decorator
+def force_no_cache(view, *args, **kwargs):
+    """
+    Wraps the response object and sets its HTTP headers
+    so that browsers should not cache contents of the page
+    """
+    response = view(*args, **kwargs)
+    response['Last-modified'] = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime())
+    return response
     
 
 def index(request):
@@ -115,3 +127,21 @@ def error(request, error_code):
     """
     error_code = int(error_code)
     return http.HttpResponse("Error %d" % error_code)
+
+# Helper functions for views
+
+def get_auth_request_message(person):
+    try:
+        athlete = models.Athlete.objects.get(person=person)
+    except ObjectDoesNotExist:
+        return None
+
+    auth_request_count = athlete.auth_request_to.count()
+    if auth_request_count <= 0:
+        return None
+    elif auth_request_count == 1:
+        return "1 požadavek na autorizaci"
+    elif auth_request_count >= 2 and auth_request_count < 5:
+        return "%d požadavky na autorizaci" % auth_request_count
+    else:
+        return "%d požadavků na autorizaci" % auth_request_count

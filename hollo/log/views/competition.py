@@ -34,7 +34,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django import http 
 from django.template import loader, Context, RequestContext
 
-from hollo.log.views import login_required, athlete_view_allowed, athlete_edit_allowed
+from hollo.log.views import login_required, athlete_view_allowed, athlete_edit_allowed, get_auth_request_message
 from hollo.log import models
 from hollo.log import common
 
@@ -60,7 +60,8 @@ def monthly_view(request, athlete_id, year, month):
     c = RequestContext(request, {'first_day': datetime.date(year, month, 1),\
                                  'competitions': competitions, 'viewType': 'monthly',
                                  'athlete': athlete,
-                                 'athlete_edit_allowed': athlete.allowed_edit_by(request.user)
+                                 'athlete_edit_allowed': athlete.allowed_edit_by(request.user),
+                                 'auth_request_message': get_auth_request_message(request.user.person)
                                  })
     return http.HttpResponse(t.render(c))
 
@@ -85,8 +86,9 @@ def yearly_view(request, athlete_id, year):
 
     t = loader.get_template('log/competition_yearly.html')
     c = RequestContext(request, {'first_day': datetime.date(year, 1, 1), 'months': months, 'viewType': 'yearly',\
-                'athlete': athlete,
-                'athlete_edit_allowed': athlete.allowed_edit_by(request.user)
+                'athlete': athlete, \
+                'athlete_edit_allowed': athlete.allowed_edit_by(request.user), \
+                'auth_request_message': get_auth_request_message(request.user.person) \
                 })
     return http.HttpResponse(t.render(c))
 
@@ -236,3 +238,17 @@ def remove_competition(request, athlete_id, competition_id):
     
     competition.delete()
     return http.HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+
+@login_required
+@athlete_view_allowed
+def change_view(request, athlete_id):
+    """
+    Change the workout period which is displayed
+    """
+    if (request.POST['viewType'] == 'monthly'):
+        week, year = int(request.POST['month']), int(request.POST['year'])
+        return http.HttpResponseRedirect('/competition/%s/month/%04d/%02d/' % (athlete_id, year, month))
+    else:
+        month, year = int(request.POST['month']), int(request.POST['year'])
+        return http.HttpResponseRedirect('/competition/%s/year/%04d/' % (athlete_id, year))

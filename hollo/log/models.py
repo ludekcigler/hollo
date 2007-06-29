@@ -73,9 +73,8 @@ class Person(models.Model):
                         person=person, athlete__person=self).count() > 0)
         view_status['auth_request_to'] = (AuthorizationRequest.objects.filter( \
                         person=self, athlete__person=person).count() > 0)
-        view_status['blocked'] = (Athlete.objects.filter( \
-                        blocked_persons=person, person=self).count() > 0)
-
+        view_status['blocked'] = (person.blocking_athletes.filter(person=self).count() > 0)
+        view_status['blocks'] = (self.blocking_athletes.filter(person=person).count() > 0)
         view_status['coach'] = (Coach.objects.filter(person=person, athletegroups__athletes__person=self).\
                                         count() > 0)
         view_status['watched'] = (Athlete.objects.filter(watching_persons=person, person=self).count() > 0)
@@ -211,7 +210,11 @@ class Workout(models.Model):
     athlete = models.ForeignKey('Athlete')
     weather = models.CharField(maxlength=100, blank=True, default='')
     note = models.TextField(blank=True, default='')
-    rating = models.SmallIntegerField(default=3)
+    rating_satisfaction = models.SmallIntegerField(default=3)
+    rating_difficulty = models.SmallIntegerField(default=3)
+
+    MIN_RATING = 1
+    MAX_RATING = 5
 
     def __str__(self):
         return "%s, %s" % (str(self.athlete), self.day,)

@@ -23,6 +23,7 @@ import decorator
 import time
 
 from django.core.exceptions import ObjectDoesNotExist
+from django.core import urlresolvers
 from django import http 
 from django.template import loader, Context, RequestContext
 
@@ -103,9 +104,9 @@ def index(request):
             else:
                 #TODO: show error page
                 athlete_id = None
-        return http.HttpResponseRedirect('/workout/%s/' % (athlete_id, ))
+        return http.HttpResponseRedirect(urlresolvers.reverse('log.views.workout.index', kwargs = {'athlete_id': athlete_id}))
     else:
-        return http.HttpResponseRedirect('/login/')
+        return http.HttpResponseRedirect(urlresolvers.reverse('log.views.user.login'))
 
 @login_required
 def change_athlete(request, view_type):

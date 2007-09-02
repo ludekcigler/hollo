@@ -32,6 +32,7 @@ import re
 from django.core.exceptions import ObjectDoesNotExist
 from django import http 
 from django.template import loader, Context, RequestContext
+from django.core.urlresolvers import reverse
 
 from hollo.log.views import login_required, athlete_view_allowed, \
                             athlete_edit_allowed, get_auth_request_message, \
@@ -43,7 +44,10 @@ from hollo.log import common
 @athlete_view_allowed
 def index(request, athlete_id):
     year, week = datetime.date.today().isocalendar()[:2]
-    return http.HttpResponseRedirect('/workout/%s/week/%04d/%02d/' % (athlete_id, year, week))
+    return http.HttpResponseRedirect(reverse('log.views.workout.weekly_view', 
+                                     kwargs={'athlete_id': athlete_id,
+                                             'year': year,
+                                             'week': week}))
 
 @login_required
 @athlete_view_allowed
@@ -63,7 +67,7 @@ def weekly_view(request, athlete_id, week, year, detail_year = None, detail_mont
                                                  day=day)
         competitions = models.Competition.objects.filter(athlete=athlete,
                                     day=day)
-        data = {'day': day, 'workouts': workouts, 
+        data = {'date': day, 'workouts': workouts, 
                 'competitions': competitions
                }
         week_data.append(data)
@@ -104,6 +108,8 @@ def weekly_view(request, athlete_id, week, year, detail_year = None, detail_mont
     c = RequestContext(request, context)
     return http.HttpResponse(t.render(c))
 
+def weekly_view_detail(*args, **kwargs):
+    return weekly_view(*args, **kwargs)
 
 def weekly_summary(athlete, year, week):
     """
@@ -132,7 +138,7 @@ def monthly_view(request, athlete_id, month, year, detail_day = None):
         week_data = {'week': week_number, 'days': []}
         for day in week_row:
             if day:
-                day_data = {'day': datetime.date(year, month, day),
+                day_data = {'date': datetime.date(year, month, day),
                             'workouts': models.Workout.objects.filter(athlete=athlete, 
                                                      day=datetime.date(year, month, day)), 
                             'competitions': models.Competition.objects.filter(athlete=athlete, 
@@ -173,6 +179,8 @@ def monthly_view(request, athlete_id, month, year, detail_day = None):
     c = RequestContext(request, data)
     return http.HttpResponse(t.render(c))
 
+def monthly_view_detail(*args, **kwargs):
+    return monthly_view(*args, **kwargs)
 
 @login_required
 @athlete_view_allowed
@@ -182,10 +190,16 @@ def change_view(request, athlete_id):
     """
     if (request.POST['viewType'] == 'weekly'):
         week, year = int(request.POST['week']), int(request.POST['year'])
-        return http.HttpResponseRedirect('/workout/%s/week/%04d/%02d/' % (athlete_id, year, week))
+        return http.HttpResponseRedirect(reverse('log.views.workout.weekly_view',
+                                                 kwargs={'athlete_id': athlete_id,
+                                                         'year': year,
+                                                         'week': week}))    
     else:
         month, year = int(request.POST['month']), int(request.POST['year'])
-        return http.HttpResponseRedirect('/workout/%s/month/%04d/%02d/' % (athlete_id, year, month))
+        return http.HttpResponseRedirect(reverse('log.views.workout.monthly_view',
+                                                 kwargs={'athlete_id': athlete_id,
+                                                         'year': year,
+                                                         'month': month}))
 
 
 def day_info(athlete, year, month, day):
@@ -212,8 +226,7 @@ def add_form(request, athlete_id, year, month, day):
 
     context = {
                'day': date, 
-               'form_action': 'add/%04d/%02d/%02d' % (year, month, day),
-               'form_action_desc': 'Nový',
+               'form_action': 'add',
                'athlete': athlete}
 
     # Look for submit key (we need it to determine which button was actually pressed)
@@ -233,7 +246,7 @@ def add_form(request, athlete_id, year, month, day):
             if request.REQUEST['continue']:
                 return http.HttpResponseRedirect(request.REQUEST['continue'])
             else:
-                return http.HttpResponseRedirect('/log/')
+                return http.HttpResponseRedirect(reverse('log.views.index'))
         else:
             context.update(form_context_update(request, submit_button))
 
@@ -299,7 +312,7 @@ def add_submit(request, athlete_id):
 
     _workout_items_save(request, workout, num_workout_items)
 
-    redirectUrl = request.META.get('HTTP_REFERER', '')
+    redirectUrl = request.META.get('HTTP_REFERER', reverse('log.views.index'))
     if (request.REQUEST.has_key('continue')):
         redirectUrl = request.REQUEST['continue']
 
@@ -323,8 +336,7 @@ def edit_form(request, athlete_id, day, month, year, workout_id):
 
     context = {
                'day': date, 
-               'form_action': 'edit/%04d/%02d/%02d/%d' % (year, month, day, workout_id),
-               'form_action_desc': 'Upravit',
+               'form_action': 'edit',
                'athlete': athlete}
 
     if not submit_button:
@@ -335,8 +347,8 @@ def edit_form(request, athlete_id, day, month, year, workout_id):
             return http.HttpResponseNotFound()
 
         context.update({'workout': workout, 
-                        'phase_items': workout.workoutitem_set.all(),
-                        'continue': request.META.get('HTTP_REFERER', '/')})
+                        'phase_items': workout.workout_items.all(),
+                        'continue': request.META.get('HTTP_REFERER', reverse('log.views.index'))})
     else:
         context.update({'continue': request.REQUEST['continue']})
 
@@ -346,7 +358,7 @@ def edit_form(request, athlete_id, day, month, year, workout_id):
             if request.REQUEST['continue']:
                 return http.HttpResponseRedirect(request.REQUEST['continue'])
             else:
-                return http.HttpResponseRedirect('/')
+                return http.HttpResponseRedirect(reverse('log.views.index'))
         else:
             context.update(form_context_update(request, submit_button, workout_id))
 
@@ -375,10 +387,10 @@ def edit_submit(request, athlete_id):
     workout.rating_difficulty = min(models.Workout.MAX_RATING, max(models.Workout.MIN_RATING, int(request.POST['rating_difficulty'])))
     workout.save()
 
-    workout.workoutitem_set.all().delete()
+    workout.workout_items.all().delete()
     _workout_items_save(request, workout, num_workout_items)
 
-    redirectUrl = request.META.get('HTTP_REFERER', '/')
+    redirectUrl = request.META.get('HTTP_REFERER', reverse('log.views.index'))
     if (request.REQUEST.has_key('continue')):
         redirectUrl = request.REQUEST['continue']
 
@@ -389,10 +401,10 @@ def _workout_items_save(request, workout, num_workout_items):
     for sequence in xrange(0, num_workout_items):
         workout_type = models.WorkoutType.objects.get(abbr=request.POST['workout_type_%d' % sequence])
         workout_desc = request.POST['workout_desc_%d' % sequence]
-        workout_km = request.POST['workout_km_%d' % sequence]
+        workout_num_data = request.POST['workout_km_%d' % sequence]
 
         workoutitem = models.WorkoutItem(workout=workout, sequence=sequence, type=workout_type, \
-                                         desc=workout_desc, km=workout_km)
+                                         desc=workout_desc, num_data=workout_num_data)
         workoutitem.save()
 
     return True
@@ -411,4 +423,4 @@ def remove_workout(request, athlete_id, workout_id):
         return http.HttpResponseNotFound()
     
     workout.delete()
-    return http.HttpResponseRedirect(request.META.get('HTTP_REFERER', ''))
+    return http.HttpResponseRedirect(request.META.get('HTTP_REFERER', reverse('log.views.index')))

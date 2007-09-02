@@ -95,7 +95,7 @@ def settings_submenu(context, active_item):
 def workout_weekly_view_num_day_rows(workouts, competitions):
     if len(workouts) > 0:
         num_workout_rows = reduce(lambda x, y: x + y, 
-                [max(w.workoutitem_set.count(), 1) for w in workouts])
+                [max(w.workout_items.count(), 1) for w in workouts])
     else:
         num_workout_rows = 0
 

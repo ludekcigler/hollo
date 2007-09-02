@@ -5,13 +5,15 @@
 <div id="viewSelection">
     <div id="athleteSelection">
 <h2 class="textversion">Zobrazený atlet</h2>
-    <a href="/change_athlete/workout/?old={{ athlete.person.user.username }}">
+    {% with "workout" as view_type %}
+    <a href="{% url log.views.change_athlete view_type=view_type %}?old={{ athlete.person.user.username }}">
+    {% endwith %}
         <img src="{{ athlete.person.get_image_url|default:"/site_media/log/images/user_unknown.png" }}"
         width="22" height="22" alt="{{ athlete }}" id="athleteImage">
         <span id="athleteName">{{ athlete }}</span>
     </a>
     </div>
-<form action="/workout/{{ athlete.person.user.username }}/change_view/" method="post">
+<form action="{% url log.views.workout.change_view athlete_id=athlete.person.user.username %}" method="post">
 <fieldset>
 <legend class="textversion">Zobrazení deníku</legend>
 <label for="viewType">Pohled</label>

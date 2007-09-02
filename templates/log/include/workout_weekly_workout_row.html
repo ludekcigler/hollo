@@ -1,6 +1,6 @@
 {% load log_filters %}
 {% load log_tags %}
-{% if workout.workoutitem_set.all|length_is:"0" %}
+{% if workout.workout_items.all|length_is:"0" %}
     {% if forloop.first|is_not %}
         {# If this is not the first phase, we need to produce the row header #}
     <tr class="firstFromPhase day_{{ day_data.day|date:"Y-m-d" }}">
@@ -10,7 +10,7 @@
         </tr>
 
 {% else %}
-    {% for item in workout.workoutitem_set.all|dictsort:"sequence" %}
+    {% for item in workout.workout_items.all|dictsort:"sequence" %}
         {% if forloop.first|is_not %}
     <tr class="day_{{ day_data.day|date:"Y-m-d" }}">
         {% endif %}
@@ -19,12 +19,23 @@
         {% endif %}
 
         {% if forloop.first %}
-        <td class="phase" rowspan="{{ workout.workoutitem_set.count }}">{{ forloop.parentloop.counter }}</td>
+        <td class="phase" rowspan="{{ workout.workout_items.count }}">{{ forloop.parentloop.counter }}</td>
         {% endif %}
         <td class="type">{{ item.type }}</td>
         <td class="desc">{{ item.desc }}</td>
         {% if forloop.first %}
-        <td rowspan="{{ workout.workoutitem_set.count }}" class="km">{{workout.total_km}}</td>
+        <td rowspan="{{ workout.workout_items.count }}" class="num_data">
+        {% with workout.total_km as total %}
+        {% if total %}
+        {{total}} km
+        {% endif %}
+        {% endwith %}
+        {% with workout.total_kg as total %}
+        {% if total %}
+        {{total}} kg
+        {% endif %}
+        {% endwith %}
+        </td>
         {% endif %}
     </tr>
     {% endfor %}

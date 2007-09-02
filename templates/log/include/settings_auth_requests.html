@@ -18,16 +18,16 @@
     <dt>{{ person }}</dt>
     <dd>{{ request.message }}</dd>
     <dd>
-        <a href="/settings/friends/auth/{{ username }}/" title="{{ person }} - přijmout autorizaci"><img src="/site_media/log/images/icons/accept_small.png" width="16" height="16" alt="OK"></a>
-        <a href="/settings/friends/auth_reject/{{ username }}/" title="{{ person }} - zamítnout autorizaci"><img src="/site_media/log/images/icons/cancel_small.png" width="16" height="16" alt="Zamítnout"></a>
-        <a href="/settings/friends/block/{{ username }}/" title="{{ person }} - blokovat"><img src="/site_media/log/images/icons/block_small.png" width="16" height="16" alt="Blokovat"></a>
+        <a href="{% url log.views.settings.friends_auth person_id=username %}" title="{{ person }} - přijmout autorizaci"><img src="/site_media/log/images/icons/accept_small.png" width="16" height="16" alt="OK"></a>
+        <a href="{% url log.views.settings.friends_auth_reject person_id=username %}" title="{{ person }} - zamítnout autorizaci"><img src="/site_media/log/images/icons/cancel_small.png" width="16" height="16" alt="Zamítnout"></a>
+        <a href="{% url log.views.settings.friends_block person_id=username %}" title="{{ person }} - blokovat"><img src="/site_media/log/images/icons/block_small.png" width="16" height="16" alt="Blokovat"></a>
     </dd>
     {% endwith %}
     {% endwith %}
 {% endfor %}
 </dl>
 {% endif %}
-    <form action="/settings/friends/auth_list/?continue={{ continue|urlencode }}" method="post">
+    <form action="{% url log.views.settings.friends_auth_list %}?continue={{ continue|urlencode }}" method="post">
     <fieldset class="buttonSet">
         <legend class="textversion">Hotovo</legend>
         <input type="submit" name="submitOk" class="ok button" value="Hotovo">

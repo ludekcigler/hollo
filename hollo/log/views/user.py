@@ -26,6 +26,7 @@ import django.contrib.auth
 from django import http 
 from django.shortcuts import render_to_response
 from django.template import loader, Context, RequestContext
+from django.core.urlresolvers import reverse
 
 from hollo.log import views
 
@@ -42,9 +43,9 @@ def auth(request):
     user = django.contrib.auth.authenticate(username=username, password=password)
     if user is not None and user.is_active:
         django.contrib.auth.login(request, user)
-        return http.HttpResponseRedirect('/')
+        return http.HttpResponseRedirect(reverse('log.views.index'))
     else:
-        return render_to_response('log/login.html', {'message': u"Soráč, ale zadal's špatně heslo.."})
+        return http.HttpResponseRedirect("%s?%s" % (reverse('log.views.user.login'), "auth=error"))
 
 
 def logout(request):

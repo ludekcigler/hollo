@@ -33,7 +33,7 @@
     {% endwith %}
 {% endfor %}
 </dl>
-<a href="/settings/friends/add/">Sledovat atleta</a>
+<a href="{% url log.views.settings.friends_add %}">Sledovat atleta</a>
 {% if athlete %}
     {% if blocked_persons|length_is:"0" %}{% else %}
 <h4>Blokovaní</h4>

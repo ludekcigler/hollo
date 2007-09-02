@@ -32,6 +32,7 @@ import re
 from django.core.exceptions import ObjectDoesNotExist
 from django import http 
 from django.template import loader, Context, RequestContext
+from django.core.urlresolvers import reverse
 
 from hollo.log.views import login_required, athlete_view_allowed, athlete_edit_allowed, get_auth_request_message
 from hollo.log import models
@@ -41,7 +42,10 @@ from hollo.log import common
 @athlete_view_allowed
 def index(request, athlete_id):
     today = datetime.date.today()
-    return http.HttpResponseRedirect('/competition/%s/month/%04d/%02d/' % (athlete_id, today.year, today.month))
+    return http.HttpResponseRedirect(reverse('log.views.competition.monthly_view',
+                                        kwargs={'athlete_id': athlete_id,
+                                                'year': today.year,
+                                                'month': today.month}))
 
 @login_required
 @athlete_view_allowed
@@ -104,8 +108,7 @@ def add_form(request, athlete_id, year, month, day):
 
     context = {'competition': {'event': ''}, 
                'day': date, 
-               'form_action': 'add/%04d/%02d/%02d' % (year, month, day),
-               'form_action_desc': 'nový',
+               'form_action': 'add',
                'athlete': athlete}
 
     # Look for submit key (we need it to determine which button was actually pressed)
@@ -116,9 +119,9 @@ def add_form(request, athlete_id, year, month, day):
         if (submit_button == 'Ok'):
             return add_submit(request)
         elif (submit_button == 'Cancel'):
-            return http.HttpResponseRedirect(request.REQUEST['continue'] or '/')
+            return http.HttpResponseRedirect(request.REQUEST['continue'] or reverse('log.views.index'))
     else:
-        context.update({'continue': request.META.get('HTTP_REFERER', '/')})
+        context.update({'continue': request.META.get('HTTP_REFERER', reverse('log.views.index'))})
 
     t = loader.get_template('log/competition_form.html')
     c = RequestContext(request, context)
@@ -146,7 +149,7 @@ def add_submit(request, athlete_id):
                                      result=request.POST['result'], note=request.POST['note'])
     competition.save()
 
-    redirectUrl = request.META.get('HTTP_REFERER', '/')
+    redirectUrl = request.META.get('HTTP_REFERER', reverse('log.views.index'))
     if (request.REQUEST.has_key('continue')):
         redirectUrl = request.REQUEST['continue']
 
@@ -164,8 +167,7 @@ def edit_form(request, athlete_id, year, month, day, competition_id):
 
     context = {'competition': {'event': ''}, 
                'day': date, 
-               'form_action': 'edit/%04d/%02d/%02d/%d' % (year, month, day, competition_id),
-               'form_action_desc': 'Upravit',
+               'form_action': 'edit',
                'athlete': athlete}
 
     # Look for submit key (we need it to determine which button was actually pressed)
@@ -176,14 +178,14 @@ def edit_form(request, athlete_id, year, month, day, competition_id):
         if submit_button == 'Ok':
             return edit_submit(request, athlete_id)
         elif submit_button == 'Cancel':
-            return http.HttpResponseRedirect(request.REQUEST['continue'] or '/')
+            return http.HttpResponseRedirect(request.REQUEST['continue'] or reverse('log.views.index'))
     else:
         try:
             competition = models.Competition.objects.get(id=competition_id)
         except ObjectDoesNotExist:
             return http.HttpResponseNotFound()            
         context.update({'competition': competition,
-                        'continue': request.META.get('HTTP_REFERER', '/')})
+                        'continue': request.META.get('HTTP_REFERER', reverse('log.views.index'))})
 
     t = loader.get_template('log/competition_form.html')
     c = RequestContext(request, context)
@@ -215,7 +217,7 @@ def edit_submit(request, athlete_id):
     competition.note = request.POST['note']
     competition.save()
 
-    redirectUrl = request.META.get('HTTP_REFERER', '/')
+    redirectUrl = request.META.get('HTTP_REFERER', reverse('log.views.index'))
     if (request.REQUEST.has_key('continue')):
         redirectUrl = request.REQUEST['continue']
 
@@ -236,7 +238,7 @@ def remove_competition(request, athlete_id, competition_id):
         return http.HttpResponseNotFound()
     
     competition.delete()
-    return http.HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+    return http.HttpResponseRedirect(request.META.get('HTTP_REFERER', reverse('log.views.index')))
 
 
 @login_required
@@ -247,7 +249,12 @@ def change_view(request, athlete_id):
     """
     if (request.POST['viewType'] == 'monthly'):
         week, year = int(request.POST['month']), int(request.POST['year'])
-        return http.HttpResponseRedirect('/competition/%s/month/%04d/%02d/' % (athlete_id, year, month))
+        return http.HttpResponseRedirect(reverse('log.views.competition.monthly_view',
+                                            kwargs={'athlete_id': athlete_id,
+                                                    'year': year,
+                                                    'month': month}))
     else:
         month, year = int(request.POST['month']), int(request.POST['year'])
-        return http.HttpResponseRedirect('/competition/%s/year/%04d/' % (athlete_id, year))
+        return http.HttpResponseRedirect(reverse('log.views.competition.yearly_view',
+                                            kwargs={'athlete_id': athlete_id,
+                                                    'year': year}))

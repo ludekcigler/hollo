@@ -1,8 +1,8 @@
 {% load log_filters %}
 <h2 class="textversion">Tréninkový deník, {{first_day|date:"F"|lower}} {{first_day|date:"Y"}}</h2>
 <ul class="pagerMenu">
-    <li class="previous"><a href="/workout/{{ athlete.person.user.username }}/month/{{previous_year}}/{{previous_month|stringformat:"02d"}}/">Předchozí měsíc</a></li>
-    <li class="next"><a href="/workout/{{ athlete.person.user.username }}/month/{{next_year}}/{{next_month|stringformat:"02d"}}/">Další měsíc</a></li>
+    <li class="previous"><a href="{% url log.views.workout.monthly_view athlete_id=athlete.person.user.username,year=previous_year,month=previous_month %}">Předchozí měsíc</a></li>
+    <li class="next"><a href="{% url log.views.workout.monthly_view athlete_id=athlete.person.user.username,year=next_year,month=next_month %}">Další měsíc</a></li>
 </ul>
 <table id="monthlyView" cellspacing="0">
     <thead>
@@ -24,11 +24,11 @@
                 {% for day_data in week_data.days %}
 
                     {% if day_data %}
-                <td class="day_{{day_data.day|date:"Y-m-d"}}">
+                <td class="day_{{day_data.date|date:"Y-m-d"}}">
                     <ul>
                         <li class="day">
-                            <a href="/workout/{{ athlete.person.user.username }}/month/{{day_data.day|date:"Y/m/d"}}/" 
-                                class="editDay" title="Detail pro {{ day_data.day|date:"j.n" }}">{{day_data.day|date:"j"}}</a>
+                            <a href="{% url log.views.workout.monthly_view_detail athlete_id=athlete.person.user.username,year=day_data.date.year,month=day_data.date.month,detail_day=day_data.date.day %}" 
+                                class="editDay" title="Detail pro {{ day_data.date|date:"j.n" }}">{{day_data.date|date:"j"}}</a>
                         </li>
                         {% if day_data.workouts|length_is:"0" and day_data.competitions|length_is:"0" %}
                         <li>Volno</li>
@@ -37,11 +37,11 @@
                         {% if day_data.workouts|length_is:"0"|is_not %}
                         <li><ul class="phases">
                             {% for workout in day_data.workouts %}
-                                {% if workout.workoutitem_set.all|length_is:"0" %}
+                                {% if workout.workout_items.all|length_is:"0" %}
                                 <li>Nic</li>
                                 {% else %}
                                 <li>
-                                    {% for phase_item in workout.workoutitem_set.all %}
+                                    {% for phase_item in workout.workout_items.all %}
                                     {{phase_item.type}}{% if forloop.last|is_not %}, {% endif %}
                                     {% endfor %}
                                 </li>
@@ -75,6 +75,6 @@
 </table>
 
 <ul class="pagerMenu">
-    <li class="previous"><a href="/workout/{{ athlete.person.user.username }}/month/{{previous_year}}/{{previous_month|stringformat:"02d"}}/">Předchozí měsíc</a></li>
-    <li class="next"><a href="/workout/{{ athlete.person.user.username }}/month/{{next_year}}/{{next_month|stringformat:"02d"}}/">Další měsíc</a></li>
+    <li class="previous"><a href="{% url log.views.workout.monthly_view athlete_id=athlete.person.user.username,year=previous_year,month=previous_month %}">Předchozí měsíc</a></li>
+    <li class="next"><a href="{% url log.views.workout.monthly_view athlete_id=athlete.person.user.username,year=next_year,month=next_month %}">Další měsíc</a></li>
 </ul>

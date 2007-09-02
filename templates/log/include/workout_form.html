@@ -1,7 +1,21 @@
 {% load log_tags %}
 <div id="workoutForm">
-<h2>{{ form_action_desc|capfirst }} trénink</h2>
-<form id="workoutEdit" action="/workout/{{ athlete.person.user.username }}/{{ form_action }}/?continue={{ continue|urlencode }}" method="post">
+
+{% ifequal form_action "add" %}
+<h2>Nový trénink</h2>
+{% else %}
+{% ifequal form_action "edit" %}
+<h2>Upravit trénink</h2>
+{% endifequal %}
+{% endifequal %}
+
+{% ifequal form_action "add" %}
+<form id="workoutEdit" action="{% url log.views.workout.add_form athlete_id=athlete.person.user.username,year=day.year,month=day.month,day=day.day %}?continue={{ continue|urlencode }}" method="post">
+{% else %}
+{% ifequal form_action "edit" %}
+<form id="workoutEdit" action="{% url log.views.workout.edit_form athlete_id=athlete.person.user.username,year=day.year,month=day.month,day=day.day,workout_id=workout.id %}?continue={{ continue|urlencode }}" method="post">
+{% endifequal %}
+{% endifequal %}
     <fieldset class="buttonSet">
         <legend class="textversion">Uložit</legend>
         <input type="submit" name="submitOk" class="ok button" value="Uložit">

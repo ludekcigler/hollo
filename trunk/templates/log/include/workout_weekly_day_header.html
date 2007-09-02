@@ -2,8 +2,8 @@
                 {% load log_filters %}
                 <th class="day" scope="row" 
                     rowspan="{% workout_weekly_view_num_day_rows day_data.workouts day_data.competitions  %}">
-                    <a href="/workout/{{ athlete.person.user.username }}/week/{{first_day|date:"Y"}}/{{first_day|date:"W"}}/day/{{day_data.day|date:"Y"}}/{{day_data.day|date:"m"}}/{{day_data.day|date:"d"}}/" title="Detail {{ day_data.day|date:"j.n"}}">
-                    {{ day_data.day|date:"D"|trunc:"2" }} 
+                    <a href="{% url log.views.workout.weekly_view_detail athlete_id=athlete.person.user.username,year=year,week=week,detail_year=day_data.date.year,detail_month=day_data.date.month,detail_day=day_data.date.day %}" title="Detail {{ day_data.date|date:"j.n"}}">
+                    {{ day_data.date|date:"D"|trunc:"2" }} 
                     </a>
-                    <span>{{ day_data.day|date:"j.n" }}</span>
+                    <span>{{ day_data.date|date:"j.n" }}</span>
                 </th>

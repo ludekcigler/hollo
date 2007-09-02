@@ -5,7 +5,7 @@
 {% ifnotequal num_workouts 1 %}
 <h3>{{forloop.counter}}. fáze</h3>
 {% endifnotequal %}
-{% if w.workoutitem_set.all|length_is:"0" %}
+{% if w.workout_items.all|length_is:"0" %}
 <p>Tato fáze nemá žádné položky</p>
 {% else %}
 <table cellspacing="0">
@@ -17,7 +17,7 @@
         </tr>
     </thead>
     <tbody>
-    {% for i in w.workoutitem_set.all|dictsort:"sequence" %}
+    {% for i in w.workout_items.all|dictsort:"sequence" %}
     <tr>
         <td class="type">{{i.type}}</td>
         <td class="desc">{{i.desc}}</td>
@@ -66,9 +66,9 @@
 </table>
 {% if athlete_edit_allowed %}
 <p class="workoutInfoButtons">
-    <a href="/workout/{{ athlete.person.user.username }}/edit/{{ w.day|date:"Y/m/d" }}/{{ w.id }}/" class="editWorkout"
+    <a href="{% url log.views.workout.edit_form athlete_id=athlete.person.user.username,year=w.day.year,month=w.day.month,day=w.day.day,workout_id=w.id %}" class="editWorkout"
         id="editWorkout_{{ w.day|date:"Y-m-d" }}_{{ w.id }}">Upravit fázi</a>
-    <a href="/workout/{{ athlete.person.user.username }}/remove/{{ w.id }}/" class="removeWorkout"
+    <a href="{% url log.views.workout.remove_workout athlete_id=athlete.person.user.username,workout_id=w.id %}" class="removeWorkout"
         id="removeWorkout_{{ w.day|date:"Y-m-d" }}_{{ w.id }}">Odstranit fázi</a>
 </p>
 {% endif %}
@@ -76,12 +76,12 @@
 {% endfor %}
 {% if athlete_edit_allowed %}
 <p class="workoutInfoButtons">
-    <a href="/workout/{{ athlete.person.user.username }}/add/{{day|date:"Y/m/d"}}/" class="addWorkout"
+    <a href="{% url log.views.workout.add_form athlete_id=athlete.person.user.username,year=day.year,month=day.month,day=day.day %}" class="addWorkout"
         id="addWorkout_{{ day|date:"Y-m-d" }}">Přidat fázi</a>
 </p>
 {% endif %}
 {% if competitions|length_is:"0"|is_not %}
-<h3>Závody</h3>
+<h3>Závody</h{% url log.views.workout.add_form athlete_id=athlete.person.user.username,year=day.year,month=day.month,day=day.day %}3>
 <div class="competition">
 <table cellspacing="0" class="competition">
     <thead>
@@ -103,12 +103,12 @@
             <td>{{ c.place }}</td>
             {% if athlete_edit_allowed %}
             <td>
-                <a href="/competition/{{ athlete.person.user.username }}/edit/{{ c.day|date:"Y/m/d" }}/{{ c.id }}/" class="editCompetition" 
+                <a href="{% url log.views.competition.edit_form athlete_id=athlete.person.user.username,year=c.day.year,month=c.day.month,day=c.day.day,competition_id=c.id %}" class="editCompetition" 
                 id="editCompetition_{{ c.day|date:"Y-m-d" }}_{{ c.id }}" title="Upravit závod">
                 <span>Upravit závod</span></a>
             </td>
             <td>
-                <a href="/competition/{{ athlete.person.user.username }}/remove/{{ c.id }}/" class="removeCompetition" 
+                <a href="{% url log.views.competition.remove_competition athlete_id=athlete.person.user.username,competition_id=c.id %}" class="removeCompetition" 
                     id="removeCompetition_{{ c.day|date:"Y-m-d" }}_{{ c.id }}" title="Odstranit závod">
                     <span>Odstranit závod</span></a>
             </td>
@@ -121,7 +121,7 @@
 {% endif %}
 {% if athlete_edit_allowed %}
 <p class="workoutInfoButtons">
-    <a href="/competition/{{ athlete.person.user.username }}/add/{{ day|date:"Y/m/d" }}/" class="addCompetition"
+    <a href="{% url log.views.competition.add_form athlete_id=athlete.person.user.username,year=day.year,month=day.month,day=day.day %}" class="addCompetition"
         id="addCompetition_{{ day|date:"Y-m-d" }}">Přidat závod</a>
 </p>
 {% endif %}

@@ -2,8 +2,8 @@
 {% load log_tags %}
 <h2 class="textversion">Tréninkový deník, {{first_day|date:"W"}}. týden, {{first_day|date:"Y"}}</h2>
 <ul class="pagerMenu">
-    <li class="previous"><a href="/workout/{{ athlete.person.user.username }}/week/{{previous_year}}/{{previous_week|stringformat:"02d"}}/">Předchozí týden</a></li>
-    <li class="next"><a href="/workout/{{ athlete.person.user.username }}/week/{{next_year}}/{{next_week|stringformat:"02d"}}/">Další týden</a></li>
+    <li class="previous"><a href="{% url log.views.workout.weekly_view athlete_id=athlete.person.user.username,year=previous_year,week=previous_week %}">Předchozí týden</a></li>
+    <li class="next"><a href="{% url log.views.workout.weekly_view athlete_id=athlete.person.user.username,year=next_year,week=next_week %}">Další týden</a></li>
 </ul>
 <div id="weeklyView">
 <table cellspacing="0">
@@ -13,7 +13,7 @@
             <th class="phase">Fáze</th>
             <th class="type">Typ</th>
             <th class="desc">Náplň</th>
-            <th class="km">Km</th>
+            <th class="num_data"><span class="textversion">Km/Kg/...</span></th>
         </tr>
     </thead>
     <tbody>
@@ -70,6 +70,6 @@
 </div>
 
 <ul class="pagerMenu">
-    <li class="previous"><a href="/workout/{{ athlete.person.user.username }}/week/{{previous_year}}/{{previous_week|stringformat:"02d"}}/">Předchozí týden</a></li>
-    <li class="next"><a href="/workout/{{ athlete.person.user.username }}/week/{{next_year}}/{{next_week|stringformat:"02d"}}/">Další týden</a></li>
+    <li class="previous"><a href="{% url log.views.workout.weekly_view athlete_id=athlete.person.user.username,year=previous_year,week=previous_week %}">Předchozí týden</a></li>
+    <li class="next"><a href="{% url log.views.workout.weekly_view athlete_id=athlete.person.user.username,year=next_year,week=next_week %}">Další týden</a></li>
 </ul>

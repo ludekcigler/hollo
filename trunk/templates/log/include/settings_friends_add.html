@@ -17,7 +17,7 @@
             src="{{ a.person.get_image_url|default:"/site_media/log/images/user_unknown.png" }}" 
             width="22" height="22" alt="{{ a }}">
         <td>{{ a }}</td>
-        <td><a href="/settings/friends/add/{{ a.person.user.username }}/">Sledovat</a></td>
+        <td><a href="{% url log.views.settings.friends_add_edit_message athlete_id=a.person.user.username %}">Sledovat</a></td>
     </tr>
 {% endfor %}
 </table>
@@ -31,7 +31,7 @@
             src="{{ a.person.get_image_url|default:"/site_media/log/images/user_unknown.png" }}" 
             width="22" height="22" alt="{{ a }}">
         <td>{{ a }}</td>
-        <td><a href="/settings/friends/add/{{ a.person.user.username }}/">Sledovat</a></td>
+        <td><a href="{% url log.views.settings.friends_add_edit_message athlete_id=a.person.user.username %}">Sledovat</a></td>
     </tr>
 {% endfor %}
 </table>

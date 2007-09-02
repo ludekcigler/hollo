@@ -3,7 +3,7 @@
 {% block settingsContent %}
 {% settings_submenu "user" %}
 <h3 class="textversion">Obecné nastavení</h3>
-<form id="settingsUserForm" action="/settings/user/" method="post">
+<form id="settingsUserForm" action="{% url log.views.settings.user %}?continue={{ continue|urlencode }}" method="post">
     <fieldset>
         <legend class="textversion">Informace o uživateli</legend>
         <table cellspacing="0">
@@ -25,16 +25,16 @@
                     <td>
                         {% if person.image %}
                         <img src="{{ person.get_image_url }}" width="36" height="36" alt="{{ user.id }}" >
-                        <a href="/settings/user/edit_image/" title="Upravit obrázek" >Upravit</a>
-                        <a href="/settings/user/remove_image/" title="Smazat obrázek" >Smazat</a>
+                        <a href="{% url log.views.settings.user_edit_image %}" title="Upravit obrázek" >Upravit</a>
+                        <a href="{% url log.views.settings.user_remove_image %}" title="Smazat obrázek" >Smazat</a>
                         {% else %}
-                        <a href="/settings/user/edit_image/" title="Nahrát obrázek">Nahrát obrázek</a>
+                        <a href="{% url log.views.settings.user_edit_image %}" title="Nahrát obrázek">Nahrát obrázek</a>
                         {% endif %}
                     </td>
                 </tr>
                 <tr>
                     <th scope="row"><label>Heslo</label></th>
-                    <td><a href="/settings/user/change_password/" title="Změnit heslo">Změnit heslo</a></td>
+                    <td><a href="{% url log.views.settings.user_change_password %}" title="Změnit heslo">Změnit heslo</a></td>
                 </tr>
                 {% if athlete %}
                 <tr>

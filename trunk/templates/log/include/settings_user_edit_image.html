@@ -1,7 +1,7 @@
 {% load log_tags %}
 <div class="settingsForm">
 <h2>Upravit obrázek</h2>
-<form action="/settings/user/upload_image/?continue={{ continue|urlencode }}" method="post"
+<form action="{% url log.views.settings.user_upload_image %}?continue={{ continue|urlencode }}" method="post"
 enctype="multipart/form-data">
     <fieldset>
         <legend class="textversion">Obrázek</legend>
@@ -13,8 +13,8 @@ enctype="multipart/form-data">
     </fieldset>
     <fieldset class="buttonSet">
         <legend class="textversion">Uložit</legend>
-        <button type="submit" name="submitOk" class="ok" value="ok">Uložit</button>
-        <button type="submit" name="submitCancel" class="cancel" value="cancel">Zrušit</button>
+        <input type="submit" name="submitOk" class="ok" value="Uložit">
+        <input type="submit" name="submitCancel" class="cancel" value="Zrušit">
     </fieldset>
 </form>
 </div>

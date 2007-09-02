@@ -15,7 +15,7 @@ Přihlášení :: Tréninkový deník
 {{login_failed}}
 </p>
 {% endif %}
-<form action="/auth/" method="POST">
+<form action="{% url log.views.user.auth %}" method="post">
 <fieldset>
 <label for="username">Uživatelské jméno</label>
 <input type="text" id="username" name="username">

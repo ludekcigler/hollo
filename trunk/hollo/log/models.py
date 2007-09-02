@@ -28,6 +28,8 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 
 PERSON_IMAGE_UPLOAD_DIR = 'avatars'
+TRACK_EVENT_RESULT_TYPE_CHOICES = (('T', 'Time'), ('L', 'Length'), ('P', 'Points'), )
+WORKOUT_TYPE_NUM_CHOICES = (('DISTANCE', 'Km'), ('WEIGHT', 'Kg'), ('TIME', 'Min'), ('NONE', 'None'))
 
 class Person(models.Model):
     """
@@ -167,13 +169,14 @@ class TrackEvent(models.Model):
     One event on the track (or outside..), e.g. 100m, Javelin etc.
     """
     name = models.CharField(maxlength=30, primary_key=True)
+    # Does the event contain additional info? (used for cross-country etc.)
+    has_additional_info = models.BooleanField(default=False)
     # Pattern to verify result on server-side (including named groups)
     result_pattern = models.CharField(maxlength=150, default='^.*$')
     # Pattern to verify result on client side (using JS)
     js_result_pattern = models.CharField(maxlength=150, default='^.*$')
     # Order of results
-    result_type = models.CharField(maxlength=1,
-                    choices=(('T', 'Time'), ('L', 'Length'), ('P', 'Points')))
+    result_type = models.CharField(maxlength=1, choices=TRACK_EVENT_RESULT_TYPE_CHOICES, default='T')
 
     # Ordering of the track events
     order = models.DateField(auto_now_add=True)
@@ -195,7 +198,9 @@ class Competition(models.Model):
     day = models.DateField()
     place = models.CharField(maxlength = 100, default='')
     event = models.ForeignKey('TrackEvent')
-    result = models.CharField(maxlength = 100)
+    # Additional info about an event, in case the event has such
+    event_info = models.CharField(maxlength=100, default='')
+    result = models.CharField(maxlength=100)
     note = models.TextField(blank=True, default='')
 
     class Admin:
@@ -218,16 +223,26 @@ class Workout(models.Model):
     def __str__(self):
         return "%s, %s" % (str(self.athlete), self.day,)
 
-    def _get_total_km(self):
-        try:
-            return reduce(lambda x, y: x + y, [v['km'] for v in self.workoutitem_set.values('km')])
-        except TypeError:
-            return 0
+    def _get_total_num_data(self, num_type):
+        total = 0
+        summed_items = 0
+        for item in self.workout_items.all():
+            if item.type.num_type == num_type:
+                total += item.num_data
+                summed_items += 1
+        return (summed_items > 0) and total or None
 
-    total_km = property(_get_total_km, 'Total km in given workout')
+    def _get_total_km(self):
+        return self._get_total_num_data('DISTANCE')
+
+    def _get_total_kg(self):
+        return self._get_total_num_data('WEIGHT')
+
+    total_km = property(_get_total_km, 'Total km in given workout or None')
+    total_kg = property(_get_total_kg, 'Total kg in given workout or None')
 
     def _get_num_workout_items(self):
-        return len(self.workoutitem_set.all())
+        return len(self.workout_items.all())
 
     num_workout_items = property(_get_num_workout_items, 'Number of workout items in the workout')
 
@@ -240,6 +255,8 @@ class WorkoutType(models.Model):
     """
     abbr = models.CharField(maxlength = 10)
     name = models.CharField(maxlength = 30)
+    # Type of numeric data associated with the workout (eg. km, kg, minutes, ...)
+    num_type = models.CharField(maxlength=8, choices=WORKOUT_TYPE_NUM_CHOICES, default='DISTANCE')
     order = models.DateField(auto_now_add=True)
 
     def __str__(self):
@@ -255,11 +272,11 @@ class WorkoutItem(models.Model):
     """
     One workout item; e.g. warm-up, main phase or chill-out
     """
-    workout = models.ForeignKey('Workout')
+    workout = models.ForeignKey('Workout', related_name='workout_items')
     sequence = models.IntegerField()
-    type = models.ForeignKey('WorkoutType')
+    type = models.ForeignKey('WorkoutType', related_name='workout_items')
     desc = models.TextField()
-    km = models.FloatField(decimal_places=2, max_digits=5, default=None, blank=True)
+    num_data = models.FloatField(decimal_places=2, max_digits=5, default=None, blank=True)
 
     def __str__(self):
         return "%s: %s, %s" % (str(self.workout), self.type.abbr, self.desc,)

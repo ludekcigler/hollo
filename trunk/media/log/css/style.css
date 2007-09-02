@@ -374,7 +374,7 @@ div#workoutSummary a:hover {
     width: 10%;
 }
 
-#workoutSummary table td.km {
+#workoutSummary table td.num_data {
     text-align: right;
     width: 5%;
 }
@@ -455,7 +455,7 @@ div#workoutSummary a:hover {
     width: 3em;
 }
 
-#weeklyView tbody td.km {
+#weeklyView tbody td.num_data {
     width: 1em;
     text-align: right;
 }
@@ -512,7 +512,7 @@ tbody tr.highlighted td, tbody tr.highlighted th, tbody td.highlighted {
     width: 13.2%;
 }
 
-#monthlyView .km {
+#monthlyView .num_data {
     color: #666;
 }
 

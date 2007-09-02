@@ -1,5 +1,15 @@
 {% extends 'log/base.html' %}
-{% block title %}{{ form_action_desc|capfirst }} trénink :: Tréninkový deník{% endblock %}
+
+{% block title %}
+{% ifequal form_action "add" %}
+Nový trénink :: Tréninkový deník
+{% else %}
+{% ifequal form_action "edit" %}
+Upravit trénink :: Tréninkový deník
+{% endifequal %}
+{% endifequal %}
+{% endblock %}
+
 {% block pageBody %}
 {% include 'log/include/workout_form.html' %}
 {% endblock %}

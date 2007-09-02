@@ -4,7 +4,7 @@
 {% settings_submenu "friends" %}
 <h3 class="textversion">Kamarádi</h3>
 <h4>Požadovat autorizaci</h4>
-<form action="/settings/friends/add_submit/{{ athlete.person.user.username }}/" method="post">
+<form action="{% url log.views.settings.friends_add_submit athlete_id=athlete.person.user.username %}" method="post">
     <fieldset>
         <legend>Zpráva</legend>
         <textarea name="message"></textarea>

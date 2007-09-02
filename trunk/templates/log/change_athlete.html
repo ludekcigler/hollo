@@ -5,9 +5,16 @@
 <ul>
 {% for athlete in person.allowed_athletes %}
     {% ifequal athlete.person.user.username oldAthlete %}
-    <li class="active"><a href="/{{ viewType }}/{{ athlete.person.user.username }}/">{{ athlete }}</a></li>
+    <li class="active">
     {% else %}
-    <li><a href="/{{ viewType }}/{{ athlete.person.user.username }}/">{{ athlete }}</a></li>
+    <li>
+    {% endifequal %}
+    {% ifequal viewType "workout" %}
+    <a href="{% url log.views.workout.index athlete_id=athlete.person.user.username %}">{{ athlete }}</a></li>
+    {% else %}
+    {% ifequal viewType "competition" %}
+    <a href="{% url log.views.competition.index athlete_id=athlete.person.user.username %}">{{ athlete }}</a></li>
+    {% endifequal %}
     {% endifequal %}
 {% endfor %}
 </ul>

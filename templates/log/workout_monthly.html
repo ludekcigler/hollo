@@ -5,17 +5,14 @@
 Měsíční pohled :: Tréninkový deník
 {% endblock %}
 
-{% block customHeader %}
+{% block custom_header %}
     <script type="text/javascript" src="/site_media/log/js/workout_monthly_view.js"></script>
 {% endblock %}
 
-{% block workoutSummary %}
-<h2>Měsíční souhrn</h2>
-<p>
-Lorem ipsum
-</p>
+{% block workout_summary %}
+{% include 'log/include/workout_monthly_summary.html' %}
 {% endblock %}
 
-{% block workoutView %}
+{% block workout_view %}
 {% include 'log/include/workout_monthly.html' %}
 {% endblock %}

@@ -1,5 +1,5 @@
 {% load log_tags %}
-<div id="workoutForm">
+<div id="workout_form">
 
 {% ifequal form_action "add" %}
 <h2>Nový trénink</h2>
@@ -9,65 +9,93 @@
 {% endifequal %}
 {% endifequal %}
 
+{% if form_errors %}
+<div class="error_box">
+Některé Vámi zadané hodnoty jsou špatně - mrkněte se na ně znovu
+</div>
+{% endif %}
+
 {% ifequal form_action "add" %}
-<form id="workoutEdit" action="{% url log.views.workout.add_form athlete_id=athlete.person.user.username,year=day.year,month=day.month,day=day.day %}?continue={{ continue|urlencode }}" method="post">
+<form id="workout_edit" action="{% url log.views.workout.add_form athlete_id=athlete.person.user.username,year=day.year,month=day.month,day=day.day %}?continue={{ continue|urlencode }}" method="post">
 {% else %}
 {% ifequal form_action "edit" %}
-<form id="workoutEdit" action="{% url log.views.workout.edit_form athlete_id=athlete.person.user.username,year=day.year,month=day.month,day=day.day,workout_id=workout.id %}?continue={{ continue|urlencode }}" method="post">
+<form id="workout_edit" action="{% url log.views.workout.edit_form athlete_id=athlete.person.user.username,year=day.year,month=day.month,day=day.day,workout_id=workout.id %}?continue={{ continue|urlencode }}" method="post">
 {% endifequal %}
 {% endifequal %}
-    <fieldset class="buttonSet">
+    <fieldset class="button_set">
         <legend class="textversion">Uložit</legend>
-        <input type="submit" name="submitOk" class="ok button" value="Uložit">
-        <input type="submit" name="submitCancel" class="cancel button" value="Zrušit">
+        <input type="submit" name="submit_ok" class="ok button" value="Uložit">
+        <input type="submit" name="submit_cancel" class="cancel button" value="Zrušit">
     </fieldset>
-    <fieldset class="workoutItems">
+    <fieldset class="workout_items">
         <legend>Části tréninku</legend>
-        <input type="hidden" name="day" value="{{ day|date:"Y-m-d" }}">
-        <input type="hidden" name="id" value="{{ workout.id }}">
-        <input type="hidden" name="num_workout_items" id="numWorkoutItems" value="{{ phase_items|length }}">
-        <ol>
-                {% for phase_item in phase_items %}
-                <li>
-                    <ul>
-                        <li><label for="workout_type_{{ forloop.counter0 }}">Typ</label>
-                        <select name="workout_type_{{ forloop.counter0 }}" 
-                            class="workoutType" id="workout_type_{{ forloop.counter0 }}">
+        {{workout_form.day}}
+        {{workout_form.id}}
+        {{workout_form.num_workout_items}}
+        <table>
+            <thead class="textversion">
+                <tr>
+                    <th scope="column">Typ</th>
+                    <th scope="column">Popis</th>
+                    <th scope="column">km/kg</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for form in workout_item_forms %}
+                <tr>
+                    <td {% if form.errors.type %}class="error"{% endif %}>
+                        <label for="workout_item_{{ forloop.counter0 }}_type">Typ</label><br />
+                        <select name="workout_item_{{ forloop.counter0 }}_type" 
+                            id="workout_item_{{ forloop.counter0 }}_type">
                             {% if phase_item %}
                                 {% select_workout_type phase_item.type %}
                             {% else %}
                                 {% select_workout_type "Roz" %}
                             {% endif %}
                         </select>
-                        </li>
-                        <li>
-                        <label for="workout_desc_{{ forloop.counter0 }}">Popis</label>
-                        <input type="text" id="workout_desc_{{ forloop.counter0 }}"
-                            name="workout_desc_{{ forloop.counter0 }}" class="workoutDesc" value="{{ phase_item.desc }}">
-                        </li>
-                        <li>
-                        <label for="workout_km_{{ forloop.counter0 }}">Km</label>
-                        <input type="text" id="workout_km_{{ forloop.counter0 }}"
-                            name="workout_km_{{ forloop.counter0 }}" value="{{ phase_item.km }}" class="workoutKm">
-                        </li>
-                        <li>
-                            <label>&nbsp;</label>
-                        <input type="image" name="submitRemoveWorkoutItem_{{ forloop.counter0 }}" src="/site_media/log/images/icons/remove_small.png" alt="Smazat" title="Smazat část tréninku" class="removeWorkoutItem" size="16;16" value="removeWorkoutItem_{{ forloop.counter0 }}">
-                        </li>
-                    </ul>
-                </li>
-                {% endfor %}
-        </ol>
-        <p class="addWorkoutItem">
-        <input type="submit" name="submitAddWorkoutItem" value="Přidat část tréninku" id="addWorkoutItem" class="button">
+                    </td>
+                    <td {% if form.errors.desc %}class="error"{% endif %}>
+                        <label for="workout_item_{{ forloop.counter0 }}_desc">Popis</label><br />
+                        <input type="text" id="workout_item_{{ forloop.counter0 }}_desc"
+                            name="workout_item_{{ forloop.counter0 }}_desc" value="{{ form.data.desc }}" />
+                    </td>
+                    <td {% if form.errors.num_data %}class="error"{% endif %}>
+                        <label for="workout_item_{{ forloop.counter0 }}_num_data">km/kg</label><br />
+                        <input type="text" id="workout_item_{{ forloop.counter0 }}_num_data"
+                            name="workout_item_{{ forloop.counter0 }}_num_data" value="{{ form.data.num_data }}" />
+                        {% if form.errors.num_data %}
+                        <span class="error_message">Je potřeba zadat číslo</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <input type="submit" name="submit_remove_workout_item_{{ forloop.counter0 }}" class="remove_workout_item" value="" />
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <p class="add_workout_item">
+            <input type="submit" name="submit_add_workout_item" value="Přidat část tréninku" id="add_workout_item" />
         </p>
     </fieldset>
-    <fieldset class="workoutAdditionalInfo">
+    <fieldset class="workout_additional_info">
         <legend class="textversion">Další informace</legend>
-        <label for="weather">Počasí</label><input type="text" id="weather" name="weather" value="{{ workout.weather }}">
-        <label for="rating_satisfaction">Spokojenost</label><input type="text" id="rating_satisfaction" name="rating_satisfaction" value="{{ workout.rating_satisfaction|default:"3" }}">
-        <label for="rating_difficulty">Obtížnost</label><input type="text" id="rating_difficulty" name="rating_difficulty" value="{{ workout.rating_difficulty|default:"3" }}">
-        <label for="note">Poznámky</label><textarea name="note" id="note">{{ workout.note }}</textarea>
+        <p {% if workout_form.errors.weather %}class="error"{% endif %}>
+        <label for="workout_weather">Počasí</label>
+        {{workout_form.weather}}
+        </p>
+        <p {% if workout_form.errors.rating_satisfaction %}class="error"{% endif %}>
+        <label for="workout_rating_satisfaction">Spokojenost</label>
+        {{workout_form.rating_satisfaction}}
+        </p>
+        <p {% if workout_form.errors.rating_difficulty %}class="error"{% endif %}>
+        <label for="workout_rating_difficulty">Obtížnost</label>
+        {{workout_form.rating_difficulty}}
+        </p>
+        <p {% if workout_form.errors.note %}class="error"{% endif %}>
+        <label for="workout_note">Poznámky</label>
+        {{workout_form.note}}
+        </p>
     </fieldset>
 </form>
 </div>

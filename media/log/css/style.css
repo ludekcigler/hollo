@@ -25,16 +25,6 @@ table {
     border-spacing: 0;
 }
 
-table thead th:first-child {
-    border-radius-topleft: 5px;
-    -moz-border-radius-topleft: 5px;
-}
-
-table thead th:last-child {
-    border-radius-topright: 5px;
-    -moz-border-radius-topright: 5px;
-}
-
 .jsInfo {
     display: none;
 }
@@ -89,7 +79,20 @@ fieldset {
     display: none;
 }
 
-.pagerMenu {
+.table_header_bg
+{
+    background-color: #E9E9FF;
+    padding: 0;
+    margin: 0;
+}
+
+table tbody td, table tbody th {
+    background-color: white;
+}
+
+/*-----------------------------------------------------------------------------*/
+
+.pager_menu {
     list-style: none;
     margin: 0.4em 0;
     padding: 0;
@@ -97,56 +100,50 @@ fieldset {
     text-align: right;
 }
 
-.pagerMenu li {
+.pager_menu li {
     display: inline;
     padding: 0;
     margin: 0;
 }
 
-.pagerMenu .previous {
+.pager_menu .previous {
     padding-right: 0;
     margin-right: 0.5em;
 }
 
-.pagerMenu .previous a:before {
+.pager_menu .previous a:before {
     content: "< ";
     
 }
 
-.pagerMenu .next a:after {
+.pager_menu .next a:after {
     content: " >";
 }
 
-div.tr, div.tl, div.br, div.bl, span.tr, span.tl, span.br, span.bl {
-    display: block;
-    position: absolute;
-    width: 4px;
-    height: 4px;
+/*-----------------------------------------------------------------------------*/
+
+.corner_tl, .corner_tr, .corner_bl, .corner_br {
+    padding: 0;
+    margin: 0;
 }
- 
-div.tl, span.tl {
+
+.corner_tl {
     background: url('/site_media/log/images/corners/top_left_small.png') no-repeat top left;
-    top: 0;
-    left: 0;
 }
 
-div.tr, span.tr {
+.corner_tr {
     background: url('/site_media/log/images/corners/top_right_small.png') no-repeat top right;
-    top: 0;
-    right: 0;
 }
 
-div.bl, span.bl {
+.corner_bl {
     background: url('/site_media/log/images/corners/bottom_left_small.png') no-repeat bottom left;
-    bottom: 0;
-    left: 0;
 }
 
-div.br, span.br {
+.corner_br {
     background: url('/site_media/log/images/corners/bottom_right_small.png') no-repeat bottom right;
-    bottom: 0;
-    right: 0;
 }
+
+/*------------------------------------------------------------------------------*/
 
 #header {
     margin: 0;
@@ -162,25 +159,25 @@ div.br, span.br {
     padding: 0;
 }
 
-#userInfo {
+#user_info {
     position: absolute;
     right: 0;
     top: 0.4em;
 }
 
-#userInfo li {
+#user_info li {
     display: block;
     float: left;
     border-left: 1px solid black;
     padding: 0 0.4em;
 }
 
-#userInfo li:first-child {
+#user_info li:first-child {
     border-left: none;
     font-weight: bold;
 }
 
-#mainMenu {
+#main_menu {
     position: absolute;
     right: 2em;
     bottom: 0;
@@ -188,74 +185,70 @@ div.br, span.br {
     font-family: "Trebuchet MS", Arial, sans-serif;
 }
 
-#mainMenu li {
+#main_menu li {
     border-left: 4px solid white;
     float: left;
     padding: 0;
     position: relative;
 }
 
-#mainMenu a {
+#main_menu a {
     display: block;
     text-decoration: none;
     color: white;
     font-weight: bold;
     background-color: lightsteelblue;
-    padding: 0.2em 0.6em;
-    position: relative;
     border: none;
-    -moz-border-radius-topleft: 5px;
-    -moz-border-radius-topright: 5px;
-    -webkit-border-radius-topleft: 5px;
-    -webkit-border-radius-topright: 5px;
-    border-radius-topleft: 5px;
-    border-radius-topright: 5px;
-    margin-bottom: -1px;
+    padding: 0;
 }
 
-#mainMenu li.active a {
+#main_menu a span {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+#main_menu a .content {
+    padding: 0.2em 0.6em;
+}
+
+#main_menu li.active a {
     background-color: steelblue;
 }
 
-#mainMenu a:hover {
+#main_menu a:hover {
     background-color: midnightblue;
 }
 
-#viewSelection {
+#view_selection {
     color: white;
     background-color: steelblue;
-    padding: 0.4em 0.4em;
-    -moz-border-radius: 5px;
+    padding: 0;
 }
 
-/*
-#viewSelection {
-    color: white;
-    background-color: steelblue;
-    position: relative;
-    -moz-border-radius: 5px;
-    -webkit-border-radius: 5px;
-    border-radius: 5px;
-}*/
+#view_selection div.content
+{
+    padding: 0.4em;
+}
 
-#viewSelection form, #viewSelection fieldset {
+#view_selection form, #view_selection fieldset {
     display: inline-block;
     margin: 0;
     padding: 0.1em;
 }
 
-#viewSelection select, #viewSelection input {
+#view_selection select, #view_selection input {
     margin-right: 0.5em;
 }
 
-#athleteSelection {
+#athlete_selection {
     float: left;
     border-right: 1px solid white;
     padding: 0em 0.6em;
     margin-right: 0.6em;
 }
 
-#athleteSelection a {
+#athlete_selection a {
     color: white;
     text-decoration: none;
     font-weight: bold;
@@ -263,46 +256,46 @@ div.br, span.br {
     padding: 0.2em 0.4em 0.2em 0.2em;
 }
 
-#athleteSelection a:hover {
+#athlete_selection a:hover {
     background-color: lightsteelblue;
 }
 
-#athleteImage {
+#athlete_image {
     vertical-align: middle;
     background-color: white;
     border: 1px solid #333;
 }
 
-#athleteName {
+#athlete_name {
     margin-left: 0.4em;
 }
 
-#workoutSummary, #competitionSummary {
+#workout_summary, #competition_summary {
     width: 35%;
     float: right;
     margin: 1em 0 0;
 }
 
-#workoutSummary div, #competitionSummary div {
+#workout_summary div.content, #competition_summary div.content {
     padding: 0 1em;
 }
 
-#workoutSummary div div.workout, #workoutSummary div div.competition {
+#workout_summary div div.workout, #workout_summary div div.competition {
     padding: 0;
     border-bottom: 1px solid gray;
 }
 
-#workoutSummary div.workout p {
+#workout_summary div.workout p {
     margin: 0;
     min-height: 30px;
     height: 1em;
 }
 
-#workoutSummary p.workoutInfoButtons {
+#workout_summary p.workout_info_buttons {
     text-align: right;
 }
 
-#workoutSummary p.workoutInfoButtons a {
+#workout_summary p.workout_info_buttons a {
     display: inline-block;
     text-decoration: none;
     color: #333;
@@ -312,31 +305,31 @@ div.br, span.br {
     border: 1px solid white;
 }
 
-#workoutSummary a.editWorkout {
+#workout_summary a.edit_workout {
     background-image: url(/site_media/log/images/icons/properties_middle.png);
 }
 
-#workoutSummary a.addCompetition, #workoutSummary a.addWorkout {
+#workout_summary a.add_competition, #workout_summary a.add_workout {
     background-image: url(/site_media/log/images/icons/add_middle.png);
 }
 
-#workoutSummary a.removeWorkout {
+#workout_summary a.remove_workout {
     background-image: url(/site_media/log/images/icons/remove_middle.png);
 }
 
-#workoutSummary a.removeCompetition {
+#workout_summary a.remove_competition {
     background-image: url(/site_media/log/images/icons/remove_small.png);
 }
 
-#workoutSummary a.editCompetition {
+#workout_summary a.edit_competition {
     background-image: url(/site_media/log/images/icons/properties_small.png);
 }
 
-#workoutSummary table.competition a span {
+#workout_summary table.competition a span {
     display: none;
 }
 
-#workoutSummary table.competition a {
+#workout_summary table.competition a {
     display: block;
     width: 20px;
     height: 20px;
@@ -346,83 +339,80 @@ div.br, span.br {
     border: 1px solid white;
 }
 
-div#workoutSummary a:hover {
+div#workout_summary a:hover {
     background-color: #FFFFBF;
     border: 1px solid gray;
 }
 
-#workoutSummary h2 {
+#workout_summary h2 {
     margin: 0 0 0.5em;
 }
 
-#workoutSummary table {
-    margin: 0.3em 0;
+#workout_summary table {
     width: 100%;
 }
 
-#workoutSummary table thead th {
+#workout_summary table thead th {
     border-bottom: 1px solid gray;
     text-align: left;
-    background-color: #E9E9FF;
 }
 
-#workoutSummary table th, #workoutSummary table td {
+#workout_summary table th, #workout_summary table td {
     padding: 0.1em 0.3em;
 }
 
-#workoutSummary table .type {
+#workout_summary table .type {
     width: 10%;
 }
 
-#workoutSummary table td.num_data {
+#workout_summary table td.num_data {
     text-align: right;
     width: 5%;
 }
 
-#workoutSummary .workout ul {
+#workout_summary .workout ul {
     margin: 0.5em 0;
     padding: 0;
     list-style: none;
 }
 
-#workoutSummary .workout ul li {
+#workout_summary .workout ul li {
     padding: 0 2em;
 }
 
-#workoutSummary .workout ul li.totalKm {
+#workout_summary .workout ul li.totalKm {
     background-image: url("/site_media/log/images/icons/km_small.png");
     background-repeat: no-repeat;
 }
 
-#workoutSummary .workout ul li.weather {
+#workout_summary .workout ul li.weather {
     background-image: url("/site_media/log/images/icons/weather_small.png");
     background-repeat: no-repeat;
 }
 
-#workoutView, #competitionView {
+#workout_view, #competition_view {
     margin: 1em 35% 0 0;
     border-right: 1px dotted #666;
     padding: 0 1.2em 0 0;
 }
 
-#workoutView table, #competitionView table {
+#workout_view table, #competition_view table {
     width: 100%;
 }
-#weeklyView tbody td {
+#weekly_view tbody td {
     padding: 0.05em 0.5em;
 }
 
-#weeklyView thead th, #monthlyView thead th {
-    background-color: #E9E9FF;
+#weekly_view thead th, #monthly_view thead th {
     text-align: left;
-/*    padding: 0.05em 0.5em;*/
+    padding: 0.05em 0.2em;
 }
 
-#weeklyView {
+#weekly_view {
     position: relative;
 }
 
-#weeklyView tbody th {
+#weekly_view tbody th {
     font-size: 1.8em;
     font-weight: bold;
     font-family: "Trebuchet MS", Arial, sans-serif;
@@ -431,36 +421,36 @@ div#workoutSummary a:hover {
     width: 1.5em;
 }
 
-#weeklyView tbody th a {
+#weekly_view tbody th a {
     color: #999;
 }
 
-#weeklyView tbody th a:hover {
+#weekly_view tbody th a:hover {
     color: #666;
     text-decoration: none;
 }
 
-#weeklyView tbody th span {
+#weekly_view tbody th span {
     font-size: 0.5em;
     color: black;
     display: block;
 }
 
-#weeklyView tbody td.phase {
+#weekly_view tbody td.phase {
     width: 1em;
     text-align: center;
 }
 
-#weeklyView tbody td.type {
+#weekly_view tbody td.type {
     width: 3em;
 }
 
-#weeklyView tbody td.num_data {
+#weekly_view tbody td.num_data {
     width: 1em;
     text-align: right;
 }
 
-#weeklyView tbody td {
+#weekly_view tbody td {
     border-top: 1px dotted #CCC;
 }
 
@@ -470,96 +460,94 @@ tbody tr.highlighted td, tbody tr.highlighted th, tbody td.highlighted {
 }
 
 
-#weeklyView tbody tr.firstFromDay td, #weeklyView tbody tr.firstFromDay th {
+#weekly_view tbody tr.first_from_day td, #weekly_view tbody tr.first_from_day th {
     border-top: 1px solid #666;
 }
 
-#weeklyView tr.firstFromPhase td, #weeklyView tr.firstFromPhase th {
+#weekly_view tr.first_from_phase td, #weekly_view tr.firstFrom_phase th {
     border-top: 1px solid #CCC;
 }
 
-#weeklyView, #monthlyView {
+#weekly_view, #monthly_view {
     margin: 0;
     border-bottom: 1px solid gray;
 }
 
-#monthlyView tbody td ul {
+#monthly_view tbody td ul {
     list-style: none;
     margin: 0;
     padding: 0;
 }
 
-#monthlyView .day a {
+#monthly_view .day a {
     font-family: "Trebuchet MS", Arial, sans-serif;
     font-size: 1.4em;
     font-weight: bold;
     color: #999;
 }
 
-#monthlyView .day a:hover {
+#monthly_view .day a:hover {
     text-decoration: none;
     color: #666;
 }
 
-#monthlyView tbody td, #monthlyView tbody th {
+#monthly_view tbody td, #monthly_view tbody th {
     padding: 0.3em;
     border-top: 1px solid gray;
 }
 
-#monthlyView tbody td {
+#monthly_view tbody td {
     border-left: 1px dotted gray;
     vertical-align: top;
     width: 13.2%;
 }
 
-#monthlyView .num_data {
+#monthly_view .num_data {
     color: #666;
 }
 
-#monthlyView tbody th {
+#monthly_view tbody th {
     font-family: "Trebuchet MS", Arial, sans-serif;
     padding: 0.35em;
     width: 3%;
 }
 
-#monthlyView tbody td p {
+#monthly_view tbody td p {
     margin: 0;
     padding: 0;
     float: right;
 }
 
-#editFormWindow {
+#edit_form_window {
     position: fixed;
     overflow: auto;
     background-color: white;
     border: 2px solid black;
 }
 
-#loginForm {
+#login_form {
     background-color: steelblue;
     color: white;
     float: left;
     width: 19.5em;
     margin: 0 0 1em;
-    -moz-border-radius: 6px;
-    border-radius: 6px;
 }
 
-#loginForm form {
+#login_form form {
     margin: 0 1em;
 }
 
-#loginForm h2 {
+#login_form h2 {
     margin: 0.5em 1em;
     border-bottom: 1px solid white;
 }
 
-#loginForm button {
+#login_form button {
     float: right;
     margin: 0.2em 0 0.6em;
 }
 
-#loginForm input {
+#login_form input {
     width: 15em;
 }
 
@@ -593,7 +581,7 @@ tbody tr.highlighted td, tbody tr.highlighted th, tbody td.highlighted {
     position: relative;
     cursor: move;
 }
-.jqDrag #workoutEditFormClose, .jqDrag #competitionEditFormClose {
+.jqDrag #workout_edit_form_close, .jqDrag #competition_edit_form_close {
     position: absolute;
     right: 2px;
     top: 2px;
@@ -613,7 +601,7 @@ tbody tr.highlighted td, tbody tr.highlighted th, tbody td.highlighted {
     cursor: se-resize;
 }
 
-#displayUserForm {
+#displayUser_form {
     position: absolute;
     right: 300px;
     top: 0px;
@@ -630,97 +618,94 @@ form input.cancel {
    background-image: url('/site_media/log/images/icons/cancel_small.png'); 
 }
 
-#workoutForm #addWorkoutItem {
+#workout_form #add_workout_item {
     background-image: url('/site_media/log/images/icons/add_small.png');
 }
 
-#workoutForm .addWorkoutItem {
+#workout_form .add_workout_item {
     clear: both;
     text-align: right;
     padding: 0.8em 0;
 }
 
-form fieldset.buttonSet {
+form fieldset.button_set {
     border-top: 1px solid gray;
     text-align: right;
     padding-top: 1em;
 }
 
-#workoutForm, #competitionForm, .settingsForm {
+#workout_form, #competition_form, .settings_form {
     width: 60%;
     margin: 1em auto;
     background-repeat: no-repeat;
     background-position: right top;
     padding: 1em 1em 6.5em;
     position: relative;
-    -moz-border-radius: 8px;
-    -webkit-border-radius: 8px;
-    border-radius: 8px;
     color: black;
 }
 
-#workoutForm, #competitionForm {
+#workout_form, #competition_form {
     background-color: #BFCFFF;
     background-image: url('/site_media/log/images/icons/workout_form_large.png');
 }
 
-.settingsForm {
+.settings_form {
     background-color: #FFF280;
     background-image: url('/site_media/log/images/icons/settings_form_large.png');
 }
 
-#workoutForm h2, #competitionForm h2, .settingsForm h2 {
+#workout_form h2, #competition_form h2, .settings_form h2 {
     margin: 0.4em 80px 2em 0;
     border-bottom: 1px solid gray;
     padding: 0 0 0.4em 0.2em;
 }
 
-.settingsForm h2 {
+.settings_form h2 {
     margin-bottom: 1em;
 }
 
-#workoutForm .workoutItems ol ul, #workoutForm .workoutItems ol {
+#workout_form .workout_items ol ul, #workout_form .workout_items ol {
     list-style: none;
     padding: 0;
     margin: 0;
 }
 
-#workoutForm .workoutItems ol li {
+#workout_form .workout_items ol li {
     display: block;
     clear: left;
 }
 
-#workoutForm .workoutItems ol ul li {
+#workout_form .workout_items ol ul li {
     float: left;
     clear: none;
 }
 
-#workoutForm .workoutItems label {
+#workout_form .workout_items label {
     display: block;
     font-size: 0.8em;
 }
 
-#workoutForm .workoutItems legend {
+#workout_form .workout_items legend {
     font-weight: bold;
 }
 
-#workoutForm .workoutItems input {
+#workout_form .workout_items input {
     margin: 0 0.1em;
 }
 
-#workoutForm .removeWorkoutItem {
+#workout_form .remove_workout_item {
     margin: 1.6em 0 0 0.1em;
 }
 
-#workoutForm .workoutDesc {
+#workout_form .workout_desc {
     width: 29em;
 }
 
-#workoutForm .workoutKm {
+#workout_form .workout_km {
     width: 5em;
 }
 
-#workoutForm .workoutWeather label {
+#workout_form .workout_weather label {
     margin-right: 2em;
     font-weight: bold;
     padding-left: 24px;
@@ -728,11 +713,11 @@ form fieldset.buttonSet {
     background-repeat: no-repeat;
 }
 
-#workoutForm .workoutWeather input {
+#workout_form .workout_weather input {
     width: 20em;
 }
 
-#workoutForm .buttonSet, #competitionForm .buttonSet, .settingsForm .buttonSet {
+#workout_form .button_set, #competition_form .button_set, .settings_form .button_set {
     position: absolute;
     bottom: 0;
     right: 0;
@@ -740,14 +725,14 @@ form fieldset.buttonSet {
     width: 70%;
 }
 
-#workoutForm input.button, #competitionForm input.button, .settingsForm input.button {
+#workout_form input.button, #competition_form input.button, .settings_form input.button {
    background-repeat: no-repeat;
    background-position: 5px center;
    padding: 0.2em 0.2em 0.2em 24px;
 }
 
 
-#competitionForm label {
+#competition_form label {
     float: left;
     clear: left;
     width: 10em;
@@ -755,21 +740,20 @@ form fieldset.buttonSet {
     padding: 0.3em;
 }
 
-#competitionForm .competition input, #competitionForm .competition textarea, #competitionForm .competition select {
+#competition_form .competition input, #competition_form .competition textarea, #competition_form .competition select {
     float: left;
     margin: 0.2em;
 }
 
-#competitionForm .competition input, #competitionForm .competition textarea {
+#competition_form .competition input, #competition_form .competition textarea {
     width: 60%;
 }
 
-.settingsContent {
+.settings_content {
     background-color: #FFF9BF;
-    -moz-border-radius: 6px;
 }
 
-#settingsMenu {
+#settings_menu {
     list-style: none;
     margin: 0;
     padding: 0;
@@ -777,19 +761,17 @@ form fieldset.buttonSet {
     font-weight: bold;
 }
 
-#settingsMenu li {
+#settings_menu li {
     display: inline;
     font-family: "Trebuchet MS", Verdana, Arial, sans-serif;
     padding: 0.4em 0.8em;
-    -moz-border-radius-topleft: 6px;
-    -moz-border-radius-topright: 6px;
 }
 
-#settingsMenu li a {
+#settings_menu li a {
     text-decoration: none;
 }
 
-#settingsMenu li.active {
+#settings_menu li.active {
     background-color: #FFF9BF;
 
 }

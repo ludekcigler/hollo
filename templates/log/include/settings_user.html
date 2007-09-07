@@ -1,24 +1,29 @@
 {% extends 'log/include/settings_base.html' %}
 {% load log_tags %}
-{% block settingsContent %}
+{% block settings_content %}
 {% settings_submenu "user" %}
 <h3 class="textversion">Obecné nastavení</h3>
-<form id="settingsUserForm" action="{% url log.views.settings.user %}?continue={{ continue|urlencode }}" method="post">
+{% if form_errors %}
+<div class="error_box">
+Některé Vámi zadané hodnoty jsou špatně - mrkněte se na ně znovu
+</div>
+{% endif %}
+<form id="settings_user_form" action="{% url log.views.settings.user %}?continue={{ continue|urlencode }}" method="post">
     <fieldset>
         <legend class="textversion">Informace o uživateli</legend>
         <table cellspacing="0">
             <tbody>
-                <tr>
-                    <th scope="row"><label for="settingsFirstName">Jméno</label></th>
-                    <td><input type="text" name="firstName" id="settingsFirstName" value="{{ user.first_name }}"></td>
+                <tr {% if user_form.errors.first_name %}class="error"{% endif %}>
+                    <th scope="row"><label for="user_first_name">Jméno</label></th>
+                    <td>{{user_form.first_name}}</td>
                 </tr>
-                <tr>
-                    <th scope="row"><label for="settingsLastName">Příjmení</label></th>
-                    <td><input type="text" name="lastName" id="settingsLastName" value="{{ user.last_name }}"></td>
+                <tr {% if user_form.errors.last_name %}class="error"{% endif %}>
+                    <th scope="row"><label for="user_last_name">Příjmení</label></th>
+                    <td>{{user_form.last_name}}</td>
                 </tr>
-                <tr>
-                    <th scope="row"><label for="settingsEmail">Email</label></th>
-                    <td><input type="text" name="email" id="settingsEmail" value="{{ user.email }}"></td>
+                <tr {% if user_form.errors.email %}class="error"{% endif %}>
+                    <th scope="row"><label for="user_email">Email</label></th>
+                    <td>{{user_form.email}}</td>
                 </tr>
                 <tr>
                     <th scope="row"><label>Obrázek</label></th>
@@ -37,26 +42,24 @@
                     <td><a href="{% url log.views.settings.user_change_password %}" title="Změnit heslo">Změnit heslo</a></td>
                 </tr>
                 {% if athlete %}
-                <tr>
-                    <th scope="row"><label for="settingsClub">Klub</label></th>
-                    <td><input type="text" name="club" id="settingsClub" value="{{ athlete.club }}"></td>
+                <tr {% if user_form.errors.club %}class="error"{% endif %}>
+                    <th scope="row"><label for="user_club">Klub</label></th>
+                    <td>{{user_form.club}}</td>
                 </tr>
-                <tr>
-                    <th scope="row"><label for="settingsGroup">Tréninková skupina</label></th>
+                <tr {% if user_form.errors.athlete_group %}class="error"{% endif %}>
+                    <th scope="row"><label for="user_athlete_group">Tréninková skupina</label></th>
                     <td>
-                        <select name="group" id="settingsGroup">
-                        {% select_athlete_group athlete.group.id %}
-                        </select>
+                        {{user_form.athlete_group}}
                     </td>
                 </tr>
                 {% endif %}
             </tbody>
         </table>
     </fieldset>
-    <fieldset class="buttonSet">
+    <fieldset class="button_set">
         <legend class="textversion">Uložit</legend>
-        <input type="submit" name="submitOk" class="ok button" value="Uložit">
-        <input type="submit" name="submitCancel" class="cancel button" value="Hotovo">
+        <input type="submit" name="submit_ok" class="ok button" value="Uložit">
+        <input type="submit" name="submit_cancel" class="cancel button" value="Hotovo">
     </fieldset>
 </form>
 {% endblock %}

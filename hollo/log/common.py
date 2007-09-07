@@ -110,7 +110,7 @@ def get_submit_button(postContents):
     Determine submit button in the HTTP POST contents
     """
     for key in postContents:
-        m = re.match('^submit([^\.]*).*$', key)
+        m = re.match('^submit_([^\.]*).*$', key)
         if m:
             return m.group(1)
     return None

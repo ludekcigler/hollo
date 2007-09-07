@@ -115,8 +115,8 @@ def change_athlete(request, view_type):
     """
     person = models.Person.objects.get(user=request.user)
     old_athlete = request.GET.has_key('old') and request.GET['old'] or None
-    ctx = RequestContext(request, {'person': person, 'oldAthlete': old_athlete,\
-            'viewType': view_type})
+    ctx = RequestContext(request, {'person': person, 'old_athlete': old_athlete,\
+            'view_type': view_type})
     tpl = loader.get_template('log/change_athlete.html')
     return http.HttpResponse(tpl.render(ctx))
 

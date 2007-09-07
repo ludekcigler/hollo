@@ -3,7 +3,7 @@
 {% if workout.workout_items.all|length_is:"0" %}
     {% if forloop.first|is_not %}
         {# If this is not the first phase, we need to produce the row header #}
-    <tr class="firstFromPhase day_{{ day_data.day|date:"Y-m-d" }}">
+    <tr class="first_from_phase day_{{ day_data.day|date:"Y-m-d" }}">
     {% endif %}
         <td class="phase">{{ forloop.counter }}</td>
            <td colspan="3">Tato fáze nemá žádné položky..</td>
@@ -15,7 +15,7 @@
     <tr class="day_{{ day_data.day|date:"Y-m-d" }}">
         {% endif %}
         {% if forloop.parentloop.first|is_not and forloop.first %}
-    <tr class="{% if forloop.first %}firstFromPhase{% endif %} day_{{ day_data.day|date:"Y-m-d" }}">
+    <tr class="{% if forloop.first %}first_from_phase{% endif %} day_{{ day_data.day|date:"Y-m-d" }}">
         {% endif %}
 
         {% if forloop.first %}

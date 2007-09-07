@@ -22,6 +22,8 @@
 DB models for Hollo
 """
 
+import re
+
 from django.db import models
 
 from django.contrib.auth.models import User
@@ -30,6 +32,10 @@ from django.core.exceptions import ObjectDoesNotExist
 PERSON_IMAGE_UPLOAD_DIR = 'avatars'
 TRACK_EVENT_RESULT_TYPE_CHOICES = (('T', 'Time'), ('L', 'Length'), ('P', 'Points'), )
 WORKOUT_TYPE_NUM_CHOICES = (('DISTANCE', 'Km'), ('WEIGHT', 'Kg'), ('TIME', 'Min'), ('NONE', 'None'))
+
+TIME_RESULT_PATTERN = re.compile('^((?P<h>\d{1,}):(?=\d{1,2}:))?((?P<min>\d{1,2}):)?(?P<sec>\d{1,2})([,\.](?P<msec>\d{1,2}))?$')
+DISTANCE_RESULT_PATTERN = re.compile('^((?P<km>\d+)\.(?=\d+\.))?((?P<m>\d+)\.)?(?P<cm>\d+)$')
+POINTS_RESULT_PATTERN = re.compile('^(?P<pt>\d+)$')
 
 class Person(models.Model):
     """
@@ -115,6 +121,19 @@ class Athlete(models.Model):
         except ObjectDoesNotExist:
             return False
 
+    def best_result(self, track_event, min_date=None, max_date=None):
+        competitions = Competition.objects.filter(athlete=self, event=track_event)
+
+        if min_date:
+            competitions = competitions.filter(day__gte=min_date)
+        if max_date:
+            competitions = competitions.filter(day__lte=max_date)
+
+        try:
+            return max(competitions)
+        except ValueError:
+            return None
+
     class Admin:
         pass
 
@@ -171,11 +190,7 @@ class TrackEvent(models.Model):
     name = models.CharField(maxlength=30, primary_key=True)
     # Does the event contain additional info? (used for cross-country etc.)
     has_additional_info = models.BooleanField(default=False)
-    # Pattern to verify result on server-side (including named groups)
-    result_pattern = models.CharField(maxlength=150, default='^.*$')
-    # Pattern to verify result on client side (using JS)
-    js_result_pattern = models.CharField(maxlength=150, default='^.*$')
-    # Order of results
+    # Order of results (determines the result pattern)
     result_type = models.CharField(maxlength=1, choices=TRACK_EVENT_RESULT_TYPE_CHOICES, default='T')
 
     # Ordering of the track events
@@ -185,7 +200,7 @@ class TrackEvent(models.Model):
         return self.name
 
     class Admin:
-        list_display = ('name', 'result_pattern', 'result_type')
+        list_display = ('name', 'result_type')
 
     class Meta:
         ordering = ['order']
@@ -202,6 +217,28 @@ class Competition(models.Model):
     event_info = models.CharField(maxlength=100, default='')
     result = models.CharField(maxlength=100)
     note = models.TextField(blank=True, default='')
+
+    def __cmp__(self, other):
+        """
+        Compare two competition results, return NotImplemented if they are not compatible
+        """
+        if self.event != other.event:
+            return NotImplemented
+
+        if self.event.has_additional_info and self.event_info == other.event_info:
+            return NotImplemented
+
+        if self.event.result_type == 'T':
+            return compare_times(TIME_RESULT_PATTERN.match(self.result).groupdict(),
+                                 TIME_RESULT_PATTERN.match(other.result).groupdict())
+        elif self.event.result_type == 'L':
+            return compare_distances(DISTANCE_RESULT_PATTERN.match(self.result).groupdict(),
+                                 DISTANCE_RESULT_PATTERN.match(other.result).groupdict())
+        elif self.event.result_type == 'P':
+            return compare_points(POINTS_RESULT_PATTERN.match(self.result).groupdict(),
+                                 POINTS_RESULT_PATTERN.match(other.result).groupdict())
+
+        return NotImplemented
 
     class Admin:
         pass
@@ -225,12 +262,10 @@ class Workout(models.Model):
 
     def _get_total_num_data(self, num_type):
         total = 0
-        summed_items = 0
         for item in self.workout_items.all():
             if item.type.num_type == num_type:
                 total += item.num_data
-                summed_items += 1
-        return (summed_items > 0) and total or None
+        return total
 
     def _get_total_km(self):
         return self._get_total_num_data('DISTANCE')
@@ -276,7 +311,7 @@ class WorkoutItem(models.Model):
     sequence = models.IntegerField()
     type = models.ForeignKey('WorkoutType', related_name='workout_items')
     desc = models.TextField()
-    num_data = models.FloatField(decimal_places=2, max_digits=5, default=None, blank=True)
+    num_data = models.DecimalField(decimal_places=2, max_digits=5, default=None, blank=True)
 
     def __str__(self):
         return "%s: %s, %s" % (str(self.workout), self.type.abbr, self.desc,)
@@ -286,3 +321,138 @@ class WorkoutItem(models.Model):
 
     class Meta:
         pass
+
+################################################################################
+#
+#    Functions to normalize track event results
+#
+################################################################################
+
+
+def normalize_time(time):
+    """
+    Normalizes time dictionary -- converts values to a single integer time in msec
+    - converts string values to int
+    - convert ie. 0:63,9 to 1:03,90
+    """
+    # This adjusts msec on one decimal point to two decimal points number
+    if time.has_key("msec") and time["msec"] and len(time["msec"]) <= 1:
+        time["msec"] = str(int(time["msec"])*10)
+
+    return _normalize_quantity_dict(time, ["msec", "sec", "min", "h"], [100, 60, 60, 60])
+
+def normalize_distance(distance):
+    """
+    Normalizes distance dictionary -- result is an integer distance in centimeters
+    """
+    return _normalize_quantity_dict(distance, ["cm", "m", "km"], [100, 100, 100])
+
+def normalize_points(points):
+    """
+    Normalizes points dictionary -- result is an integer in points
+    """
+    return _normalize_quantity_dict(points, ["pt"], [1])
+
+def _normalize_quantity_dict(a_quantity, quantity_keys, quantity_div_by):
+    """
+    Normalizes quantity (time, distance) dictionary
+    - converts string values to int
+    - convert ie. 0:63,9 to 1:03,90
+    """
+    quantity = a_quantity.copy()
+
+    for key in quantity_keys:
+        if quantity.has_key(key) and quantity[key]:
+            quantity[key] = int(quantity[key])
+        else:
+            quantity[key] = 0
+
+    for i in xrange(0, len(quantity_keys) - 1):
+        quantity[quantity_keys[i + 1]] += quantity[quantity_keys[i]] / quantity_div_by[i]
+        quantity[quantity_keys[i]] = quantity[quantity_keys[i]] % quantity_div_by[i]
+
+    return quantity
+
+def compare_times(time_a, time_b):
+    """
+    Compares two times (specified by dictionary with keys ["h", "min", "sec", "msec"])
+    """
+    return (-1)*_compare_quantity(time_a, time_b, 
+                    ["h", "min", "sec", "msec"],
+                    normalize_time)
+
+def compare_distances(dist_a, dist_b):
+    """
+    Compare two distances (specified by dictionary with keys ["km", "m", "cm"])
+    """
+    return _compare_quantity(dist_a, dist_b, 
+                    ["km", "m", "cm"],
+                    normalize_distance)
+
+def compare_points(dist_a, dist_b):
+    """
+    Compare two points (specified by dictionary with keys ["pt"])
+    """
+    return _compare_quantity(dist_a, dist_b, 
+                    ["pt"],
+                    normalize_points)
+
+def _compare_quantity(quantity_a, quantity_b, quantity_keys, quantity_normalizator):
+    quantity_a = quantity_normalizator(quantity_a)
+    quantity_b = quantity_normalizator(quantity_b)
+
+    for key in quantity_keys:
+        if quantity_a[key] < quantity_b[key]:
+            return -1
+        elif quantity_a[key] > quantity_b[key]:
+            return 1
+    return 0
+
+def _tests():
+    # normalize_time tests
+    time = '4:08,7'
+    time_result = TIME_RESULT_PATTERN.match(time).groupdict()
+    print 'hollo.log.models.normalize_time, %s, %s' % (time, normalize_time(time_result))
+
+    time = '8.63'
+    time_result = TIME_RESULT_PATTERN.match(time).groupdict()
+    print 'hollo.log.models.normalize_time, %s, %s' % (time, normalize_time(time_result))
+
+    # compare_time tests
+    time_a = '63.76'
+    time_b = '1:04,5'
+    print 'hollo.log.models.compare_times %s, %s: %s' % (time_a, time_b, 
+                    compare_times(TIME_RESULT_PATTERN.match(time_a).groupdict(), TIME_RESULT_PATTERN.match(time_b).groupdict()))
+
+    time_a = '63.76'
+    time_b = '1:03,76'
+    print 'hollo.log.models.compare_times %s, %s: %s' % (time_a, time_b, 
+                    compare_times(TIME_RESULT_PATTERN.match(time_a).groupdict(), TIME_RESULT_PATTERN.match(time_b).groupdict()))
+
+    time_a = '63.77'
+    time_b = '1:03,76'
+    print 'hollo.log.models.compare_times %s, %s: %s' % (time_a, time_b, 
+                    compare_times(TIME_RESULT_PATTERN.match(time_a).groupdict(), TIME_RESULT_PATTERN.match(time_b).groupdict()))
+
+    # normalize_distance tests
+    dist = '2.6.58'
+    dist_result = DISTANCE_RESULT_PATTERN.match(dist).groupdict()
+    print dist_result
+    print 'hollo.log.models.normalize_distance, %s, %s' % (dist, normalize_distance(dist_result))
+
+    # compare_distances tests
+    dist_a = '2.63.77'
+    dist_b = '2.63.76'
+    print 'hollo.log.models.compare_distances %s, %s: %s' % (dist_a, dist_b, 
+                    compare_distances(DISTANCE_RESULT_PATTERN.match(dist_a).groupdict(), DISTANCE_RESULT_PATTERN.match(dist_b).groupdict()))
+
+    # normalize_points tests
+    points = '6589'
+    points_result = POINTS_RESULT_PATTERN.match(points).groupdict()
+    print 'hollo.log.models.normalize_points, %s, %s' % (points, normalize_points(points_result))
+
+    # compare_points tests
+    points_a = '6377'
+    points_b = '6376'
+    print 'hollo.log.models.compare_points %s, %s: %s' % (points_a, points_b, 
+                    compare_points(POINTS_RESULT_PATTERN.match(points_a).groupdict(), POINTS_RESULT_PATTERN.match(points_b).groupdict()))

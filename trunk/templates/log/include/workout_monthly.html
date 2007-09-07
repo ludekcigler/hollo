@@ -1,10 +1,14 @@
 {% load log_filters %}
 <h2 class="textversion">Tréninkový deník, {{first_day|date:"F"|lower}} {{first_day|date:"Y"}}</h2>
-<ul class="pagerMenu">
+<ul class="pager_menu">
     <li class="previous"><a href="{% url log.views.workout.monthly_view athlete_id=athlete.person.user.username,year=previous_year,month=previous_month %}">Předchozí měsíc</a></li>
     <li class="next"><a href="{% url log.views.workout.monthly_view athlete_id=athlete.person.user.username,year=next_year,month=next_month %}">Další měsíc</a></li>
 </ul>
-<table id="monthlyView" cellspacing="0">
+<div id="monthly_view">
+
+<div class="table_header_bg"><div class="corner_tl"><div class="corner_tr">
+
+<table cellspacing="0">
     <thead>
         <tr>
             <th><span class="textversion">Týden</span></th>
@@ -74,7 +78,11 @@
     </tbody>
 </table>
 
-<ul class="pagerMenu">
+</div></div></div>
+
+</div>
+
+<ul class="pager_menu">
     <li class="previous"><a href="{% url log.views.workout.monthly_view athlete_id=athlete.person.user.username,year=previous_year,month=previous_month %}">Předchozí měsíc</a></li>
     <li class="next"><a href="{% url log.views.workout.monthly_view athlete_id=athlete.person.user.username,year=next_year,month=next_month %}">Další měsíc</a></li>
 </ul>

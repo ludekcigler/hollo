@@ -31,10 +31,12 @@ from django.template import loader, Context, RequestContext
 from django.core.exceptions import ObjectDoesNotExist
 from django import http 
 from django.core.urlresolvers import reverse
+from django.shortcuts import get_object_or_404
 
 from hollo.log import views
 from hollo.log.views import login_required
 from hollo.log import models
+from hollo.log import forms
 from hollo.log import common
 from hollo.settings import MEDIA_ROOT
 
@@ -51,40 +53,61 @@ def user(request):
     """
     Display user-specific settings
     """
+    continue_url = request.GET.has_key('continue') and request.GET['continue'] or \
+                   request.META.get('HTTP_REFERER', reverse('log.views.index'))
     submit_button = common.get_submit_button(request.POST)
-    if submit_button == 'Cancel':
+    if submit_button == 'cancel':
         # Go to redirection page
-        return http.HttpResponseRedirect(reverse('log.views.index'))
+        return http.HttpResponseRedirect(continue_url)
 
-    person = models.Person.objects.get(user=request.user)
+    person = get_object_or_404(models.Person, user=request.user)
     athlete = models.Athlete.objects.filter(person__user=request.user).count() == 1 and \
                 models.Athlete.objects.get(person__user=request.user) or None
     coach = models.Coach.objects.filter(person__user=request.user).count() == 1 and \
                 models.Coach.objects.get(person__user=request.user) or None
 
-    if submit_button == 'Ok':
-        # The content was already submitted
-        person.user.first_name = request.POST['firstName']
-        person.user.last_name = request.POST['lastName']
+    context = {'person': person,
+               'athlete': athlete,
+               'coach': coach,
+               'continue': continue_url}
 
-        try: django.core.validators.isValidEmail(request.POST['email'], request.POST)
-        except django.core.validators.ValidationError: return http.HttpResponseNotFound()
-        person.user.email = request.POST['email']
+    user_form_groups = [('', '-- Žádná --')]
+    user_form_groups.extend([(g.id, g.name) for g in models.AthleteGroup.objects.all()])
 
-        if athlete:
-            athlete.club = request.POST['club']
-            try:
-                athlete.group = models.AthleteGroup.objects.get(id=int(request.POST['group']))
-            except ObjectDoesNotExist:
-                athlete.group = None
+    if not submit_button:
+        # Default, the content was not submitted
+        user_data = {'first_name': person.user.first_name,
+                     'last_name': person.user.last_name,
+                     'email': person.user.email,
+                     'club': athlete and athlete.club or None,
+                     'athlete_group': athlete and athlete.group and athlete.group.id or None}
 
-            athlete.save()
-        
-        person.save()
-        person.user.save()
-        return http.HttpResponseRedirect(reverse('log.views.settings.user'))
+        user_form = forms.SettingsUserForm(user_data, auto_id='user_%s')
+        user_form.fields["athlete_group"].choices = user_form_groups
+    elif submit_button == 'ok':
+        user_form = forms.SettingsUserForm(request.POST, auto_id='user_%s')
+        user_form.fields["athlete_group"].choices = user_form_groups
 
-    context = {'person': person, 'athlete': athlete, 'coach': coach}
+        if user_form.is_valid():
+            # Save data for the person
+            person.user.first_name = user_form.cleaned_data['first_name']
+            person.user.last_name = user_form.cleaned_data['last_name']
+            person.user.email = user_form.cleaned_data['email']
+
+            if athlete:
+                athlete.club = user_form.cleaned_data['club']
+                try:
+                    athlete.group = models.AthleteGroup.objects.get(id=user_form.cleaned_data['athlete_group'])
+                except ObjectDoesNotExist:
+                    athlete.group = None
+                athlete.save()
+            person.save()
+            person.user.save()
+            return http.HttpResponseRedirect(continue_url)
+        else:
+            context['form_errors'] = True
+
+    context['user_form'] = user_form
 
     tpl = loader.get_template('log/settings_user.html')
     context = RequestContext(request, context)
@@ -114,7 +137,10 @@ def user_edit_image(request):
     """
     Show edit image form
     """
-    context = RequestContext(request, {'continue': request.META.get('HTTP_REFERER', reverse('log.views.settings.user'))})
+    image_form = forms.SettingsImageForm(auto_id='user_%s')
+    context = {'continue': request.META.get('http_referer', reverse('log.views.settings.user')),
+               'image_form': image_form}
+    context = RequestContext(request, context)
     tpl = loader.get_template('log/settings_user_edit_image.html')
     return http.HttpResponse(tpl.render(context))
 
@@ -123,20 +149,23 @@ def user_upload_image(request):
     """
     Save uploaded image
     """
-    redirectUrl = request.REQUEST.has_key('continue') and request.REQUEST['continue'] \
+    continue_url = request.REQUEST.has_key('continue') and request.REQUEST['continue'] \
                     or request.META.get('HTTP_REFERER', reverse('log.views.settings.user'))
 
+    image_form = forms.SettingsImageForm(request.POST, request.FILES, auto_id='user_%s')
+
     submit_button = common.get_submit_button(request.POST)
-    if not submit_button or submit_button == 'Cancel' or not request.FILES.has_key('image'):
+    if not submit_button or submit_button == 'cancel' or not image_form.is_valid():
         # Go to redirection page
-        return http.HttpResponseRedirect(redirectUrl)
+        return http.HttpResponseRedirect(continue_url)
 
     image = request.FILES['image']
     person = models.Person.objects.get(user=request.user)
     # Check the MIME type of the uploaded file
     if not re.match('^image/(jpeg|gif|png)$', image['content-type']):
         # TODO: redirect to correct error page
-        return None
+        raise
+        return http.HttpResponseRedirect(continue_url)
 
     try:
         # Write new file
@@ -154,48 +183,49 @@ def user_upload_image(request):
         # Remove old file
         os.remove(person.get_image_filename())
     except OSError:
-        # TODO: redirect to error page
         pass
 
     person.image = os.path.join(models.PERSON_IMAGE_UPLOAD_DIR, image_filename)
     person.save()
     
-    return http.HttpResponseRedirect(redirectUrl)
+    return http.HttpResponseRedirect(continue_url)
 
 @login_required
 def user_change_password(request):
     """
     Change password form
     """
-    message = request.REQUEST.has_key('message') and request.REQUEST['message'] or None
-    context = RequestContext(request, \
-                {'continue': request.META.get('HTTP_REFERER', reverse('log.views.settings.user')), \
-                 'message': message})
+    continue_url = request.REQUEST.has_key('continue') and request.REQUEST['continue'] \
+                    or request.META.get('HTTP_REFERER', reverse('log.views.settings.user'))
+
+    form_errors = False
+    form_error_message = ''
+    submit_button = common.get_submit_button(request.POST)
+    if not submit_button:
+        data = {'password': '', 'password_retype': ''}
+        password_form = forms.SettingsPasswordForm(data, auto_id='user_%s')
+    elif submit_button == "cancel":
+        return http.HttpResponseRedirect(continue_url)
+    else:
+        password_form = forms.SettingsPasswordForm(request.POST, auto_id='user_%s')
+        if password_form.is_valid():
+            if password_form.cleaned_data['password'] == password_form.cleaned_data['password_retype']:
+                person = models.Person.objects.get(user=request.user)
+                person.user.set_password(password_form.cleaned_data['password'])
+                person.save()
+                return http.HttpResponseRedirect(continue_url)
+            else:
+                form_error_message = 'Zadaná hesla si neodpovídají'
+        else:
+            form_errors = True
+
+    context = {'continue': continue_url,
+               'password_form': password_form,
+               'form_errors': form_errors,
+               'form_error_message': form_error_message} 
+    context = RequestContext(request, context)
     tpl = loader.get_template('log/settings_user_edit_password.html')
     return http.HttpResponse(tpl.render(context))
-
-@login_required
-def user_submit_password(request):
-    """
-    Submit new password
-    """
-    cont = request.REQUEST.has_key('continue') and request.REQUEST['continue'] or ''
-    redirectUrl = cont or request.META.get('HTTP_REFERER', reverse('log.views.settings.user'))
-
-    submit_button = common.get_submit_button(request.POST)
-    if not submit_button or submit_button == 'Cancel':
-        # Go to redirection page
-        return http.HttpResponseRedirect(redirectUrl)
-
-    if request.POST['password'] != request.POST['passwordCheck']:
-        return http.HttpResponseRedirect("%s?%s" % (reverse('log.views.settings.user_change_password'), 'continue=%s&message=%s' % \
-            (urllib.quote(cont), urllib.quote('Zadaná hesla si neodpovídají'))))
-
-    person = models.Person.objects.get(user=request.user)
-    person.user.set_password(request.POST['password'])
-    person.save()
-
-    return http.HttpResponseRedirect(redirectUrl)
 
 @login_required
 def my_athletes(request):
@@ -228,7 +258,6 @@ def friends(request):
         coach = None
 
     # Load athletes from my group, together with their status
-
     my_group_athletes = []
     if athlete:
         for ath in athlete.group.athletes.exclude(pk=athlete):
@@ -315,18 +344,26 @@ def friends_add(request):
     except ObjectDoesNotExist:
         athlete = None
 
+    try:
+        coach = models.Coach.objects.get(person=person)
+    except ObjectDoesNotExist:
+        coach = None
+
     # All athletes which are not in my group, are not watched already and do not block me
+    # and I do not coach them
     person_other_athletes = [a for a in models.Athlete.objects.all() \
                              if (not a in person_group_athletes) and (a != athlete) \
                              and (not a.person_id in person_watched_athletes) \
-                             and (a.blocked_persons.filter(pk=person).count() == 0)]
+                             and (a.blocked_persons.filter(pk=person).count() == 0)
+                             and (not coach or not a in coach.athletes())]
 
     person_other_athletes.sort(cmp=(lambda x, y: \
-                                cmp(x['person'].person.user.last_name, y['person'].person.user.last_name) or \
-                                cmp(x['person'].person.user.first_name, y['person'].person.user.first_name)))
+                                cmp(x.person.user.last_name, y.person.user.last_name) or \
+                                cmp(x.person.user.first_name, y.person.user.first_name)))
 
     context = {'person': person,
                'athlete': athlete,
+               'coach': coach,
                'person_group_athletes': person_group_athletes,
                'person_other_athletes': person_other_athletes}
 

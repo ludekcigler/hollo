@@ -1,5 +1,5 @@
 {% extends 'log/workout_base.html' %}
-{% block customHeader %}
+{% block custom_header %}
     <script type="text/javascript"> 
         $(document).ready(function () {
             $('#viewSelectionSubmit').click(hollo.competition.change_view);
@@ -9,51 +9,50 @@
 {% endblock %}
 {% load log_tags %}
 
-{% block mainMenu %}
-    <li><a href="{% url log.views.workout.monthly_view athlete_id=athlete.person.user.username,year=first_day.year,month=first_day.month %}">Deník</a></li>
-    <li class="active"><a>Závody</a></li>
+{% block main_menu %}
+    <li><a href="{% url log.views.workout.monthly_view athlete_id=athlete.person.user.username,year=first_day.year,month=first_day.month %}"><span class="corner_tl"><span class="corner_tr"><span class="content">Deník</span></span></span></a></li>
+    <li class="active"><a><span class="corner_tl"><span class="corner_tr"><span class="content">Závody</span></span></span></a></li>
 {% endblock %}
 
 {% block content %}
-<div id="viewSelection">
-    <div id="athleteSelection">
-<h2 class="textversion">Zobrazený atlet</h2>
+<div id="view_selection">
+<div class="corner_tl"><div class="corner_tr"><div class="corner_bl"><div class="corner_br">
+<div class="content">
+
+    <div id="athlete_selection">
+        <h2 class="textversion">Zobrazený atlet</h2>
     {% with "competition" as view_type %}
-    <a href="{% url log.views.change_athlete view_type=view_type %}?old={{ athlete.person.user.username }}">
+            <a href="{% url log.views.change_athlete view_type=view_type %}?old={{ athlete.person.user.username }}">
     {% endwith %}
-        <img src="{{ athlete.person.get_image_url|default:"/site_media/log/images/user_unknown.png" }}" width="22" height="22" alt="{{ athlete }}" id="athleteImage">
-        <span id="athleteName">{{ athlete }}</span>
-    </a>
+            <img src="{{ athlete.person.get_image_url|default:"/site_media/log/images/user_unknown.png" }}" width="22" height="22" alt="{{ athlete }}" id="athlete_image">
+            <span id="athlete_name">{{ athlete }}</span>
+            </a>
     </div>
 <form action="{% url log.views.competition.change_view athlete_id=athlete.person.user.username %}" method="post">
 <fieldset>
 <legend class="textversion">Zobrazení závodů</legend>
-<label for="viewType">Pohled</label>
-<select id="viewType" name="viewType">
-    <option {% ifequal viewType "monthly" %}selected="selected" {% endifequal %}value="monthly">Měsíční</option>
-    <option {% ifequal viewType "yearly" %}selected="selected" {% endifequal %}value="yearly">Roční</option>
-</select>
-<label for="month">Měsíc</label>
-<select id="month" name="month">
-    {% select_month first_day.month %}
-</select>
-<label for="year">Rok</label>
-<select id="year" name="year">
-    {% select_year 2000 2010 first_day.year %}
-</select>
-<button type="submit" id="viewSelectionSubmit">Zobrazit</button>
+<label for="competition_change_view_view_type">Pohled</label>
+{{change_view_form.view_type}}
+<label for="competition_change_view_month">Měsíc</label>
+{{change_view_form.month}}
+<label for="competition_change_view_year">Rok</label>
+{{change_view_form.year}}
+<button type="submit" id="competition_change_view_submit">Zobrazit</button>
 </fieldset>
 </form>
+
+</div>
+</div></div></div></div>
 </div>
 
-<div id="competitionSummary"><div>
-{% block competitionSummary %}
+<div id="competition_summary"><div class="content">
+{% block competition_summary %}
 {% endblock %}
 </div>
 </div>
 
-<div id="competitionView">
-{% block competitionView %}
+<div id="competition_view">
+{% block competition_view %}
 {% endblock %}
 </div>
 

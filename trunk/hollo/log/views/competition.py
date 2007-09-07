@@ -33,10 +33,12 @@ from django.core.exceptions import ObjectDoesNotExist
 from django import http 
 from django.template import loader, Context, RequestContext
 from django.core.urlresolvers import reverse
+from django.shortcuts import get_object_or_404
 
 from hollo.log.views import login_required, athlete_view_allowed, athlete_edit_allowed, get_auth_request_message
 from hollo.log import models
 from hollo.log import common
+from hollo.log import forms
 
 @login_required
 @athlete_view_allowed
@@ -59,12 +61,17 @@ def monthly_view(request, athlete_id, year, month):
     except ObjectDoesNotExist:
         competitions = []
 
+    change_view_data = {'view_type': 'monthly',
+                        'year': year, 'month': month}
+    change_view_form = forms.CompetitionChangeViewForm(change_view_data, auto_id="competition_change_view_%s")
+
     t = loader.get_template('log/competition_monthly.html')
     c = RequestContext(request, {'first_day': datetime.date(year, month, 1),\
                                  'competitions': competitions, 'viewType': 'monthly',
                                  'athlete': athlete,
                                  'athlete_edit_allowed': athlete.allowed_edit_by(request.user),
-                                 'auth_request_message': get_auth_request_message(request.user.person)
+                                 'auth_request_message': get_auth_request_message(request.user.person),
+                                 'change_view_form': change_view_form
                                  })
     return http.HttpResponse(t.render(c))
 
@@ -87,11 +94,16 @@ def yearly_view(request, athlete_id, year):
         month_data = {'first_day': datetime.date(year, month, 1), 'competitions': competitions}
         months.append(month_data)
 
+    change_view_data = {'view_type': 'yearly',
+                        'year': year, 'month': 1}
+    change_view_form = forms.CompetitionChangeViewForm(change_view_data, auto_id="competition_change_view_%s")
+
     t = loader.get_template('log/competition_yearly.html')
     c = RequestContext(request, {'first_day': datetime.date(year, 1, 1), 'months': months, 'viewType': 'yearly',\
                 'athlete': athlete, \
                 'athlete_edit_allowed': athlete.allowed_edit_by(request.user), \
-                'auth_request_message': get_auth_request_message(request.user.person) \
+                'auth_request_message': get_auth_request_message(request.user.person), \
+                'change_view_form': change_view_form
                 })
     return http.HttpResponse(t.render(c))
 
@@ -105,124 +117,108 @@ def add_form(request, athlete_id, year, month, day):
     year, month, day = int(year), int(month), int(day)
     date = datetime.date(year, month, day)
     athlete = models.Athlete.objects.get(person__user__username=athlete_id)
-
-    context = {'competition': {'event': ''}, 
-               'day': date, 
-               'form_action': 'add',
-               'athlete': athlete}
-
-    # Look for submit key (we need it to determine which button was actually pressed)
-    submit_button = common.get_submit_button(request.POST)
-
-    if submit_button:
-        context.update({'continue': request.REQUEST['continue']})
-        if (submit_button == 'Ok'):
-            return add_submit(request)
-        elif (submit_button == 'Cancel'):
-            return http.HttpResponseRedirect(request.REQUEST['continue'] or reverse('log.views.index'))
-    else:
-        context.update({'continue': request.META.get('HTTP_REFERER', reverse('log.views.index'))})
-
-    t = loader.get_template('log/competition_form.html')
-    c = RequestContext(request, context)
-
-    return http.HttpResponse(t.render(c))
-
-
-@login_required
-@athlete_edit_allowed
-def add_submit(request, athlete_id):
-    """
-    Add new competition
-    """
-    day = datetime.date.fromtimestamp(calendar.timegm(time.strptime(request.POST['day'], '%Y-%m-%d')))
-    athlete = models.Athlete.objects.get(person__user__username=athlete_id)
-
-    #TODO: check the values
-    try:
-        event = models.TrackEvent.objects.get(name=request.POST['event'])
-    except ObjectDoesNotExist:
-        return http.HttpResponseNotFound()
-
-    competition = models.Competition(athlete=athlete, event=event, \
-                                     day=day, place=request.POST['place'], \
-                                     result=request.POST['result'], note=request.POST['note'])
-    competition.save()
-
-    redirectUrl = request.META.get('HTTP_REFERER', reverse('log.views.index'))
-    if (request.REQUEST.has_key('continue')):
-        redirectUrl = request.REQUEST['continue']
-
-    return http.HttpResponseRedirect(redirectUrl)
+    competition_data = {'day': date, 'event': '50 m', 'place': '', 'result': ''}
+    return display_form(request, 'add', athlete, date, competition_data, add_submit)
 
 @login_required
 @athlete_edit_allowed
 def edit_form(request, athlete_id, year, month, day, competition_id):
     """
-    Displays form to edit a competition
+    Display edit form for competition
     """
-    year, month, day, competition_id = int(year), int(month), int(day), int(competition_id)
+    year, month, day = int(year), int(month), int(day)
     date = datetime.date(year, month, day)
     athlete = models.Athlete.objects.get(person__user__username=athlete_id)
 
-    context = {'competition': {'event': ''}, 
-               'day': date, 
-               'form_action': 'edit',
-               'athlete': athlete}
-
-    # Look for submit key (we need it to determine which button was actually pressed)
-    submit_button = common.get_submit_button(request.POST)
-
-    if submit_button:
-        context.update({'continue': request.REQUEST['continue']})
-        if submit_button == 'Ok':
-            return edit_submit(request, athlete_id)
-        elif submit_button == 'Cancel':
-            return http.HttpResponseRedirect(request.REQUEST['continue'] or reverse('log.views.index'))
-    else:
-        try:
-            competition = models.Competition.objects.get(id=competition_id)
-        except ObjectDoesNotExist:
-            return http.HttpResponseNotFound()            
-        context.update({'competition': competition,
-                        'continue': request.META.get('HTTP_REFERER', reverse('log.views.index'))})
-
-    t = loader.get_template('log/competition_form.html')
-    c = RequestContext(request, context)
-
-    return http.HttpResponse(t.render(c))
+    competition = get_object_or_404(models.Competition, pk=competition_id)
+    competition_data = {'id': competition_id, 'day': date, 'event': competition.event.name,
+                        'event_info': competition.event_info, 'result': competition.result,
+                        'place': competition.place, 'note': competition.note}
+    return display_form(request, 'edit', athlete, date, competition_data, edit_submit)
 
 
-@login_required
-@athlete_edit_allowed
-def edit_submit(request, athlete_id):
+def add_submit(request, athlete, competition_form):
+    """
+    Add new competition
+    """
+    if not competition_form.is_valid():
+        return False
+
+    try:
+        event = models.TrackEvent.objects.get(name=competition_form.cleaned_data['event'])
+    except ObjectDoesNotExist:
+        return False
+
+    competition = models.Competition(athlete=athlete,
+                                     event=event,
+                                     day=competition_form.cleaned_data['day'],
+                                     event_info=competition_form.cleaned_data['event_info'],
+                                     place=competition_form.cleaned_data['place'],
+                                     result=competition_form.cleaned_data['result'],
+                                     note=competition_form.cleaned_data['note'])
+    competition.save()
+    return True
+
+def edit_submit(request, athlete, competition_form):
     """
     Edit a competition
     """
-    competition_id = int(request.POST['id'])
+    if not competition_form.is_valid() or not competition_form.data['id']:
+        return False
+
+    competition_id = competition_form.cleaned_data['id']
 
     try:
         competition = models.Competition.objects.get(id=competition_id)
     except ObjectDoesNotExist:
-        return http.HttpResponseNotFound()
+        return False
 
-    #TODO: Check the values for edited competition
     try:
-        competition.event = models.TrackEvent.objects.get(name=request.POST['event'])
+        competition.event = models.TrackEvent.objects.get(name=competition_form.cleaned_data['event'])
     except ObjectDoesNotExist:
-        return http.HttpResponseNotFound()
+        return False
 
-    competition.place = request.POST['place']
-    competition.result = request.POST['result']
-    competition.note = request.POST['note']
+    competition.place = competition_form.cleaned_data['place']
+    competition.result = competition_form.cleaned_data['result']
+    competition.note = competition_form.cleaned_data['note']
     competition.save()
+    return True
 
-    redirectUrl = request.META.get('HTTP_REFERER', reverse('log.views.index'))
-    if (request.REQUEST.has_key('continue')):
-        redirectUrl = request.REQUEST['continue']
+def display_form(request, action, athlete, day, competition_data, save_func):
+    context = {}
+    context['day'] = day
+    context['form_action'] = action
+    context['athlete'] = athlete
 
-    return http.HttpResponseRedirect(redirectUrl)
+    competition_form = forms.CompetitionForm(request.POST, auto_id='competition_%s')
+    competition_form.fields["event"].choices = [(e.name, e.name) for e in models.TrackEvent.objects.all()]
+    submit_button = common.get_submit_button(request.POST)
 
+    if not submit_button:
+        continue_url = request.META.get('HTTP_REFERER', reverse('log.views.workout.index', 
+                                                                kwargs={'athlete_id': athlete.person.user.username}))
+        competition_form.data = competition_data
+    else:
+        submit_button = submit_button.lower()
+        continue_url = request.GET['continue']
+        
+        if submit_button == 'ok':
+            if save_func(request, athlete, competition_form):
+                return http.HttpResponseRedirect(continue_url)
+            else:
+                context['form_errors'] = True
+        else:
+            if continue_url:
+                return http.HttpResponseRedirect(continue_url)
+            else:
+                return http.HttpResponseRedirect(reverse('log.views.workout.index', kwargs={'athlete_id': athlete_id}))
+
+    context['continue'] = continue_url
+    context['competition_form'] = competition_form
+    
+    t = loader.get_template('log/competition_form.html')
+    c = RequestContext(request, context)
+    return http.HttpResponse(t.render(c))
 
 @login_required
 @athlete_edit_allowed
@@ -247,14 +243,56 @@ def change_view(request, athlete_id):
     """
     Change the workout period which is displayed
     """
-    if (request.POST['viewType'] == 'monthly'):
-        week, year = int(request.POST['month']), int(request.POST['year'])
+    form = forms.CompetitionChangeViewForm(request.POST, auto_id="competition_change_view_%s")
+    if not form.is_valid():
+        return http.HttpResponseRedirect(reverse('log.views.competition.index',
+                                                 kwargs={'athlete_id': athlete_id}))
+    if (form.cleaned_data['view_type'] == 'monthly'):
         return http.HttpResponseRedirect(reverse('log.views.competition.monthly_view',
                                             kwargs={'athlete_id': athlete_id,
-                                                    'year': year,
-                                                    'month': month}))
+                                                    'year': form.cleaned_data["year"],
+                                                    'month': form.cleaned_data["month"]}))
     else:
         month, year = int(request.POST['month']), int(request.POST['year'])
         return http.HttpResponseRedirect(reverse('log.views.competition.yearly_view',
                                             kwargs={'athlete_id': athlete_id,
-                                                    'year': year}))
+                                                    'year': form.cleaned_data["year"]}))
+
+
+def interval_summary(athlete, min_date=None, max_date=None):
+    """
+    Compute personal bests for all track events the athlete has participated
+    in given interval <min_date, max_date>
+    """
+    track_events = models.TrackEvent.objects.filter(competition__athlete=athlete, has_additional_info=False)
+    other_competitions = models.Competition.objects.filter(athlete=athlete, event__has_additional_info=True)
+
+    if min_date:
+        track_events = track_events.filter(competition__day__gte=min_date)
+        other_competitions = other_competitions.filter(competition__day__gte=min_date)
+    if max_date:
+        track_events = track_events.filter(competition__day__lte=max_date)
+        other_competitions = other_competitions.filter(competition__day__lte=max_date)
+
+    track_events = track_events.distinct()
+
+    summary = {}
+    summary["track_events"] = []
+    for e in track_events:
+        summary_item = {}
+        summary_item["event"] = e
+        summary_item["best_result"] = athlete.best_result(e, min_date, max_date)
+        competitions = models.Competition.objects.filter(event=e, athlete=athlete)
+        if min_date:
+            competitions = competitions.filter(day__gte=min_date)
+        if max_date:
+            competitions = competitions.filter(day__lte=max_date)
+
+        summary_item["competitions"] = competitions
+        summary["track_events"].append(summary_item)
+
+    summary["other_competitions"] = other_competitions
+
+    return summary
+        
+

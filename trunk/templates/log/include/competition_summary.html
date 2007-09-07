@@ -1,0 +1,8 @@
+{% if competition_summary %}
+<h3>Nejlepší výkony</h3>
+<ul>
+{% for event in competition_summary.track_events %}
+    <li>{{event.event.name}}: {{event.best_result.result}}, {{event.best_result.day|date:"d.m."}} {{event.best_result.place}}</li>
+{% endfor %}
+</ul>
+{% endif %}

@@ -1,6 +1,6 @@
 {% extends 'log/include/settings_base.html' %}
 {% load log_tags %}
-{% block settingsContent %}
+{% block settings_content %}
 {% settings_submenu "my_athletes" %}
 <h3 class="textversion">Moji svěřenci</h3>
 {% for group in coach.athletegroups.all %}

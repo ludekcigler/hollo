@@ -2,47 +2,45 @@
 {% load log_tags %}
 
 {% block content %}
-<div id="viewSelection">
-    <div id="athleteSelection">
+<div id="view_selection">
+<div class="corner_tl"><div class="corner_tr"><div class="corner_bl"><div class="corner_br">
+<div class="content">
+    <div id="athlete_selection">
 <h2 class="textversion">Zobrazený atlet</h2>
     {% with "workout" as view_type %}
     <a href="{% url log.views.change_athlete view_type=view_type %}?old={{ athlete.person.user.username }}">
     {% endwith %}
         <img src="{{ athlete.person.get_image_url|default:"/site_media/log/images/user_unknown.png" }}"
-        width="22" height="22" alt="{{ athlete }}" id="athleteImage">
-        <span id="athleteName">{{ athlete }}</span>
+        width="22" height="22" alt="{{ athlete }}" id="athlete_image">
+        <span id="athlete_name">{{ athlete }}</span>
     </a>
     </div>
 <form action="{% url log.views.workout.change_view athlete_id=athlete.person.user.username %}" method="post">
 <fieldset>
 <legend class="textversion">Zobrazení deníku</legend>
-<label for="viewType">Pohled</label>
-<select id="viewType" name="viewType">
-    <option {% ifequal viewType "weekly" %}selected="selected" {% endifequal %}value="weekly">Týdenní</option>
-    <option {% ifequal viewType "monthly" %}selected="selected" {% endifequal %}value="monthly">Měsíční</option>
-</select>
-<label for="week">Týden</label>
-<input type="text" size="2" id="week" name="week" value="{{ first_day|date:"W" }}">
-<label for="month">Měsíc</label>
-<select id="month" name="month">
-    {% select_month first_day.month %}
-</select>
-<label for="year">Rok</label>
-<select id="year" name="year">
-    {% select_year 2000 2010 first_day.year %}
-</select>
-<button type="submit" id="viewSelectionSubmit">Zobrazit</button>
+<label for="workout_change_view_view_type">Pohled</label>
+{{change_view_form.view_type}}
+<label for="workout_change_view_week">Týden</label>
+{{change_view_form.week}}
+<label for="workout_change_view_month">Měsíc</label>
+{{change_view_form.month}}
+<label for="workout_change_view_year">Rok</label>
+{{change_view_form.year}}
+<button type="submit" id="workout_change_view_submit">Zobrazit</button>
 </fieldset>
 </form>
+
+</div>
+</div></div></div></div>
 </div>
 
-<div id="workoutSummary"><div>
-{% block workoutSummary %}
+<div id="workout_summary"><div class="content">
+{% block workout_summary %}
 {% endblock %}
 </div></div>
 
-<div id="workoutView">
-{% block workoutView %}
+<div id="workout_view">
+{% block workout_view %}
 {% endblock %}
 </div>
 

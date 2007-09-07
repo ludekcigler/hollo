@@ -1,4 +1,4 @@
-<div class="settingsForm">
+<div class="settings_form">
 <h2>Požavky na autorizaci</h2>
 {% if athlete.auth_request_to.all|length_is:"0" %}
 <p>Nikdo nový od vás autorizaci nechce.</p>
@@ -30,7 +30,7 @@
     <form action="{% url log.views.settings.friends_auth_list %}?continue={{ continue|urlencode }}" method="post">
     <fieldset class="buttonSet">
         <legend class="textversion">Hotovo</legend>
-        <input type="submit" name="submitOk" class="ok button" value="Hotovo">
+        <input type="submit" name="submit_ok" class="ok button" value="Hotovo">
     </fieldset>
     </form>
 </div>

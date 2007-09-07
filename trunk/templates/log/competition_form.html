@@ -1,9 +1,16 @@
 {% extends 'log/base.html' %}
-{% block title %}{{ form_action_desc|capfirst }} závod :: Tréninkový deník{% endblock %}
-{% block pageBody %}
+
+{% block title %}
+{% ifequal form_action "add" %}
+Nový závod :: Tréninkový deník
+{% else %}
+Upravit závod :: Tréninkový deník
+{% endifequal %}
+{% endblock %}
+{% block page_body %}
 {% include 'log/include/competition_form.html' %}
 {% endblock %}
 
-{% block customMetaTags %}
+{% block custom_meta_tags %}
     <meta http-equiv="Cache-Control" content="no-cache">
 {% endblock %}

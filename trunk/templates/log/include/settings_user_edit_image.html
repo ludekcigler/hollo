@@ -1,5 +1,5 @@
 {% load log_tags %}
-<div class="settingsForm">
+<div class="settings_form">
 <h2>Upravit obrázek</h2>
 <form action="{% url log.views.settings.user_upload_image %}?continue={{ continue|urlencode }}" method="post"
 enctype="multipart/form-data">
@@ -8,13 +8,13 @@ enctype="multipart/form-data">
         <p>Nahrát můžete jakýkoliv obrázek, nejlépe PNG, GIF nebo JPEG. Obrázky nahrávejte
         v rozumné velikosti, tj. nejprve je zmenšete na rozlišení 36x36 pixelů.
         </p>
-        <label for="userImageField">Obrázek</label>
-        <input type="file" id="userImageField" name="image">
+        <label for="user_image">Obrázek</label>
+        {{image_form.image}}
     </fieldset>
-    <fieldset class="buttonSet">
+    <fieldset class="button_set">
         <legend class="textversion">Uložit</legend>
-        <input type="submit" name="submitOk" class="ok" value="Uložit">
-        <input type="submit" name="submitCancel" class="cancel" value="Zrušit">
+        <input type="submit" name="submit_ok" class="ok" value="Uložit">
+        <input type="submit" name="submit_cancel" class="cancel" value="Zrušit">
     </fieldset>
 </form>
 </div>

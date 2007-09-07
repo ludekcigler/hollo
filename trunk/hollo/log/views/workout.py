@@ -33,12 +33,15 @@ from django.core.exceptions import ObjectDoesNotExist
 from django import http 
 from django.template import loader, Context, RequestContext
 from django.core.urlresolvers import reverse
+from django.shortcuts import get_object_or_404
 
 from hollo.log.views import login_required, athlete_view_allowed, \
                             athlete_edit_allowed, get_auth_request_message, \
                             force_no_cache
 from hollo.log import models
 from hollo.log import common
+from hollo.log import forms
+from hollo.log.views import competition
 
 @login_required
 @athlete_view_allowed
@@ -87,8 +90,10 @@ def weekly_view(request, athlete_id, week, year, detail_year = None, detail_mont
         next_year = year
 
     first_day = common.iso_week_day_to_gregorian(year, week, 1)
-    if first_day.year < year:
-        first_day = datetime.date(year, 1, 1)
+    last_day = common.iso_week_day_to_gregorian(year, week, 7)
+
+    change_view_data = {'view_type': 'weekly', 'week': week, 'year': year, 'month': first_day.month}
+    change_view_form = forms.WorkoutChangeViewForm(change_view_data, auto_id="workout_change_view_%s")
 
     context = {'week': week, 'year': year, 'previous_week': previous_week, \
                'previous_year': previous_year, 'next_week': next_week, \
@@ -96,14 +101,18 @@ def weekly_view(request, athlete_id, week, year, detail_year = None, detail_mont
                'first_day': first_day, 'viewType': 'weekly',
                'athlete': athlete,
                'athlete_edit_allowed': athlete.allowed_edit_by(request.user),
-               'auth_request_message': get_auth_request_message(request.user.person)}
+               'auth_request_message': get_auth_request_message(request.user.person),
+               'change_view_form': change_view_form}
 
     if (detail_year and detail_month and detail_day):
         detail_year, detail_month, detail_day = int(detail_year), int(detail_month), int(detail_day)
         t = loader.get_template('log/workout_weekly_detail.html')
         context.update(day_info(athlete, detail_year, detail_month, detail_day))
     else:
+        context["workout_summary"] = interval_summary(athlete, first_day, last_day)
+        context["competition_summary"] = competition.interval_summary(athlete, first_day, last_day)
         t = loader.get_template('log/workout_weekly.html')
+
 
     c = RequestContext(request, context)
     return http.HttpResponse(t.render(c))
@@ -111,16 +120,26 @@ def weekly_view(request, athlete_id, week, year, detail_year = None, detail_mont
 def weekly_view_detail(*args, **kwargs):
     return weekly_view(*args, **kwargs)
 
-def weekly_summary(athlete, year, week):
+def interval_summary(athlete, min_date, max_date):
     """
-    Returns a summary for a given athlete, year and week.
+    Returns a summary for a given athlete, min- and max- date.
     This includes:
     - total number of workouts
     - total km
     - average satisfaction
     """
+    summary = {}
+    summary["workouts"] = models.Workout.objects.filter(day__gte=min_date,day__lte=max_date)
+    summary["total_km"] = sum([w.total_km for w in summary["workouts"]])
+    summary["total_workouts"] = summary["workouts"].count()
+    if summary["total_workouts"] > 0:
+        summary["satisfaction_avg"] = sum([w.rating_satisfaction for w in summary["workouts"]]) / float(summary["total_workouts"])
+        summary["difficulty_avg"] = sum([w.rating_difficulty for w in summary["workouts"]]) / float(summary["total_workouts"])
+    else:
+        summary["satisfaction_avg"] = None
+        summary["difficulty_avg"] = None
 
-
+    return summary
 
 @login_required
 @athlete_view_allowed
@@ -163,20 +182,30 @@ def monthly_view(request, athlete_id, month, year, detail_day = None):
         next_year = year
         next_month = month + 1
 
-    data = {'month_data': month_data, 'previous_month': previous_month, 'previous_year': previous_year, \
+    first_day = datetime.date(year, month, 1)
+    last_day = datetime.date(year, month, calendar.monthrange(year, month)[1])
+
+    change_view_data = {'view_type': 'monthly', 'week': common.week_numbers_in_month(year, month).next(),
+                        'year': year, 'month': month}
+    change_view_form = forms.WorkoutChangeViewForm(change_view_data, auto_id="workout_change_view_%s")
+
+    context = {'month_data': month_data, 'previous_month': previous_month, 'previous_year': previous_year, \
             'next_month': next_month, 'next_year': next_year, \
-            'first_day': datetime.date(year, month, 1), 'viewType': 'monthly',
+            'first_day': first_day, 'viewType': 'monthly',
             'athlete': athlete,
             'athlete_edit_allowed': athlete.allowed_edit_by(request.user),
-            'auth_request_message': get_auth_request_message(request.user.person)}
+            'auth_request_message': get_auth_request_message(request.user.person),
+            'change_view_form': change_view_form}
 
     if detail_day:
-        data.update(day_info(athlete, year, month, int(detail_day)))
+        context.update(day_info(athlete, year, month, int(detail_day)))
         t = loader.get_template('log/workout_monthly_detail.html')
     else:
+        context["workout_summary"] = interval_summary(athlete, first_day, last_day)
+        context["competition_summary"] = competition.interval_summary(athlete, first_day, last_day)
         t = loader.get_template('log/workout_monthly.html')
 
-    c = RequestContext(request, data)
+    c = RequestContext(request, context)
     return http.HttpResponse(t.render(c))
 
 def monthly_view_detail(*args, **kwargs):
@@ -188,18 +217,20 @@ def change_view(request, athlete_id):
     """
     Change the workout period which is displayed
     """
-    if (request.POST['viewType'] == 'weekly'):
-        week, year = int(request.POST['week']), int(request.POST['year'])
+    form = forms.WorkoutChangeViewForm(request.POST, auto_id="workout_change_view_%s")
+    if not form.is_valid():
+        return http.HttpResponseRedirect(reverse('log.views.workout.index', kwargs={'athlete_id': athlete_id}))
+
+    if (form.cleaned_data["view_type"] == 'weekly'):
         return http.HttpResponseRedirect(reverse('log.views.workout.weekly_view',
                                                  kwargs={'athlete_id': athlete_id,
-                                                         'year': year,
-                                                         'week': week}))    
+                                                         'year': form.cleaned_data["year"],
+                                                         'week': form.cleaned_data["week"]}))    
     else:
-        month, year = int(request.POST['month']), int(request.POST['year'])
         return http.HttpResponseRedirect(reverse('log.views.workout.monthly_view',
                                                  kwargs={'athlete_id': athlete_id,
-                                                         'year': year,
-                                                         'month': month}))
+                                                         'year': form.cleaned_data["year"],
+                                                         'month': form.cleaned_data["month"]}))
 
 
 def day_info(athlete, year, month, day):
@@ -212,200 +243,194 @@ def day_info(athlete, year, month, day):
 
     return {'workouts': workouts, 'day': day, 'num_workouts': len(workouts), 'competitions': competitions}
 
-
 @login_required
 @athlete_edit_allowed
 def add_form(request, athlete_id, year, month, day):
-    """
-    Return HTML add form for given day
-    """
-    athlete = models.Athlete.objects.get(person__user__username=athlete_id)
-
+    athlete = get_object_or_404(models.Athlete, person__user__username=athlete_id)
     year, month, day = int(year), int(month), int(day)
     date = datetime.date(year, month, day)
+    workout_data = {'num_workout_items': 3, 'rating_satisfaction': 3, 'rating_difficulty': 3, 'day': date}
 
-    context = {
-               'day': date, 
-               'form_action': 'add',
-               'athlete': athlete}
-
-    # Look for submit key (we need it to determine which button was actually pressed)
-    submit_button = common.get_submit_button(request.POST)
-
-    if not submit_button:
-        # Default, the submit key was not pressed before
-        context.update({'phase_items': [None] * 3,
-                        'continue': request.META.get('HTTP_REFERER', '')
-                       })
-    else:
-        context.update({'continue': request.REQUEST['continue']})
-
-        if (submit_button == 'Ok'):
-            return add_submit(request, athlete_id)
-        elif (submit_button == 'Cancel'):
-            if request.REQUEST['continue']:
-                return http.HttpResponseRedirect(request.REQUEST['continue'])
-            else:
-                return http.HttpResponseRedirect(reverse('log.views.index'))
-        else:
-            context.update(form_context_update(request, submit_button))
-
-    t = loader.get_template('log/workout_form.html')
-    c = RequestContext(request, context)
-
-
-    return http.HttpResponse(t.render(c))
-
-
-def form_context_update(request, submit_button, workout_id = None):
-    """
-    Updates the workout form after intermediate submits
-    """
-
-    # Add new line to the form, maintaining all the form fields the user has entered
-    weather = request.POST['weather']
-    note = request.POST['note']
-    rating_satisfaction = min(models.Workout.MAX_RATING, max(models.Workout.MIN_RATING, int(request.POST['rating_satisfaction'])))
-    rating_difficulty = min(models.Workout.MAX_RATING, max(models.Workout.MIN_RATING, int(request.POST['rating_difficulty'])))
-    num_workout_items = int(request.POST['num_workout_items'])
-    phase_items = []
-    for sequence in xrange(0, num_workout_items):
-        type = models.WorkoutType.objects.get(abbr=request.POST['workout_type_%d' % sequence])
-        desc = request.POST['workout_desc_%d' % sequence]
-        km = request.POST['workout_km_%d' % sequence]
-        phase_items.append({'type': type, 'desc': desc, 'km': km})
-
-    if (submit_button == 'AddWorkoutItem'):
-        phase_items.append(None)
-    else:
-        removedItem = int(re.match('^.*_(\d+)$', submit_button).group(1))
-        phase_items = phase_items[0:removedItem] + phase_items[removedItem+1:]
-
-    return {'workout': \
-                {'id': workout_id, \
-                'weather': weather, \
-                'note': note, \
-                'rating_satisfaction': rating_satisfaction, \
-                'rating_difficulty': rating_difficulty \
-                }, \
-            'phase_items': phase_items}
-
-@login_required
-@athlete_edit_allowed
-def add_submit(request, athlete_id):
-    """
-    Add new workout for given day
-    """
-    num_workout_items = int(request.POST['num_workout_items'])
-    
-    day = datetime.date.fromtimestamp(calendar.timegm(time.strptime(request.POST['day'], '%Y-%m-%d')))
-    athlete = models.Athlete.objects.get(person__user__username=athlete_id)
-
-    workout = models.Workout(athlete=athlete,
-                             day=day, 
-                             weather=request.POST['weather'],
-                             note=request.POST['note'],
-                             rating_satisfaction = min(models.Workout.MAX_RATING, max(models.Workout.MIN_RATING, int(request.POST['rating_satisfaction']))),
-                             rating_difficulty = min(models.Workout.MAX_RATING, max(models.Workout.MIN_RATING, int(request.POST['rating_difficulty']))))
-
-    workout.save()
-
-    _workout_items_save(request, workout, num_workout_items)
-
-    redirectUrl = request.META.get('HTTP_REFERER', reverse('log.views.index'))
-    if (request.REQUEST.has_key('continue')):
-        redirectUrl = request.REQUEST['continue']
-
-    return http.HttpResponseRedirect(redirectUrl)
-
+    return display_form(request, 'add', athlete, date, workout_data, 3, {}, add_submit)
 
 @login_required
 @athlete_edit_allowed
 def edit_form(request, athlete_id, day, month, year, workout_id):
-    """
-    Return HTML fragment with edit form for given workout
-    """
+    athlete = get_object_or_404(models.Athlete, person__user__username=athlete_id)
     year, month, day = int(year), int(month), int(day)
-    workout_id = int(workout_id)
     date = datetime.date(year, month, day)
+    num_workout_items = models.WorkoutItem.objects.filter(workout__pk=workout_id).count()
 
-    athlete = models.Athlete.objects.get(person__user__username=athlete_id)
+    workout = models.Workout.objects.get(pk=workout_id)
+    workout_data = {'day': workout.day, 'id': workout_id, 'num_workout_items': num_workout_items,
+                    'weather': workout.weather, 'rating_satisfaction': workout.rating_satisfaction,
+                    'rating_difficulty': workout.rating_difficulty, 'note': workout.note}
+
+    workout_items_data = {}
+    for workout_item in workout.workout_items.all():
+        seq = workout_item.sequence
+        workout_items_data['workout_item_%d_type' % seq] = workout_item.type
+        workout_items_data['workout_item_%d_desc' % seq] = workout_item.desc
+        workout_items_data['workout_item_%d_num_data' % seq] = workout_item.num_data
+    
+    return display_form(request, 'edit', athlete, date, workout_data,
+                        num_workout_items, workout_items_data, edit_submit)
+    
+
+def display_form(request, action, athlete, date, workout_data, num_workout_items, workout_items_data, save_func):
+    """
+    Return HTML add/edit form for given workout
+    @param action               Either "add" or "edit"
+    @param athlete              ID of an athlete
+    @param workout_data         Dictionary with data about workout
+    @param num_workout_items    Number of workout items
+    @param workout_items_data   List of dictionaries with data of workout items
+    @param save_func            Function to save data to
+    """
+    context = {}
+    context['day'] = date, 
+    context['form_action'] = action
+    context['athlete'] = athlete
+
+    workout_form = forms.WorkoutForm(request.POST.copy(), auto_id='workout_%s')
+    workout_item_forms = []
 
     # Look for submit key (we need it to determine which button was actually pressed)
     submit_button = common.get_submit_button(request.POST)
 
-    context = {
-               'day': date, 
-               'form_action': 'edit',
-               'athlete': athlete}
-
     if not submit_button:
         # Default, the submit key was not pressed before
-        try:
-            workout = models.Workout.objects.get(id = workout_id)
-        except ObjectDoesNotExist:
-            return http.HttpResponseNotFound()
-
-        context.update({'workout': workout, 
-                        'phase_items': workout.workout_items.all(),
-                        'continue': request.META.get('HTTP_REFERER', reverse('log.views.index'))})
+        continue_url = request.META.get('HTTP_REFERER', reverse('log.views.workout.index', 
+                                                                kwargs={'athlete_id': athlete.person.user.username}))
+        workout_form.data = workout_data
+        workout_item_forms = _create_workout_item_forms(num_workout_items, workout_items_data)
     else:
-        context.update({'continue': request.REQUEST['continue']})
+        submit_button = submit_button.lower()
+        continue_url = request.GET['continue']
+        num_workout_items = int(workout_form.data['num_workout_items'])
+        workout_item_forms = _create_workout_item_forms(num_workout_items, request.POST)
 
-        if (submit_button == 'Ok'):
-            return edit_submit(request, athlete_id)
-        elif (submit_button == 'Cancel'):
-            if request.REQUEST['continue']:
-                return http.HttpResponseRedirect(request.REQUEST['continue'])
+        if submit_button == 'ok':
+            if save_func(request, athlete, workout_form, workout_item_forms):
+                return http.HttpResponseRedirect(continue_url)
             else:
-                return http.HttpResponseRedirect(reverse('log.views.index'))
+                # There were errors in workout form -- redisplay the form
+                context['form_errors'] = True
+
+        elif submit_button == 'cancel':
+            if continue_url:
+                return http.HttpResponseRedirect(continue_url)
+            else:
+                return http.HttpResponseRedirect(reverse('log.views.workout.index', kwargs={'athlete_id': athlete_id}))
+
+        elif submit_button == 'add_workout_item':
+            item_data = {'type': 'Roz', 'desc': '', 'num_data': '0'}
+            workout_item_forms.append(forms.WorkoutItemForm(item_data, auto_id=(('workout_item_%d_' % num_workout_items) + '%s')))
+            num_workout_items += 1
+            workout_form.data['num_workout_items'] = num_workout_items
+
         else:
-            context.update(form_context_update(request, submit_button, workout_id))
+            # Remove the workout item
+            removed_item = int(re.match('^.*_(\d+)$', submit_button).group(1))
+            del workout_item_forms[removed_item]
+            num_workout_items -= 1
+            workout_form.data['num_workout_items'] = num_workout_items
+
+            # Update IDs of workout item forms
+            for f, i in zip(workout_item_forms, range(0, len(workout_item_forms))):
+                f.auto_id = (('workout_item_%d_' % i) + '%s')
+
+    context['continue'] = continue_url
+    context['workout_form'] = workout_form
+    context['workout_item_forms'] = workout_item_forms
 
     t = loader.get_template('log/workout_form.html')
     c = RequestContext(request, context)
     return http.HttpResponse(t.render(c))
 
 
-@login_required
-@athlete_edit_allowed
-def edit_submit(request, athlete_id):
+def _create_workout_item_forms(num_workout_items, data={}):
     """
-    Edit given workout
+    Creates workout item forms
     """
-    workout_id = int(request.POST['id'])
-    num_workout_items = int(request.POST['num_workout_items'])
+    result_forms = []
+    for i in xrange(0, num_workout_items):
+        item_data = {'type': 'Roz', 'desc': '', 'num_data': '0'}
+        item_data_post_fields = ["workout_item_%d_type", "workout_item_%d_desc", "workout_item_%d_num_data"]
+        item_data_fields = ["type", "desc", "num_data"]
+        for post_field, field in zip(item_data_post_fields, item_data_fields):
+            if data.has_key(post_field % i):
+                item_data[field] = data[post_field % i]
 
-    try:
-        workout = models.Workout.objects.get(id=workout_id)
-    except ObjectDoesNotExist:
-        return http.HttpResponseNotFound()
+        workout_item_form = forms.WorkoutItemForm(data=item_data, auto_id=(('workout_item_%d_' % i) + '%s'))
+        workout_item_form.fields["type"].choices = [(t.abbr, t.abbr) for t in models.WorkoutType.objects.all()]
+        result_forms.append(workout_item_form)
 
-    workout.weather = request.POST['weather']
-    workout.note = request.POST['note']
-    workout.rating_satisfaction = min(models.Workout.MAX_RATING, max(models.Workout.MIN_RATING, int(request.POST['rating_satisfaction'])))
-    workout.rating_difficulty = min(models.Workout.MAX_RATING, max(models.Workout.MIN_RATING, int(request.POST['rating_difficulty'])))
+    return result_forms
+
+def add_submit(request, athlete, workout_form, workout_item_forms):
+    """
+    Add new workout for given day
+    """
+    # Check validity in the forms
+    if not workout_form.is_valid():
+        return False
+    for form in workout_item_forms:
+        if not form.is_valid():
+            return False
+
+    num_workout_items = workout_form.cleaned_data['num_workout_items']
+    day = workout_form.cleaned_data['day']
+
+    workout = models.Workout(athlete=athlete,
+                             day=day, 
+                             weather=workout_form.cleaned_data['weather'],
+                             note=workout_form.cleaned_data['note'],
+                             rating_satisfaction=workout_form.cleaned_data['rating_satisfaction'],
+                             rating_difficulty=workout_form.cleaned_data['rating_difficulty'])
+    workout.save()
+
+    _workout_items_save(request, workout, workout_item_forms)
+
+    return True
+
+
+def edit_submit(request, athlete, workout_form, workout_item_forms):
+    """
+    Submit "edit workout" form
+    """
+    # Check validity in the forms
+    if not workout_form.is_valid():
+        return False
+    for form in workout_item_forms:
+        if not form.is_valid():
+            return False
+
+    num_workout_items = workout_form.cleaned_data['num_workout_items']
+    day = workout_form.cleaned_data['day']
+
+    workout = models.Workout.objects.get(pk=workout_form.cleaned_data['id'])
+
+    workout.weather = workout_form.cleaned_data['weather']
+    workout.note = workout_form.cleaned_data['note']
+    workout.rating_satisfaction = workout_form.cleaned_data['rating_satisfaction']
+    workout.rating_difficulty = workout_form.cleaned_data['rating_difficulty']
     workout.save()
 
     workout.workout_items.all().delete()
-    _workout_items_save(request, workout, num_workout_items)
+    _workout_items_save(request, workout, workout_item_forms)
 
-    redirectUrl = request.META.get('HTTP_REFERER', reverse('log.views.index'))
-    if (request.REQUEST.has_key('continue')):
-        redirectUrl = request.REQUEST['continue']
+    return True
 
-    return http.HttpResponseRedirect(redirectUrl)
-
-
-def _workout_items_save(request, workout, num_workout_items):
-    for sequence in xrange(0, num_workout_items):
-        workout_type = models.WorkoutType.objects.get(abbr=request.POST['workout_type_%d' % sequence])
-        workout_desc = request.POST['workout_desc_%d' % sequence]
-        workout_num_data = request.POST['workout_km_%d' % sequence]
-
-        workoutitem = models.WorkoutItem(workout=workout, sequence=sequence, type=workout_type, \
-                                         desc=workout_desc, num_data=workout_num_data)
-        workoutitem.save()
+def _workout_items_save(request, workout, workout_items_forms):
+    for form, sequence in zip(workout_items_forms, range(0, len(workout_items_forms))):
+        workout_type = models.WorkoutType.objects.get(abbr=form.cleaned_data['type'])
+        workout_item = models.WorkoutItem(workout=workout, 
+                                         sequence=sequence, 
+                                         type=workout_type,
+                                         desc=form.cleaned_data['desc'],
+                                         num_data=form.cleaned_data['num_data'])
+        workout_item.save()
 
     return True
 

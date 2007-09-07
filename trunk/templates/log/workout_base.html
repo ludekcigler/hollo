@@ -2,24 +2,24 @@
 {% block javascripts %}
     <script type="text/javascript" src="/site_media/log/js/competition.js"></script>
     <script type="text/javascript" src="/site_media/log/js/workout.js"></script>
-    {% block customHeader %}
+    {% block custom_header %}
     {% endblock %}
 {% endblock %}
 
-{% block pageBody %}
+{% block page_body %}
 <div id="header">
 <h1>Deník atleta<span></span></h1>
 
 <h2 class="textversion">Hlavní menu</h2>
-<ul id="mainMenu">
-{% block mainMenu %}
-    <li class="active"><a>Deník</a></li>
-    <li><a href="{% url log.views.competition.monthly_view athlete_id=athlete.person.user.username,year=first_day.year,month=first_day.month %}">Závody</a></li>
+<ul id="main_menu">
+{% block main_menu %}
+    <li class="active"><a><span class="corner_tl"><span class="corner_tr"><span class="content">Deník</span></span></span></a></li>
+    <li><a href="{% url log.views.competition.monthly_view athlete_id=athlete.person.user.username,year=first_day.year,month=first_day.month %}"><span class="corner_tl"><span class="corner_tr"><span class="content">Závody</span></span></span></a></li>
 {% endblock %}
 </ul>
 
 <h2 class="textversion">Informace o uživateli</h2>
-<ul id="userInfo">
+<ul id="user_info">
     <li>{% if user.first_name and user.last_name %}{{ user.first_name }} {{ user.last_name }}
         {% else %}{{ user.username }}{% endif %}</li>
     {% if auth_request_message %}

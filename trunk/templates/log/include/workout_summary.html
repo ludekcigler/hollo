@@ -1,0 +1,23 @@
+{% if workout_summary.total_km %}
+<h3>Tréninky</h3>
+<ul>
+    <li>{{workout_summary.total_workouts}} tréninků</li>
+    <li>{{workout_summary.total_km}} km</li>
+    <li>Průměrná spokojenost 
+        {% with workout_summary.satisfaction_avg as rating %}
+        {% with "red" as color %}
+        {% include 'log/widgets/rating.html' %}
+        {% endwith %}
+        {% endwith %}
+    </li>
+    <li>Průměrná obtížnost 
+        {% with workout_summary.difficulty_avg as rating %}
+        {% with "red" as color %}
+        {% include 'log/widgets/rating.html' %}
+        {% endwith %}
+        {% endwith %}
+    </li>
+</ul>
+{% else %}
+<p>Žádné tréninky... nu což, však to doženeš v zimě :)</p>
+{% endif %}

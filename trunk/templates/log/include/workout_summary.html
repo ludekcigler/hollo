@@ -1,16 +1,22 @@
-{% if workout_summary.total_km %}
+{% load log_filters %}
 <h3>Tréninky</h3>
-<ul>
-    <li>{{workout_summary.total_workouts}} tréninků</li>
-    <li>{{workout_summary.total_km}} km</li>
-    <li>Průměrná spokojenost 
+{% if workout_summary.workouts.count|greater_than:"0" %}
+<ul class="interval_summary">
+    <li class="num_workouts">{{workout_summary.total_workouts|pluralize_cz:"%d trénink,%d tréninky,%d tréninků"}}</li>
+    {% if workout_summary.total_km %}
+    <li class="total_km">{{workout_summary.total_km}} km</li>
+    {% endif %}
+    {% if workout_summary.total_kg %}
+    <li class="total_kg">{{workout_summary.total_kg}} kg</li>
+    {% endif %}
+    <li class="satisfaction_avg"><span>Průměrná spokojenost</span>
         {% with workout_summary.satisfaction_avg as rating %}
-        {% with "red" as color %}
+        {% with "yellow" as color %}
         {% include 'log/widgets/rating.html' %}
         {% endwith %}
         {% endwith %}
     </li>
-    <li>Průměrná obtížnost 
+    <li class="difficulty_avg"><span>Průměrná obtížnost</span>
         {% with workout_summary.difficulty_avg as rating %}
         {% with "red" as color %}
         {% include 'log/widgets/rating.html' %}
@@ -19,5 +25,7 @@
     </li>
 </ul>
 {% else %}
-<p>Žádné tréninky... nu což, však to doženeš v zimě :)</p>
+<ul class="interval_summary">
+    <li class="num_workouts">Žádné tréninky</li>
+</ul>
 {% endif %}

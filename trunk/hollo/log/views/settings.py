@@ -53,8 +53,7 @@ def user(request):
     """
     Display user-specific settings
     """
-    continue_url = request.GET.has_key('continue') and request.GET['continue'] or \
-                   request.META.get('HTTP_REFERER', reverse('log.views.index'))
+    continue_url = reverse('log.views.index')
     submit_button = common.get_submit_button(request.POST)
     if submit_button == 'cancel':
         # Go to redirection page
@@ -278,9 +277,11 @@ def friends(request):
                 blocked_persons.append(bp)
 
     # Other persons
+    athlete_group = None
     if athlete:
         watching_persons = models.Person.objects.filter(watched_athletes=athlete)
         auth_req_from = models.Person.objects.filter(auth_request_from__athlete=athlete)
+        athlete_group = athlete.group
     else:
         watching_persons = []
         auth_req_from = []
@@ -301,9 +302,9 @@ def friends(request):
         except ObjectDoesNotExist:
             other_athlete = None
 
-        if not models.Athlete.objects.filter(person=op, group=athlete.group) and not op.id in other_persons_ids:
+        if not models.Athlete.objects.filter(person=op, group=athlete_group) and not op.id in other_persons_ids:
             other_persons_ids.add(op.id)
-            other_persons.append({'person': op, 'view_status': op.get_view_status(athlete.person), \
+            other_persons.append({'person': op, 'view_status': op.get_view_status(person), \
                                   'athlete': other_athlete})
 
     other_persons.sort(cmp=(lambda x, y: \

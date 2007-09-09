@@ -2,15 +2,28 @@
     height: 80px;
 }
 
-#workoutView table {
+#main_menu li {
+    width: 3em;
+    text-align: center;
+}
+
+#main_menu a:hover * {
+    cursor: pointer;
+}
+
+#workout_view div.table_header_bg, #competition_view div.table_header_bg {
     width: 99%;
 }
 
-.pagerMenu {
+.pager_menu {
     height: 1px;
     width: 99%;
 }
 
-div.tl, div.bl, div.br, span.tr, span.tl, span.br, span.bl {
-    display: none;
+.info_box {
+    margin: 0.5em 0;
+}
+
+.info_box p.content {
+    margin: 0;
 }

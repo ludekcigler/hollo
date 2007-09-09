@@ -1,8 +1,47 @@
-{% if competition_summary %}
-<h3>Nejlepší výkony</h3>
-<ul>
-{% for event in competition_summary.track_events %}
-    <li>{{event.event.name}}: {{event.best_result.result}}, {{event.best_result.day|date:"d.m."}} {{event.best_result.place}}</li>
-{% endfor %}
+{% load log_filters %}
+<h3>Závody</h3>
+<ul class="interval_summary">
+    {% if competition_summary.competitions.count %}
+    <li class="num_competitions">{{competition_summary.competitions.count|pluralize_cz:"%d závod,%d závody,%d závodů"}}</li>
+    {% else %}
+    <li class="num_competitions">Žádné závody</li>
+    {% endif %}
 </ul>
+{% if competition_summary.competitions.count %}
+<h4>Nejlepší výkony</h4>
+
+<div class="table_header_bg"><div class="corner_tl"><div class="corner_tr">
+
+<table cellspacing="0">
+    <thead>
+        <tr>
+            <th scope="column">Disciplína</th>
+            <th scope="column">Výkon</th>
+            <th scope="column">Datum</th>
+            <th scope="column">Místo</th>
+        </tr>
+    </thead>
+    <tbody>
+{% for event_summary in competition_summary.track_events %}
+    <tr>
+        <td>
+            {% if event_summary.event.has_additional_info %}
+            {{event_summary.best_result.event_info}}
+            {% else %}
+            {{event_summary.event.name}}
+            {% endif %}
+        </td>
+        <td>
+            {{event_summary.best_result.result}}
+        </td>
+        <td>
+            {{event_summary.best_result.day|date:"j.n.Y"}}
+        </td>
+        <td>
+            {{event_summary.best_result.place}}
+        </td>
+    </tr>
+{% endfor %}
+</table>
+</div></div></div>
 {% endif %}

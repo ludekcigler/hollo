@@ -1,6 +1,5 @@
 {% load log_filters %}
         <dt>
-        <img src="/site_media/log/images/user_unknown.png" width="22" height="22" alt="{{ person }}" >
         <span>{{ person }}</span></dt>
         <dd>
         {% if view_status.watched|is_not and view_status.auth_request_from|is_not and athlete and view_status.blocked|is_not  %}

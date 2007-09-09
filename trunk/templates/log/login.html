@@ -9,23 +9,29 @@ Přihlášení :: Tréninkový deník
 </div>
 
 <div id="login_form">
-<h2>Přihlášení</h2>
 {% if login_failed %}
-<p>
-{{login_failed}}
+<div class="info_box error">
+<p class="content">
+Špatné přihlášení
 </p>
+</div>
 {% endif %}
+<div class="corner_tl login_content"><div class="corner_tr"><div class="corner_bl"><div class="corner_br">
+<h2>Přihlášení</h2>
 <form action="{% url log.views.user.auth %}" method="post">
 <fieldset>
 <label for="username">Uživatelské jméno</label>
-<input type="text" id="username" name="username">
+<input type="text" id="username" name="username" />
 <label for="password">Heslo</label>
-<input type="password" id="password" name="password">
+<input type="password" id="password" name="password" />
 </fieldset>
 <fieldset>
 <button type="submit">Přihlásit se</button>
 </fieldset>
 </form>
+
+</div></div></div></div>
+
 </div>
 
 <div id="version_number">

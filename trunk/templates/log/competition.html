@@ -1,16 +1,27 @@
 {% extends 'log/workout_base.html' %}
-{% block custom_header %}
-    <script type="text/javascript"> 
-        $(document).ready(function () {
-            $('#viewSelectionSubmit').click(hollo.competition.change_view);
-            $('#viewType').change(function() { hollo.competition.select_view(this.value); });
-        });
-    </script>
+
+{% block title %}
+Závody - 
+{% ifequal competition_view_type "monthly" %}
+{{first_day|date:"F Y"}}
+{% else %}
+    {% ifequal competition_view_type "yearly" %}
+    {{first_day|date:"Y"}}
+    {% else %}
+    vše
+    {% endifequal %}
+{% endifequal %}
+:: Tréninkový deník
 {% endblock %}
-{% load log_tags %}
 
 {% block main_menu %}
-    <li><a href="{% url log.views.workout.monthly_view athlete_id=athlete.person.user.username,year=first_day.year,month=first_day.month %}"><span class="corner_tl"><span class="corner_tr"><span class="content">Deník</span></span></span></a></li>
+    <li>
+        {% if first_day %}
+        <a href="{% url log.views.workout.monthly_view athlete_id=athlete.person.user.username,year=first_day.year,month=first_day.month %}">
+        {% else %}
+        <a href="{% url log.views.workout.index athlete_id=athlete.person.user.username %}">
+        {% endif %}
+        <span class="corner_tl"><span class="corner_tr"><span class="content">Deník</span></span></span></a></li>
     <li class="active"><a><span class="corner_tl"><span class="corner_tr"><span class="content">Závody</span></span></span></a></li>
 {% endblock %}
 
@@ -45,15 +56,25 @@
 </div></div></div></div>
 </div>
 
-<div id="competition_summary"><div class="content">
-{% block competition_summary %}
-{% endblock %}
+<div id="competition_summary" class="summary"><div class="content">
+<h2>
+{% ifequal competition_view_type "monthly" %}
+Měsíční souhrn
+{% else %}
+    {% ifequal competition_view_type "yearly" %}
+    Roční souhrn
+    {% else %}
+    Celkový souhrn
+    {% endifequal %}
+{% endifequal %}
+</h2>
+
+{% include 'log/include/competition_summary.html' %}
 </div>
 </div>
 
 <div id="competition_view">
-{% block competition_view %}
-{% endblock %}
+{% include 'log/include/competition_view.html' %}
 </div>
 
 {% endblock %}

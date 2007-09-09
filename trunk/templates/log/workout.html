@@ -2,9 +2,8 @@
 {% load log_tags %}
 
 {% block content %}
-<div id="view_selection">
-<div class="corner_tl"><div class="corner_tr"><div class="corner_bl"><div class="corner_br">
-<div class="content">
+<div id="view_selection" class="corner_tl">
+<div class="corner_tr"><div class="corner_bl"><div class="corner_br content">
     <div id="athlete_selection">
 <h2 class="textversion">Zobrazený atlet</h2>
     {% with "workout" as view_type %}
@@ -30,11 +29,10 @@
 </fieldset>
 </form>
 
-</div>
-</div></div></div></div>
+</div></div></div>
 </div>
 
-<div id="workout_summary"><div class="content">
+<div id="workout_summary" class="summary"><div class="content">
 {% block workout_summary %}
 {% endblock %}
 </div></div>

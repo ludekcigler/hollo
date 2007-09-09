@@ -42,71 +42,83 @@ from hollo.log import forms
 
 @login_required
 @athlete_view_allowed
-def index(request, athlete_id):
-    today = datetime.date.today()
-    return http.HttpResponseRedirect(reverse('log.views.competition.monthly_view',
-                                        kwargs={'athlete_id': athlete_id,
-                                                'year': today.year,
-                                                'month': today.month}))
-
-@login_required
-@athlete_view_allowed
 def monthly_view(request, athlete_id, year, month):
     year, month = int(year), int(month)
-    athlete = models.Athlete.objects.get(person__user__username=athlete_id)
+    first_day = datetime.date(year, month, 1)
+    last_day = datetime.date(year, month, calendar.monthrange(year, month)[1])
 
-    try:
-        competitions = models.Competition.objects.filter(athlete=athlete, \
-                                day__month=month, day__year=year).order_by('day')
-    except ObjectDoesNotExist:
-        competitions = []
+    if month == 1:
+        previous_year = year - 1
+        previous_month = 12
+    else:
+        previous_year = year
+        previous_month = month - 1
+    if month == 12:
+        next_year = year + 1
+        next_month = 1
+    else:
+        next_year = year
+        next_month = month + 1
 
-    change_view_data = {'view_type': 'monthly',
-                        'year': year, 'month': month}
-    change_view_form = forms.CompetitionChangeViewForm(change_view_data, auto_id="competition_change_view_%s")
+    context = {'previous_month': previous_month, 'previous_year': previous_year,
+               'next_month': next_month, 'next_year': next_year}
 
-    t = loader.get_template('log/competition_monthly.html')
-    c = RequestContext(request, {'first_day': datetime.date(year, month, 1),\
-                                 'competitions': competitions, 'viewType': 'monthly',
-                                 'athlete': athlete,
-                                 'athlete_edit_allowed': athlete.allowed_edit_by(request.user),
-                                 'auth_request_message': get_auth_request_message(request.user.person),
-                                 'change_view_form': change_view_form
-                                 })
-    return http.HttpResponse(t.render(c))
-
+    return interval_view(request, athlete_id, "monthly", first_day, last_day, context)
 
 @login_required
 @athlete_view_allowed
 def yearly_view(request, athlete_id, year):
     year = int(year)
-    athlete = models.Athlete.objects.get(person__user__username=athlete_id)
+    first_day = datetime.date(year, 1, 1)
+    last_day = datetime.date(year, 12, calendar.monthrange(year, 12)[1])
 
-    months = []
+    context = {'previous_year': year - 1, 'next_year': year + 1}
 
-    for month in xrange(1, 13):
-        try:
-            competitions = models.Competition.objects.filter(athlete=request.user.id, \
-                                day__month=month, day__year=year)
-        except ObjectDoesNotExist:
-            competitions = []
+    return interval_view(request, athlete_id, "yearly", first_day, last_day, context)
 
-        month_data = {'first_day': datetime.date(year, month, 1), 'competitions': competitions}
-        months.append(month_data)
+@login_required
+@athlete_view_allowed
+def index(request, athlete_id):
+    return interval_view(request, athlete_id, "all")
 
-    change_view_data = {'view_type': 'yearly',
-                        'year': year, 'month': 1}
+def interval_view(request, athlete_id, view_type, first_day = None, last_day = None, initial_context = None):
+    athlete = get_object_or_404(models.Athlete, person__user__username=athlete_id)
+
+    competitions = models.Competition.objects.filter(athlete=athlete).order_by('day')
+    
+    if first_day:
+        competitions = competitions.filter(day__gte=first_day)
+    if last_day:
+        competitions = competitions.filter(day__lte=last_day)
+
+    if first_day:
+        year, month = first_day.year, first_day.month
+    else:
+        year, month = time.localtime()[0:2]
+
+    change_view_data = {'view_type': view_type,
+                        'year': year, 
+                        'month': month}
     change_view_form = forms.CompetitionChangeViewForm(change_view_data, auto_id="competition_change_view_%s")
 
-    t = loader.get_template('log/competition_yearly.html')
-    c = RequestContext(request, {'first_day': datetime.date(year, 1, 1), 'months': months, 'viewType': 'yearly',\
-                'athlete': athlete, \
-                'athlete_edit_allowed': athlete.allowed_edit_by(request.user), \
-                'auth_request_message': get_auth_request_message(request.user.person), \
-                'change_view_form': change_view_form
-                })
-    return http.HttpResponse(t.render(c))
+    context = {'first_day': first_day,
+               'competitions': competitions, 
+               'athlete': athlete,
+               'athlete_edit_allowed': athlete.allowed_edit_by(request.user),
+               'auth_request_message': get_auth_request_message(request.user.person),
+               'change_view_form': change_view_form,
+               'competition_view_type': view_type,
+               'competition_summary': interval_summary(athlete, first_day, last_day)
+              }
 
+    if initial_context:
+        initial_context.update(context)
+        context = initial_context
+
+    t = loader.get_template('log/competition.html')
+
+    c = RequestContext(request, context)
+    return http.HttpResponse(t.render(c))
 
 @login_required
 @athlete_edit_allowed
@@ -195,7 +207,7 @@ def display_form(request, action, athlete, day, competition_data, save_func):
     submit_button = common.get_submit_button(request.POST)
 
     if not submit_button:
-        continue_url = request.META.get('HTTP_REFERER', reverse('log.views.workout.index', 
+        continue_url = request.META.get('HTTP_REFERER', reverse('log.views.competition.index', 
                                                                 kwargs={'athlete_id': athlete.person.user.username}))
         competition_form.data = competition_data
     else:
@@ -211,7 +223,7 @@ def display_form(request, action, athlete, day, competition_data, save_func):
             if continue_url:
                 return http.HttpResponseRedirect(continue_url)
             else:
-                return http.HttpResponseRedirect(reverse('log.views.workout.index', kwargs={'athlete_id': athlete_id}))
+                return http.HttpResponseRedirect(reverse('log.views.competition.index', kwargs={'athlete_id': athlete_id}))
 
     context['continue'] = continue_url
     context['competition_form'] = competition_form
@@ -252,46 +264,52 @@ def change_view(request, athlete_id):
                                             kwargs={'athlete_id': athlete_id,
                                                     'year': form.cleaned_data["year"],
                                                     'month': form.cleaned_data["month"]}))
-    else:
+    elif (form.cleaned_data['view_type'] == 'yearly'):
         month, year = int(request.POST['month']), int(request.POST['year'])
         return http.HttpResponseRedirect(reverse('log.views.competition.yearly_view',
                                             kwargs={'athlete_id': athlete_id,
                                                     'year': form.cleaned_data["year"]}))
+    else:
+        return http.HttpResponseRedirect(reverse('log.views.competition.index',
+                                            kwargs={'athlete_id': athlete_id}))
 
 
-def interval_summary(athlete, min_date=None, max_date=None):
+def interval_summary(athlete, first_day=None, last_day=None):
     """
     Compute personal bests for all track events the athlete has participated
-    in given interval <min_date, max_date>
+    in given interval <first_day, last_day>
     """
     track_events = models.TrackEvent.objects.filter(competition__athlete=athlete, has_additional_info=False)
-    other_competitions = models.Competition.objects.filter(athlete=athlete, event__has_additional_info=True)
+    competitions_all = models.Competition.objects.filter(athlete=athlete)
 
-    if min_date:
-        track_events = track_events.filter(competition__day__gte=min_date)
-        other_competitions = other_competitions.filter(competition__day__gte=min_date)
-    if max_date:
-        track_events = track_events.filter(competition__day__lte=max_date)
-        other_competitions = other_competitions.filter(competition__day__lte=max_date)
+    if first_day:
+        track_events = track_events.filter(competition__day__gte=first_day)
+        competitions_all = competitions_all.filter(day__gte=first_day)
+    if last_day:
+        track_events = track_events.filter(competition__day__lte=last_day)
+        competitions_all = competitions_all.filter(day__lte=last_day)
+
+    competitions_other = competitions_all.filter(event__has_additional_info=True)
 
     track_events = track_events.distinct()
 
     summary = {}
     summary["track_events"] = []
+    summary["competitions"] = competitions_all
     for e in track_events:
         summary_item = {}
         summary_item["event"] = e
-        summary_item["best_result"] = athlete.best_result(e, min_date, max_date)
+        summary_item["best_result"] = athlete.best_result(e, first_day, last_day)
         competitions = models.Competition.objects.filter(event=e, athlete=athlete)
-        if min_date:
-            competitions = competitions.filter(day__gte=min_date)
-        if max_date:
-            competitions = competitions.filter(day__lte=max_date)
+        if first_day:
+            competitions = competitions.filter(day__gte=first_day)
+        if last_day:
+            competitions = competitions.filter(day__lte=last_day)
 
         summary_item["competitions"] = competitions
         summary["track_events"].append(summary_item)
 
-    summary["other_competitions"] = other_competitions
+    summary["competitions_other"] = competitions_other
 
     return summary
         

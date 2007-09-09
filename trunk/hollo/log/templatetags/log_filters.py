@@ -84,3 +84,15 @@ def range_from(value, lower_bound):
 def range_to(value, upper_bound):
     value, upper_bound = int(value), int(upper_bound)
     return range(value, upper_bound)
+
+@register.filter
+def pluralize_cz(value, format):
+    value = int(value)
+    format_singular, format_plural_few, format_plural_many = format.split(',')
+    if value == 1:
+        return format_singular % value
+    elif value >= 2 and value <= 4:
+        return format_plural_few % value
+    else:
+        return format_plural_many % value
+

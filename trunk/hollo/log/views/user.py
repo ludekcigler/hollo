@@ -32,7 +32,10 @@ from hollo.log import views
 
 def login(request):
     t = loader.get_template('log/login.html')
-    c = Context()
+    context = {}
+    if request.has_key('auth') and request.GET['auth']:
+        context['login_failed'] = True
+    c = RequestContext(request, context)
     return http.HttpResponse(t.render(c))
 
 

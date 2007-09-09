@@ -35,7 +35,7 @@ class WorkoutChangeViewForm(ChangeViewForm):
     week = forms.IntegerField(min_value=1, max_value=53, label='Týden', widget=forms.TextInput(attrs={'size': '2'}))
 
 class CompetitionChangeViewForm(ChangeViewForm):
-    view_type = forms.ChoiceField(choices=[('monthly', 'Měsíční'), ('yearly', 'Roční')], label='Pohled')
+    view_type = forms.ChoiceField(choices=[('monthly', 'Měsíční'), ('yearly', 'Roční'), ('all', 'Vše')], label='Pohled')
 
 class SettingsUserForm(forms.Form):
     first_name = forms.CharField(min_length=1, label='Jméno')

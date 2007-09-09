@@ -1,5 +1,19 @@
 {% load log_filters %}
 <h2>{{day|date:"j"}}. {{day|date:"F Y"|lower}}</h2>
+{% ifequal view_type "weekly" %}
+<a href="{% url log.views.workout.weekly_view athlete_id=athlete.person.user.username,year=year,week=week %}"
+    class="workout_info_jump_back">
+    <span>Zpět</span>
+</a>
+{% else %}
+    {% ifequal view_type "monthly" %}
+<a href="{% url log.views.workout.monthly_view athlete_id=athlete.person.user.username,year=year,month=month %}"
+    class="workout_info_jump_back">
+    <span>Zpět</span>
+</a>
+    {% endifequal %}
+{% endifequal %}
+
 {% for w in workouts %}
 <div class="workout">
 {% ifnotequal num_workouts 1 %}
@@ -8,7 +22,7 @@
 {% if w.workout_items.all|length_is:"0" %}
 <p>Tato fáze nemá žádné položky</p>
 {% else %}
-<div class="table_header_bg"><div class="corner_tl"><div class="corner_tr">
+<div class="corner_tl table_header_bg"><div class="corner_tr">
 <table cellspacing="0">
     <thead>
         <tr>
@@ -27,45 +41,37 @@
     {% endfor %}
     </tbody>
 </table>
-</div></div></div>
+</div></div>
 {% endif %}
 
-<table cellspacing="0">
-    <caption class="textversion">Podrobnosti o tréninku</caption>
-    <tbody>
+<ul class="workout_additional_info">
     {% if w.total_km %}
-        <tr class="totalKm">
-            <th scope="row"><span class="textversion">Celková kilometráž</span></th>
-            <td>{{w.total_km}} km</td>
-        </tr>
+    <li class="total_km"><span class="textversion">Celková kilometráž: </span>{{w.total_km}} km</li>
     {% endif %}
-    {% if w.weather|length_is:"0"|is_not %}
-    <tr class="weather">
-        <th scope="row"><span class="textversion">Počasí</span></th>
-        <td>{{w.weather}}&nbsp;</td>
-    </tr>
+    {% if w.total_kg %}
+    <li class="total_kg"><span class="textversion">Nazvedaná váha: </span>{{w.total_kg}} kg</li>
     {% endif %}
-    <tr class="rating rating_satisfaction">
-        <th scope="row"><span class="textversion">Spokojenost</span></th>
-        <td>
+    {% if w.weather %}
+    <li class="weather"><span class="textversion">Počasí: </span>{{w.weather}}</li>
+    {% endif %}
+    <li class="satisfaction">
+        <span class="textversion">Spokojenost: {{w.rating_satisfaction}} </span>
         {% with w.rating_satisfaction as rating %}
         {% with "yellow" as color %}
         {% include 'log/widgets/rating.html' %}
         {% endwith %}
         {% endwith %}
-        </td>
-    </tr>
-    <tr class="rating rating_difficulty">
-        <th scope="row"><span class="textversion">Obtížnost</span></th>
-        <td>
+    </li>
+    <li class="difficulty">
+        <span class="textversion">Obtížnost: {{w.rating_difficulty}} </span>
         {% with w.rating_difficulty as rating %}
         {% with "red" as color %}
         {% include 'log/widgets/rating.html' %}
         {% endwith %}
         {% endwith %}
-        </td>
-    </tr>
-</table>
+    </li>
+</ul>
+
 {% if athlete_edit_allowed %}
 <p class="workout_info_buttons">
     <a href="{% url log.views.workout.edit_form athlete_id=athlete.person.user.username,year=w.day.year,month=w.day.month,day=w.day.day,workout_id=w.id %}" class="edit_workout"
@@ -78,14 +84,15 @@
 {% endfor %}
 {% if athlete_edit_allowed %}
 <p class="workout_info_buttons">
-    <a href="{% url log.views.workout.add_form athlete_id=athlete.person.user.username,year=day.year,month=day.month,day=day.day %}" class="addWorkout"
+    <a href="{% url log.views.workout.add_form athlete_id=athlete.person.user.username,year=day.year,month=day.month,day=day.day %}" class="add_workout"
         id="add_workout_{{ day|date:"Y-m-d" }}">Přidat fázi</a>
 </p>
 {% endif %}
 {% if competitions|length_is:"0"|is_not %}
 <h3>Závody</h3>
 <div class="competition">
-<div class="table_header_bg"><div class="corner_tl"><div class="corner_tr">
+<div class="table_header_bg corner_tl"><div class="corner_tr">
+
 <table cellspacing="0" class="competition">
     <thead>
         <tr>
@@ -120,7 +127,7 @@
 {% endfor %}
     </tbody>
 </table>
-</div></div></div>
+</div></div>
 </div>
 {% endif %}
 {% if athlete_edit_allowed %}

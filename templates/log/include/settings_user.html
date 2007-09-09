@@ -2,10 +2,14 @@
 {% load log_tags %}
 {% block settings_content %}
 {% settings_submenu "user" %}
+
+<div class="settings_content">
 <h3 class="textversion">Obecné nastavení</h3>
 {% if form_errors %}
-<div class="error_box">
+<div class="info_box error">
+<p class="content">
 Některé Vámi zadané hodnoty jsou špatně - mrkněte se na ně znovu
+</p>
 </div>
 {% endif %}
 <form id="settings_user_form" action="{% url log.views.settings.user %}?continue={{ continue|urlencode }}" method="post">
@@ -30,6 +34,7 @@ Některé Vámi zadané hodnoty jsou špatně - mrkněte se na ně znovu
                     <td>
                         {% if person.image %}
                         <img src="{{ person.get_image_url }}" width="36" height="36" alt="{{ user.id }}" >
+                        <br />
                         <a href="{% url log.views.settings.user_edit_image %}" title="Upravit obrázek" >Upravit</a>
                         <a href="{% url log.views.settings.user_remove_image %}" title="Smazat obrázek" >Smazat</a>
                         {% else %}
@@ -62,4 +67,6 @@ Některé Vámi zadané hodnoty jsou špatně - mrkněte se na ně znovu
         <input type="submit" name="submit_cancel" class="cancel button" value="Hotovo">
     </fieldset>
 </form>
+
+</div>
 {% endblock %}

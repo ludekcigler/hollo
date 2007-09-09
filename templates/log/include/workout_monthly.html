@@ -1,12 +1,12 @@
 {% load log_filters %}
-<h2 class="textversion">Tréninkový deník, {{first_day|date:"F"|lower}} {{first_day|date:"Y"}}</h2>
+<h2>{{first_day|date:"F Y"|capfirst}} :: Tréninky</h2>
 <ul class="pager_menu">
     <li class="previous"><a href="{% url log.views.workout.monthly_view athlete_id=athlete.person.user.username,year=previous_year,month=previous_month %}">Předchozí měsíc</a></li>
     <li class="next"><a href="{% url log.views.workout.monthly_view athlete_id=athlete.person.user.username,year=next_year,month=next_month %}">Další měsíc</a></li>
 </ul>
 <div id="monthly_view">
 
-<div class="table_header_bg"><div class="corner_tl"><div class="corner_tr">
+<div class="table_header_bg corner_tl"><div class="corner_tr">
 
 <table cellspacing="0">
     <thead>
@@ -24,7 +24,9 @@
     <tbody>
         {% for week_data in month_data %}
             <tr>
-                <th>{{week_data.week}}</th>
+                <th>
+                    <a href="{% url log.views.workout.weekly_view athlete_id=athlete.person.user.username,year=first_day.year,week=week_data.week %}" title="{{week_data.week}}. týden">{{week_data.week}}</a>
+                </th>
                 {% for day_data in week_data.days %}
 
                     {% if day_data %}
@@ -78,7 +80,7 @@
     </tbody>
 </table>
 
-</div></div></div>
+</div></div>
 
 </div>
 

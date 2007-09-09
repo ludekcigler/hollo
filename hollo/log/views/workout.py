@@ -98,7 +98,7 @@ def weekly_view(request, athlete_id, week, year, detail_year = None, detail_mont
     context = {'week': week, 'year': year, 'previous_week': previous_week, \
                'previous_year': previous_year, 'next_week': next_week, \
                'next_year': next_year, 'week_data': week_data, \
-               'first_day': first_day, 'viewType': 'weekly',
+               'first_day': first_day, 'view_type': 'weekly',
                'athlete': athlete,
                'athlete_edit_allowed': athlete.allowed_edit_by(request.user),
                'auth_request_message': get_auth_request_message(request.user.person),
@@ -129,7 +129,7 @@ def interval_summary(athlete, min_date, max_date):
     - average satisfaction
     """
     summary = {}
-    summary["workouts"] = models.Workout.objects.filter(day__gte=min_date,day__lte=max_date)
+    summary["workouts"] = models.Workout.objects.filter(athlete=athlete, day__gte=min_date, day__lte=max_date)
     summary["total_km"] = sum([w.total_km for w in summary["workouts"]])
     summary["total_workouts"] = summary["workouts"].count()
     if summary["total_workouts"] > 0:
@@ -191,7 +191,8 @@ def monthly_view(request, athlete_id, month, year, detail_day = None):
 
     context = {'month_data': month_data, 'previous_month': previous_month, 'previous_year': previous_year, \
             'next_month': next_month, 'next_year': next_year, \
-            'first_day': first_day, 'viewType': 'monthly',
+            'first_day': first_day, 'view_type': 'monthly',
+            'year': year, 'month': month,
             'athlete': athlete,
             'athlete_edit_allowed': athlete.allowed_edit_by(request.user),
             'auth_request_message': get_auth_request_message(request.user.person),

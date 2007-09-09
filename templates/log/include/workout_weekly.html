@@ -1,6 +1,6 @@
 {% load log_filters %}
 {% load log_tags %}
-<h2 class="textversion">Tréninkový deník, {{first_day|date:"W"}}. týden, {{first_day|date:"Y"}}</h2>
+<h2>{{first_day|date:"W"}}. týden {{first_day|date:"Y"}} :: Tréninky</h2>
 <ul class="pager_menu">
     <li class="previous"><a href="{% url log.views.workout.weekly_view athlete_id=athlete.person.user.username,year=previous_year,week=previous_week %}">Předchozí týden</a></li>
     <li class="next"><a href="{% url log.views.workout.weekly_view athlete_id=athlete.person.user.username,year=next_year,week=next_week %}">Další týden</a></li>

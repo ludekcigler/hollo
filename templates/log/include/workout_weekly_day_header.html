@@ -3,7 +3,7 @@
                 <th class="day" scope="row" 
                     rowspan="{% workout_weekly_view_num_day_rows day_data.workouts day_data.competitions  %}">
                     <a href="{% url log.views.workout.weekly_view_detail athlete_id=athlete.person.user.username,year=year,week=week,detail_year=day_data.date.year,detail_month=day_data.date.month,detail_day=day_data.date.day %}" title="Detail {{ day_data.date|date:"j.n"}}">
-                    {{ day_data.date|date:"D"|trunc:"2" }} 
+                    {{ day_data.date|date:"D"|trunc_unicode:"2" }} 
                     </a>
                     <span>{{ day_data.date|date:"j.n" }}</span>
                 </th>

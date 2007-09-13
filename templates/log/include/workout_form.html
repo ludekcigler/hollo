@@ -1,5 +1,7 @@
 {% load log_tags %}
+
 <div id="workout_form">
+<div class="corner_tl"><div class="corner_tr"><div class="corner_bl"><div class="corner_br content">
 
 {% ifequal form_action "add" %}
 <h2>Nový trénink</h2>
@@ -10,8 +12,10 @@
 {% endifequal %}
 
 {% if form_errors %}
-<div class="error_box">
-Některé Vámi zadané hodnoty jsou špatně - mrkněte se na ně znovu
+<div class="info_box error">
+<p class="content">
+Některé zadané hodnoty jsou špatně - mrkněte se na ně znovu
+</p>
 </div>
 {% endif %}
 
@@ -35,39 +39,44 @@ Některé Vámi zadané hodnoty jsou špatně - mrkněte se na ně znovu
         <table>
             <thead class="textversion">
                 <tr>
-                    <th scope="column">Typ</th>
-                    <th scope="column">Popis</th>
-                    <th scope="column">km/kg</th>
+                    <th scope="column" class="type">Typ</th>
+                    <th scope="column" class="desc">Popis</th>
+                    <th scope="column" class="num_data">km/kg</th>
+                    <th>Remove item</th>
                 </tr>
             </thead>
             <tbody>
             {% for form in workout_item_forms %}
                 <tr>
-                    <td {% if form.errors.type %}class="error"{% endif %}>
-                        <label for="workout_item_{{ forloop.counter0 }}_type">Typ</label><br />
+                    <td class="type {% if form.errors.type %}error{% endif %}">
+                        <label for="workout_item_{{ forloop.counter0 }}_type">Typ</label>
                         <select name="workout_item_{{ forloop.counter0 }}_type" 
                             id="workout_item_{{ forloop.counter0 }}_type">
-                            {% if phase_item %}
-                                {% select_workout_type phase_item.type %}
+                            {% if form.data %}
+                                {% select_workout_type form.data.type %}
                             {% else %}
-                                {% select_workout_type "Roz" %}
+                                {% if form.initial %}
+                                    {% select_workout_type form.initial.type %}
+                                {% else %}
+                                    {% select_workout_type "" %}
+                                {% endif %}
                             {% endif %}
                         </select>
                     </td>
-                    <td {% if form.errors.desc %}class="error"{% endif %}>
-                        <label for="workout_item_{{ forloop.counter0 }}_desc">Popis</label><br />
+                    <td class="desc {% if form.errors.desc %}error{% endif %}">
+                        <label for="workout_item_{{ forloop.counter0 }}_desc">Popis</label>
                         <input type="text" id="workout_item_{{ forloop.counter0 }}_desc"
-                            name="workout_item_{{ forloop.counter0 }}_desc" value="{{ form.data.desc }}" />
+                            name="workout_item_{{ forloop.counter0 }}_desc" value="{{ form.data.desc }}{{ form.initial.desc }}" />
                     </td>
-                    <td {% if form.errors.num_data %}class="error"{% endif %}>
-                        <label for="workout_item_{{ forloop.counter0 }}_num_data">km/kg</label><br />
+                    <td class="num_data {% if form.errors.num_data %}error{% endif %}">
+                        <label for="workout_item_{{ forloop.counter0 }}_num_data">km/kg</label>
                         <input type="text" id="workout_item_{{ forloop.counter0 }}_num_data"
-                            name="workout_item_{{ forloop.counter0 }}_num_data" value="{{ form.data.num_data }}" />
+                            name="workout_item_{{ forloop.counter0 }}_num_data" value="{{ form.data.num_data }}{{ form.initial.num_data}}" />
                         {% if form.errors.num_data %}
                         <span class="error_message">Je potřeba zadat číslo</span>
                         {% endif %}
                     </td>
-                    <td>
+                    <td class="remove_button">
                         <input type="submit" name="submit_remove_workout_item_{{ forloop.counter0 }}" class="remove_workout_item" value="" />
                     </td>
                 </tr>
@@ -80,22 +89,43 @@ Některé Vámi zadané hodnoty jsou špatně - mrkněte se na ně znovu
     </fieldset>
     <fieldset class="workout_additional_info">
         <legend class="textversion">Další informace</legend>
-        <p {% if workout_form.errors.weather %}class="error"{% endif %}>
-        <label for="workout_weather">Počasí</label>
-        {{workout_form.weather}}
-        </p>
-        <p {% if workout_form.errors.rating_satisfaction %}class="error"{% endif %}>
-        <label for="workout_rating_satisfaction">Spokojenost</label>
-        {{workout_form.rating_satisfaction}}
-        </p>
-        <p {% if workout_form.errors.rating_difficulty %}class="error"{% endif %}>
-        <label for="workout_rating_difficulty">Obtížnost</label>
-        {{workout_form.rating_difficulty}}
-        </p>
-        <p {% if workout_form.errors.note %}class="error"{% endif %}>
-        <label for="workout_note">Poznámky</label>
-        {{workout_form.note}}
-        </p>
+        <table cellspacing="0">
+            <tbody>
+                <tr class="weather {% if workout_form.errors.weather %}error{% endif %}">
+                    <th>
+                        <label for="workout_weather">Počasí</label>
+                    </th>
+                    <td>
+                        {{workout_form.weather}}
+                    </td>
+                </tr>
+                <tr class="satisfaction {% if workout_form.errors.rating_satisfaction %}error{% endif %}">
+                    <th>
+                        <label for="workout_rating_satisfaction">Spokojenost</label>
+                    </th>
+                    <td>
+                        {{workout_form.rating_satisfaction}}
+                    </td>
+                </tr>
+                <tr class="difficulty {% if workout_form.errors.rating_difficulty %} error{% endif %}">
+                    <th>
+                        <label for="workout_rating_difficulty">Obtížnost</label>
+                    </th>
+                    <td>
+                        {{workout_form.rating_difficulty}}
+                    </td>
+                </tr>
+                <tr class="notes {% if workout_form.errors.note %}error{% endif %}">
+                    <th>
+                        <label for="workout_note">Poznámky</label>
+                    </th>
+                    <td>
+                        {{workout_form.note}}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </fieldset>
 </form>
+</div></div></div></div>
 </div>

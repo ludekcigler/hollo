@@ -1,5 +1,10 @@
 {% extends 'log/base.html' %}
 
+{% block javascripts %}
+    <script type="text/javascript" src="{% url log.views.js_event_info %}"></script>
+    <script type="text/javascript" src="/site_media/log/js/competition_form.js"></script>
+{% endblock %}
+
 {% block title %}
 {% ifequal form_action "add" %}
 Nový závod :: Tréninkový deník

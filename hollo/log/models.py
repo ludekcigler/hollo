@@ -34,7 +34,7 @@ TRACK_EVENT_RESULT_TYPE_CHOICES = (('T', 'Time'), ('L', 'Length'), ('P', 'Points
 WORKOUT_TYPE_NUM_CHOICES = (('DISTANCE', 'Km'), ('WEIGHT', 'Kg'), ('TIME', 'Min'), ('NONE', 'None'))
 
 TIME_RESULT_PATTERN = re.compile('^((?P<h>\d{1,}):(?=\d{1,2}:))?((?P<min>\d{1,2}):)?(?P<sec>\d{1,2})([,\.](?P<msec>\d{1,2}))?$')
-DISTANCE_RESULT_PATTERN = re.compile('^((?P<km>\d+)\.(?=\d+\.))?((?P<m>\d+)\.)?(?P<cm>\d+)$')
+DISTANCE_RESULT_PATTERN = re.compile('^((?P<km>\d+)[\.,](?=\d+[\.,]))?((?P<m>\d+)[\.,])?(?P<cm>\d+)$')
 POINTS_RESULT_PATTERN = re.compile('^(?P<pt>\d+)$')
 
 class Person(models.Model):
@@ -198,6 +198,17 @@ class TrackEvent(models.Model):
 
     def __str__(self):
         return self.name
+
+    # Check if the result matches the expected one
+    def check_result(self, result):
+        if self.result_type == 'T':
+            return bool(TIME_RESULT_PATTERN.match(result))
+        elif self.result_type == 'L':
+            return bool(DISTANCE_RESULT_PATTERN.match(result))
+        elif self.result_type == 'P':
+            return bool(POINTS_RESULT_PATTERN.match(result))
+        return False
+        
 
     class Admin:
         list_display = ('name', 'result_type')
@@ -456,3 +467,5 @@ def _tests():
     points_b = '6376'
     print 'hollo.log.models.compare_points %s, %s: %s' % (points_a, points_b, 
                     compare_points(POINTS_RESULT_PATTERN.match(points_a).groupdict(), POINTS_RESULT_PATTERN.match(points_b).groupdict()))
+
+    print bool(DISTANCE_RESULT_PATTERN.match('4.86'))

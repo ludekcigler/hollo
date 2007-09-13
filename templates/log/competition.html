@@ -1,5 +1,9 @@
 {% extends 'log/workout_base.html' %}
 
+{% block javascripts %}
+    <script type="text/javascript" src="/site_media/log/js/change_view_form.js"></script>
+{% endblock %}
+
 {% block title %}
 Závody - 
 {% ifequal competition_view_type "monthly" %}
@@ -42,13 +46,13 @@ Závody -
 <form action="{% url log.views.competition.change_view athlete_id=athlete.person.user.username %}" method="post">
 <fieldset>
 <legend class="textversion">Zobrazení závodů</legend>
-<label for="competition_change_view_view_type">Pohled</label>
+<label for="change_view_view_type">Pohled</label>
 {{change_view_form.view_type}}
-<label for="competition_change_view_month">Měsíc</label>
+<label for="change_view_month">Měsíc</label>
 {{change_view_form.month}}
-<label for="competition_change_view_year">Rok</label>
+<label for="change_view_year">Rok</label>
 {{change_view_form.year}}
-<button type="submit" id="competition_change_view_submit">Zobrazit</button>
+<button type="submit" id="change_view_submit">Zobrazit</button>
 </fieldset>
 </form>
 

@@ -99,7 +99,7 @@ def interval_view(request, athlete_id, view_type, first_day = None, last_day = N
     change_view_data = {'view_type': view_type,
                         'year': year, 
                         'month': month}
-    change_view_form = forms.CompetitionChangeViewForm(change_view_data, auto_id="competition_change_view_%s")
+    change_view_form = forms.CompetitionChangeViewForm(change_view_data, auto_id="change_view_%s")
 
     context = {'first_day': first_day,
                'competitions': competitions, 
@@ -161,6 +161,11 @@ def add_submit(request, athlete, competition_form):
     except ObjectDoesNotExist:
         return False
 
+    # Check the result against regexp
+    if not event.check_result(competition_form.cleaned_data['result']):
+        competition_form.errors['result'] = 'The result does not match the pattern'
+        return False
+
     competition = models.Competition(athlete=athlete,
                                      event=event,
                                      day=competition_form.cleaned_data['day'],
@@ -202,17 +207,18 @@ def display_form(request, action, athlete, day, competition_data, save_func):
     context['form_action'] = action
     context['athlete'] = athlete
 
-    competition_form = forms.CompetitionForm(request.POST, auto_id='competition_%s')
-    competition_form.fields["event"].choices = [(e.name, e.name) for e in models.TrackEvent.objects.all()]
     submit_button = common.get_submit_button(request.POST)
 
     if not submit_button:
         continue_url = request.META.get('HTTP_REFERER', reverse('log.views.competition.index', 
                                                                 kwargs={'athlete_id': athlete.person.user.username}))
-        competition_form.data = competition_data
+        competition_form = forms.CompetitionForm(initial=competition_data, auto_id='competition_%s')
+        competition_form.fields["event"].choices = [(e.name, e.name) for e in models.TrackEvent.objects.all()]
     else:
         submit_button = submit_button.lower()
         continue_url = request.GET['continue']
+        competition_form = forms.CompetitionForm(request.POST, auto_id='competition_%s')
+        competition_form.fields["event"].choices = [(e.name, e.name) for e in models.TrackEvent.objects.all()]
         
         if submit_button == 'ok':
             if save_func(request, athlete, competition_form):
@@ -255,7 +261,7 @@ def change_view(request, athlete_id):
     """
     Change the workout period which is displayed
     """
-    form = forms.CompetitionChangeViewForm(request.POST, auto_id="competition_change_view_%s")
+    form = forms.CompetitionChangeViewForm(request.POST, auto_id="change_view_%s")
     if not form.is_valid():
         return http.HttpResponseRedirect(reverse('log.views.competition.index',
                                                  kwargs={'athlete_id': athlete_id}))

@@ -1,5 +1,6 @@
 {% load log_tags %}
 <div id="competition_form">
+<div class="corner_tl"><div class="corner_tr"><div class="corner_bl"><div class="corner_br content">
 {% ifequal form_action "add" %}
 <h2>Nový závod</h2>
 {% else %}
@@ -9,8 +10,10 @@
 {% endifequal %}
 
 {% if form_errors %}
-<div class="error_box">
+<div class="info_box error">
+<p class="content">
 Některé Vámi zadané hodnoty jsou špatně - mrkněte se na ně znovu
+</p>
 </div>
 {% endif %}
 
@@ -29,27 +32,27 @@ Některé Vámi zadané hodnoty jsou špatně - mrkněte se na ně znovu
     </fieldset>
     <fieldset class="competition">
         <legend class="textversion">Závod</legend>
-        <p {% if competition_form.errors.event %}class="error"{% endif %}>
+        <p class="event {% if competition_form.errors.event %}error{% endif %}">
         <label for="competition_event">Disciplína</label>
         {{ competition_form.event }}
         </p>
 
-        <p {% if competition_form.errors.event_info %}class="error"{% endif %}>
+        <p class="event_info {% if competition_form.errors.event_info %}error{% endif %}">
         <label for="competition_event_info">Podrobnosti</label>
         {{ competition_form.event_info }}
         </p>
 
-        <p {% if competition_form.errors.result %}class="error"{% endif %}>
+        <p class="result {% if competition_form.errors.result %}error{% endif %}">
         <label for="competition_result">Výkon</label>
         {{ competition_form.result }}
         </p>
 
-        <p {% if competition_form.errors.place %}class="error"{% endif %}>
+        <p class="place {% if competition_form.errors.place %}error{% endif %}">
         <label for="competition_place">Místo</label>
         {{ competition_form.place }}
         </p>
 
-        <p {% if competition_form.errors.note %}class="error"{% endif %}>
+        <p class="note {% if competition_form.errors.note %}error{% endif %}">
         <label for="competition_note">Poznámka</label>
         {{ competition_form.note }}
         </p>
@@ -58,4 +61,5 @@ Některé Vámi zadané hodnoty jsou špatně - mrkněte se na ně znovu
         {{ competition_form.id }}
     </fieldset>
 </form>
+</div></div></div></div>
 </div>

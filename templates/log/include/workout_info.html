@@ -28,7 +28,7 @@
         <tr>
         <th class="type">Typ</th>
         <th class="desc">Popis</th>
-        <th class="km">Km</th>
+        <th class="num_data">km/kg</th>
         </tr>
     </thead>
     <tbody>
@@ -36,7 +36,7 @@
     <tr>
         <td class="type">{{i.type}}</td>
         <td class="desc">{{i.desc}}</td>
-        <td class="km">{{i.km}}</td>
+        <td class="num_data">{{i.num_data}}</td>
     </tr>
     {% endfor %}
     </tbody>
@@ -108,7 +108,13 @@
     <tbody>
 {% for c in competitions %}
         <tr>
-            <td>{{ c.event }}</td>
+            <td>
+            {% if c.event.has_additional_info %}
+            {{c.event_info}}
+            {% else %}
+            {{c.event.name}}
+            {% endif %}
+            </td>
             <td>{{ c.result }}</td>
             <td>{{ c.place }}</td>
             {% if athlete_edit_allowed %}

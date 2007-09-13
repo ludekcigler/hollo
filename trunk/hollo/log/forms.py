@@ -74,5 +74,5 @@ class WorkoutForm(forms.Form):
 
 class WorkoutItemForm(forms.Form):
     type = forms.ChoiceField(label='Typ', initial='Roz')
-    desc = forms.CharField(label='Popis', min_length=1, initial='')
+    desc = forms.CharField(label='Popis')
     num_data = forms.DecimalField(decimal_places=2, label='km/kg', initial=0)

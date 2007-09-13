@@ -86,4 +86,8 @@ urlpatterns = patterns('log.views',
 
     (r'^competition/(?P<athlete_id>\w+)/add/(?P<year>\d{4})/(?P<month>\d{,2})/(?P<day>\d{,2})/$', 'competition.add_form'),
     (r'^competition/(?P<athlete_id>\w+)/edit/(?P<year>\d{4})/(?P<month>\d{,2})/(?P<day>\d{,2})/(?P<competition_id>\d+)/$', 'competition.edit_form'),
+
+    # Javascript-generating views
+    (r'^js/event_info/', 'js_event_info'),
+    (r'^js/workout_type_info/', 'js_workout_type_info'),
 )

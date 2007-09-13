@@ -96,3 +96,8 @@ def pluralize_cz(value, format):
     else:
         return format_plural_many % value
 
+@register.filter
+def trunc_unicode(value, length):
+    length = int(length)
+    return unicode(value)[0:length]
+

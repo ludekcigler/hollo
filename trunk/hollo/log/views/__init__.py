@@ -145,3 +145,17 @@ def get_auth_request_message(person):
         return "%d požadavky na autorizaci" % auth_request_count
     else:
         return "%d požadavků na autorizaci" % auth_request_count
+
+# Generate list of information about track events
+def js_event_info(request):
+    track_events = models.TrackEvent.objects.all()
+    t = loader.get_template('log/js_event_info.js')
+    context = RequestContext(request, {'events': track_events})
+    return http.HttpResponse(t.render(context))
+
+# Generate list of information about workout types
+def js_workout_type_info(request):
+    workout_types = models.WorkoutType.objects.all()
+    t = loader.get_template('log/js_workout_type_info.js')
+    context = RequestContext(request, {'workout_types': workout_types})
+    return http.HttpResponse(t.render(context))

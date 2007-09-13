@@ -353,19 +353,19 @@ table tbody td, table tbody th {
     background-image: url(/site_media/log/images/icons/remove_middle.png);
 }
 
-.summary a.remove_competition {
+a.remove_competition {
     background-image: url(/site_media/log/images/icons/remove_small.png);
 }
 
-.summary a.edit_competition {
+a.edit_competition {
     background-image: url(/site_media/log/images/icons/properties_small.png);
 }
 
-.summary table.competition a span {
+.summary table.competition a span, #competition_view table a span {
     display: none;
 }
 
-.summary table.competition a {
+.summary table.competition a, #competition_view table a {
     display: block;
     width: 20px;
     height: 20px;
@@ -776,6 +776,10 @@ form input.cancel {
    background-image: url('/site_media/log/images/icons/cancel_small.png'); 
 }
 
+#workout_form table td {
+    background-color: transparent;
+}
+
 #workout_form #add_workout_item {
     background-image: url('/site_media/log/images/icons/add_small.png');
 }
@@ -783,13 +787,22 @@ form input.cancel {
 #workout_form .add_workout_item {
     clear: both;
     text-align: right;
-    padding: 0.8em 0;
+    padding: 0.2em 0;
+    margin: 0.2em;
 }
 
 form fieldset.button_set {
     border-top: 1px solid gray;
     text-align: right;
     padding-top: 1em;
+}
+
+form .error input, form .error select {
+    border: 1px solid red;
+}
+
+form .error {
+    color: red;
 }
 
 #workout_form, #competition_form, .settings_form {
@@ -801,7 +814,7 @@ form fieldset.button_set {
     position: relative;
 }
 
-#workout_form .content, #competition_form .content, .settings_form .content {
+#workout_form div.content, #competition_form div.content, .settings_form div.content {
     padding: 1em 1em 6.5em;
 }
 
@@ -825,20 +838,25 @@ form fieldset.button_set {
     margin-bottom: 1em;
 }
 
-#workout_form .workout_items ol ul, #workout_form .workout_items ol {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+#workout_form .workout_items table {
+    width: 100%;
 }
 
-#workout_form .workout_items ol li {
-    display: block;
-    clear: left;
+#workout_form .workout_items td {
+    padding: 0.1em 0.3em;
 }
 
-#workout_form .workout_items ol ul li {
-    float: left;
-    clear: none;
+
+#workout_form .workout_items .type {
+    width: 3em;
+}
+
+#workout_form .workout_items .num_data {
+    width: 3em;
+}
+
+#workout_form .workout_items .remove_button {
+    width: 20px;
 }
 
 #workout_form .workout_items label {
@@ -850,20 +868,37 @@ form fieldset.button_set {
     font-weight: bold;
 }
 
+#workout_form .workout_items td input {
+    width: 100%;
+}
+
 #workout_form .remove_workout_item {
-    margin: 1.6em 0 0 0.1em;
+    margin: 1.2em 0 0 0.1em;
     background-image: url(/site_media/log/images/icons/remove_small.png);
     background-position: center center;
     width: 20px;
     height: 20px;
 }
 
-#workout_form .workout_desc {
-    width: 29em;
+#workout_form .workout_additional_info table {
+    width: 100%;
 }
 
-#workout_form .workout_km {
+#workout_form .workout_additional_info th {
+    background-color: transparent;
+    text-align: right;
+    padding: 0.2em 1.5em;
     width: 5em;
+    font-weight: normal;
+    vertical-align: top;
+}
+
+#workout_form .workout_additional_info input, #workout_form .workout_additional_info textarea {
+    width: 100%;
+}
+
+form textarea {
+    height: 5em;
 }
 
 #workout_form .workout_weather label {
@@ -987,3 +1022,54 @@ form fieldset.button_set {
 .settings_form dl dd span:first-child {
     border: none;    
 }
+ /*----------------------------------------------------------------------------*/
+
+.star_picker span {
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+.star_picker {
+    position: relative;
+    display: block;
+    float: left;
+}
+
+.star_picker_element {
+    width: 12px;
+    height: 12px;
+    background-image: url(/site_media/log/images/icons/star_gray.gif);
+    display: block;
+    float: left;
+}
+
+.star_picker.yellow .selected, .star_picker .selected {
+    background-image: url(/site_media/log/images/icons/star_yellow.gif);
+}
+
+.star_picker.red .selected {
+    background-image: url(/site_media/log/images/icons/star_red.gif);
+}
+
+.star_picker_highlight {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.star_picker_highlight_element {
+    width: 12px;
+    height: 12px;
+    display: block;
+    float: left;
+}
+
+.star_picker_highlight .highlighted {
+    background-image: url(/site_media/log/images/icons/star_highlight.gif);
+    cursor: pointer;
+}
+
+.star_picker_highlight_element:hover {
+    cursor: pointer;
+}
+
+/*----------------------------------------------------------------------------*/

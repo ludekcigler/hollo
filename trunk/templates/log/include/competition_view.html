@@ -35,6 +35,8 @@
             <th class="event">Disciplína</th>
             <th class="result">Výkon</th>
             <th class="place">Místo</th>
+            <th scope="col">&nbsp;</th>
+            <th scope="col">&nbsp;</th>
         </tr>
      </thead>
      <tbody>
@@ -50,6 +52,16 @@
             </td>
             <td>{{ c.result }}</td>
             <td>{{ c.place }}</td>
+            <td>
+                <a href="{% url log.views.competition.edit_form athlete_id=athlete.person.user.username,year=c.day.year,month=c.day.month,day=c.day.day,competition_id=c.id %}" class="edit_competition" 
+                id="edit_competition_{{ c.day|date:"Y-m-d" }}_{{ c.id }}" title="Upravit závod">
+                <span>Upravit závod</span></a>
+            </td>
+            <td>
+                <a href="{% url log.views.competition.remove_competition athlete_id=athlete.person.user.username,competition_id=c.id %}" class="remove_competition" 
+                    id="remove_competition_{{ c.day|date:"Y-m-d" }}_{{ c.id }}" title="Odstranit závod">
+                    <span>Odstranit závod</span></a>
+            </td>
         </tr>
         {% endfor %}
      </tbody>

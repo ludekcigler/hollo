@@ -93,7 +93,7 @@ def weekly_view(request, athlete_id, week, year, detail_year = None, detail_mont
     last_day = common.iso_week_day_to_gregorian(year, week, 7)
 
     change_view_data = {'view_type': 'weekly', 'week': week, 'year': year, 'month': first_day.month}
-    change_view_form = forms.WorkoutChangeViewForm(change_view_data, auto_id="workout_change_view_%s")
+    change_view_form = forms.WorkoutChangeViewForm(change_view_data, auto_id="change_view_%s")
 
     context = {'week': week, 'year': year, 'previous_week': previous_week, \
                'previous_year': previous_year, 'next_week': next_week, \
@@ -187,7 +187,7 @@ def monthly_view(request, athlete_id, month, year, detail_day = None):
 
     change_view_data = {'view_type': 'monthly', 'week': common.week_numbers_in_month(year, month).next(),
                         'year': year, 'month': month}
-    change_view_form = forms.WorkoutChangeViewForm(change_view_data, auto_id="workout_change_view_%s")
+    change_view_form = forms.WorkoutChangeViewForm(change_view_data, auto_id="change_view_%s")
 
     context = {'month_data': month_data, 'previous_month': previous_month, 'previous_year': previous_year, \
             'next_month': next_month, 'next_year': next_year, \
@@ -218,7 +218,7 @@ def change_view(request, athlete_id):
     """
     Change the workout period which is displayed
     """
-    form = forms.WorkoutChangeViewForm(request.POST, auto_id="workout_change_view_%s")
+    form = forms.WorkoutChangeViewForm(request.POST, auto_id="change_view_%s")
     if not form.is_valid():
         return http.HttpResponseRedirect(reverse('log.views.workout.index', kwargs={'athlete_id': athlete_id}))
 
@@ -293,7 +293,6 @@ def display_form(request, action, athlete, date, workout_data, num_workout_items
     context['form_action'] = action
     context['athlete'] = athlete
 
-    workout_form = forms.WorkoutForm(request.POST.copy(), auto_id='workout_%s')
     workout_item_forms = []
 
     # Look for submit key (we need it to determine which button was actually pressed)
@@ -303,43 +302,46 @@ def display_form(request, action, athlete, date, workout_data, num_workout_items
         # Default, the submit key was not pressed before
         continue_url = request.META.get('HTTP_REFERER', reverse('log.views.workout.index', 
                                                                 kwargs={'athlete_id': athlete.person.user.username}))
-        workout_form.data = workout_data
+        workout_form = forms.WorkoutForm(initial=workout_data, auto_id='workout_%s')
         workout_item_forms = _create_workout_item_forms(num_workout_items, workout_items_data)
     else:
         submit_button = submit_button.lower()
         continue_url = request.GET['continue']
-        num_workout_items = int(workout_form.data['num_workout_items'])
-        workout_item_forms = _create_workout_item_forms(num_workout_items, request.POST)
 
-        if submit_button == 'ok':
-            if save_func(request, athlete, workout_form, workout_item_forms):
-                return http.HttpResponseRedirect(continue_url)
-            else:
-                # There were errors in workout form -- redisplay the form
-                context['form_errors'] = True
-
-        elif submit_button == 'cancel':
+        if submit_button == 'cancel':
             if continue_url:
                 return http.HttpResponseRedirect(continue_url)
             else:
                 return http.HttpResponseRedirect(reverse('log.views.workout.index', kwargs={'athlete_id': athlete_id}))
 
-        elif submit_button == 'add_workout_item':
-            item_data = {'type': 'Roz', 'desc': '', 'num_data': '0'}
-            workout_item_forms.append(forms.WorkoutItemForm(item_data, auto_id=(('workout_item_%d_' % num_workout_items) + '%s')))
-            num_workout_items += 1
-            workout_form.data['num_workout_items'] = num_workout_items
+        num_workout_items = int(request.POST['num_workout_items'])
 
+        if submit_button == 'ok':
+            workout_form = forms.WorkoutForm(request.POST.copy(), auto_id='workout_%s')
+            workout_item_forms = _create_workout_item_forms(num_workout_items, data=request.POST.copy())
+            if save_func(request, athlete, workout_form, workout_item_forms):
+                return http.HttpResponseRedirect(continue_url)
+            else:
+                # There were errors in workout form -- redisplay the form
+                context['form_errors'] = True
         else:
-            # Remove the workout item
-            removed_item = int(re.match('^.*_(\d+)$', submit_button).group(1))
-            del workout_item_forms[removed_item]
-            num_workout_items -= 1
-            workout_form.data['num_workout_items'] = num_workout_items
+            workout_item_forms = _create_workout_item_forms(num_workout_items, initial=request.POST.copy())
+            workout_form = forms.WorkoutForm(initial=request.POST.copy(), auto_id='workout_%s')
+            if submit_button == 'add_workout_item':
+                workout_item_forms.append(forms.WorkoutItemForm(auto_id=(('workout_item_%d_' % num_workout_items) + '%s')))
+                num_workout_items += 1
+                workout_form.initial['num_workout_items'] = num_workout_items
+    
+            else:
+                # Remove the workout item
+                removed_item = int(re.match('^.*_(\d+)$', submit_button).group(1))
+                del workout_item_forms[removed_item]
+                num_workout_items -= 1
+                workout_form.initial['num_workout_items'] = num_workout_items
 
-            # Update IDs of workout item forms
-            for f, i in zip(workout_item_forms, range(0, len(workout_item_forms))):
-                f.auto_id = (('workout_item_%d_' % i) + '%s')
+                # Update IDs of workout item forms
+                for f, i in zip(workout_item_forms, range(0, len(workout_item_forms))):
+                    f.auto_id = (('workout_item_%d_' % i) + '%s')
 
     context['continue'] = continue_url
     context['workout_form'] = workout_form
@@ -350,21 +352,31 @@ def display_form(request, action, athlete, date, workout_data, num_workout_items
     return http.HttpResponse(t.render(c))
 
 
-def _create_workout_item_forms(num_workout_items, data={}):
+def _create_workout_item_forms(num_workout_items, data={}, initial={}):
     """
     Creates workout item forms
     """
+    posted_data = initial
+    if data:
+        posted_data = data
+        
     result_forms = []
+    workout_type_choices = [(t.abbr, t.abbr) for t in models.WorkoutType.objects.all()]
     for i in xrange(0, num_workout_items):
-        item_data = {'type': 'Roz', 'desc': '', 'num_data': '0'}
+
+        item_data = {}
         item_data_post_fields = ["workout_item_%d_type", "workout_item_%d_desc", "workout_item_%d_num_data"]
         item_data_fields = ["type", "desc", "num_data"]
         for post_field, field in zip(item_data_post_fields, item_data_fields):
-            if data.has_key(post_field % i):
-                item_data[field] = data[post_field % i]
+            if posted_data.has_key(post_field % i):
+                item_data[field] = posted_data[post_field % i]
 
-        workout_item_form = forms.WorkoutItemForm(data=item_data, auto_id=(('workout_item_%d_' % i) + '%s'))
-        workout_item_form.fields["type"].choices = [(t.abbr, t.abbr) for t in models.WorkoutType.objects.all()]
+        if data:
+            workout_item_form = forms.WorkoutItemForm(item_data, auto_id=(('workout_item_%d_' % i) + '%s'))
+        else:
+            workout_item_form = forms.WorkoutItemForm(initial=item_data, auto_id=(('workout_item_%d_' % i) + '%s'))
+
+        workout_item_form.fields["type"].choices = workout_type_choices
         result_forms.append(workout_item_form)
 
     return result_forms

@@ -10,6 +10,13 @@ Upravit trénink :: Tréninkový deník
 {% endifequal %}
 {% endblock %}
 
+{% block javascripts %}
+    <script type="text/javascript" src="/site_media/log/js/star_picker.js"></script>
+    <script type="text/javascript" src="{% url log.views.js_workout_type_info %}"></script>
+
+    <script type="text/javascript" src="/site_media/log/js/workout_form.js"></script>
+{% endblock %}
+
 {% block page_body %}
 {% include 'log/include/workout_form.html' %}
 {% endblock %}

@@ -1,6 +1,10 @@
 {% extends 'log/workout_base.html' %}
 {% load log_tags %}
 
+{% block javascripts %}
+    <script type="text/javascript" src="/site_media/log/js/change_view_form.js"></script>
+{% endblock %}
+
 {% block content %}
 <div id="view_selection" class="corner_tl">
 <div class="corner_tr"><div class="corner_bl"><div class="corner_br content">
@@ -17,15 +21,15 @@
 <form action="{% url log.views.workout.change_view athlete_id=athlete.person.user.username %}" method="post">
 <fieldset>
 <legend class="textversion">Zobrazení deníku</legend>
-<label for="workout_change_view_view_type">Pohled</label>
+<label for="change_view_view_type">Pohled</label>
 {{change_view_form.view_type}}
-<label for="workout_change_view_week">Týden</label>
+<label for="change_view_week">Týden</label>
 {{change_view_form.week}}
-<label for="workout_change_view_month">Měsíc</label>
+<label for="change_view_month">Měsíc</label>
 {{change_view_form.month}}
-<label for="workout_change_view_year">Rok</label>
+<label for="change_view_year">Rok</label>
 {{change_view_form.year}}
-<button type="submit" id="workout_change_view_submit">Zobrazit</button>
+<button type="submit" id="change_view_submit">Zobrazit</button>
 </fieldset>
 </form>
 

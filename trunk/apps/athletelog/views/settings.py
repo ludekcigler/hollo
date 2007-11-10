@@ -33,19 +33,19 @@ from django import http
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 
-from hollo.log import views
-from hollo.log.views import login_required
-from hollo.log import models
-from hollo.log import forms
-from hollo.log import common
-from hollo.settings import MEDIA_ROOT
+from athletelog import views
+from athletelog.views import login_required
+from athletelog import models
+from athletelog import forms
+from athletelog import common
+from settings import MEDIA_ROOT
 
 @login_required
 def index(request):
     """
     Default settings URL, just redirects to the proper default screen
     """
-    return http.HttpResponseRedirect(reverse('log.views.settings.user'))
+    return http.HttpResponseRedirect(reverse('athletelog.views.settings.user'))
 
 
 @login_required
@@ -53,7 +53,7 @@ def user(request):
     """
     Display user-specific settings
     """
-    continue_url = reverse('log.views.index')
+    continue_url = reverse('athletelog.views.index')
     submit_button = common.get_submit_button(request.POST)
     if submit_button == 'cancel':
         # Go to redirection page
@@ -108,7 +108,7 @@ def user(request):
 
     context['user_form'] = user_form
 
-    tpl = loader.get_template('log/settings_user.html')
+    tpl = loader.get_template('athletelog/settings_user.html')
     context = RequestContext(request, context)
     return http.HttpResponse(tpl.render(context))
 
@@ -129,7 +129,7 @@ def user_remove_image(request):
     person.image = None
     person.save()
 
-    return http.HttpResponseRedirect(request.META.get('HTTP_REFERER', reverse('log.views.settings.user')))
+    return http.HttpResponseRedirect(request.META.get('HTTP_REFERER', reverse('athletelog.views.settings.user')))
 
 @login_required
 def user_edit_image(request):
@@ -137,10 +137,10 @@ def user_edit_image(request):
     Show edit image form
     """
     image_form = forms.SettingsImageForm(auto_id='user_%s')
-    context = {'continue': request.META.get('http_referer', reverse('log.views.settings.user')),
+    context = {'continue': request.META.get('http_referer', reverse('athletelog.views.settings.user')),
                'image_form': image_form}
     context = RequestContext(request, context)
-    tpl = loader.get_template('log/settings_user_edit_image.html')
+    tpl = loader.get_template('athletelog/settings_user_edit_image.html')
     return http.HttpResponse(tpl.render(context))
 
 @login_required
@@ -149,7 +149,7 @@ def user_upload_image(request):
     Save uploaded image
     """
     continue_url = request.REQUEST.has_key('continue') and request.REQUEST['continue'] \
-                    or request.META.get('HTTP_REFERER', reverse('log.views.settings.user'))
+                    or request.META.get('HTTP_REFERER', reverse('athletelog.views.settings.user'))
 
     image_form = forms.SettingsImageForm(request.POST, request.FILES, auto_id='user_%s')
 
@@ -195,7 +195,7 @@ def user_change_password(request):
     Change password form
     """
     continue_url = request.REQUEST.has_key('continue') and request.REQUEST['continue'] \
-                    or request.META.get('HTTP_REFERER', reverse('log.views.settings.user'))
+                    or request.META.get('HTTP_REFERER', reverse('athletelog.views.settings.user'))
 
     form_errors = False
     form_error_message = ''
@@ -223,7 +223,7 @@ def user_change_password(request):
                'form_errors': form_errors,
                'form_error_message': form_error_message} 
     context = RequestContext(request, context)
-    tpl = loader.get_template('log/settings_user_edit_password.html')
+    tpl = loader.get_template('athletelog/settings_user_edit_password.html')
     return http.HttpResponse(tpl.render(context))
 
 @login_required
@@ -234,9 +234,9 @@ def my_athletes(request):
     try:
         coach = models.Coach.objects.get(person=request.user.id)
     except ObjectDoesNotExist:
-        return http.HttpResponseRedirect(reverse('log.views.settings.index'))
+        return http.HttpResponseRedirect(reverse('athletelog.views.settings.index'))
 
-    tpl = loader.get_template('log/settings_my_athletes.html')
+    tpl = loader.get_template('athletelog/settings_my_athletes.html')
     context = RequestContext(request, {'coach': coach})
     return http.HttpResponse(tpl.render(context))
 
@@ -318,7 +318,7 @@ def friends(request):
                'blocked_persons': blocked_persons,
                'other_persons': other_persons}
 
-    tpl = loader.get_template('log/settings_friends.html')
+    tpl = loader.get_template('athletelog/settings_friends.html')
     context = RequestContext(request, context)
     return http.HttpResponse(tpl.render(context))
 
@@ -368,7 +368,7 @@ def friends_add(request):
                'person_group_athletes': person_group_athletes,
                'person_other_athletes': person_other_athletes}
 
-    tpl = loader.get_template('log/settings_friends_add.html')
+    tpl = loader.get_template('athletelog/settings_friends_add.html')
     context = RequestContext(request, context)
     return http.HttpResponse(tpl.render(context))
 
@@ -385,7 +385,7 @@ def friends_add_edit_message(request, athlete_id):
         return None
     context = {'person': person, 'athlete': athlete}
     context = RequestContext(request, context)
-    tpl = loader.get_template('log/settings_friends_add_message.html')
+    tpl = loader.get_template('athletelog/settings_friends_add_message.html')
     return http.HttpResponse(tpl.render(context))
 
 @login_required
@@ -395,7 +395,7 @@ def friends_add_submit(request, athlete_id):
     """
     submit_button = common.get_submit_button(request.POST)
     if submit_button == 'Cancel':
-        return http.HttpResponseRedirect(reverse('log.views.settings.friends'))
+        return http.HttpResponseRedirect(reverse('athletelog.views.settings.friends'))
 
     try:
         req = models.AuthorizationRequest()
@@ -411,7 +411,7 @@ def friends_add_submit(request, athlete_id):
         return None
 
     req.save()
-    return http.HttpResponseRedirect(reverse('log.views.settings.friends'))
+    return http.HttpResponseRedirect(reverse('athletelog.views.settings.friends'))
 
 @login_required
 def friends_remove(request, athlete_id):
@@ -422,7 +422,7 @@ def friends_remove(request, athlete_id):
     except ObjectDoesNotExist:
         pass
 
-    return http.HttpResponseRedirect(request.META.get('HTTP_REFERER', reverse('log.views.index')))
+    return http.HttpResponseRedirect(request.META.get('HTTP_REFERER', reverse('athletelog.views.index')))
 
 
 @login_required
@@ -435,7 +435,7 @@ def friends_auth(request, person_id):
     except ObjectDoesNotExist:
         pass
 
-    return http.HttpResponseRedirect(request.META.get('HTTP_REFERER', reverse('log.views.index')))
+    return http.HttpResponseRedirect(request.META.get('HTTP_REFERER', reverse('athletelog.views.index')))
 
 @login_required
 def friends_auth_reject(request, person_id):
@@ -446,7 +446,7 @@ def friends_auth_reject(request, person_id):
     except ObjectDoesNotExist:
         pass
 
-    return http.HttpResponseRedirect(request.META.get('HTTP_REFERER', reverse('log.views.index')))
+    return http.HttpResponseRedirect(request.META.get('HTTP_REFERER', reverse('athletelog.views.index')))
 
 @login_required
 def friends_auth_cancel(request, athlete_id):
@@ -457,7 +457,7 @@ def friends_auth_cancel(request, athlete_id):
     except ObjectDoesNotExist:
         pass
 
-    return http.HttpResponseRedirect(request.META.get('HTTP_REFERER', reverse('log.views.index')))
+    return http.HttpResponseRedirect(request.META.get('HTTP_REFERER', reverse('athletelog.views.index')))
 
 
 @login_required
@@ -472,7 +472,7 @@ def friends_block(request, person_id):
     except ObjectDoesNotExist:
         pass
 
-    return http.HttpResponseRedirect(request.META.get('HTTP_REFERER', reverse('log.views.index')))
+    return http.HttpResponseRedirect(request.META.get('HTTP_REFERER', reverse('athletelog.views.index')))
 
 
 @login_required
@@ -484,13 +484,13 @@ def friends_unblock(request, person_id):
     except ObjectDoesNotExist:
         pass
 
-    return http.HttpResponseRedirect(request.META.get('HTTP_REFERER', reverse('log.views.index')))
+    return http.HttpResponseRedirect(request.META.get('HTTP_REFERER', reverse('athletelog.views.index')))
 
 @login_required
 def friends_auth_list(request):
     submit_button = common.get_submit_button(request.POST)
     cont = request.REQUEST.has_key('continue') and request.REQUEST['continue'] \
-           or request.META.get('HTTP_REFERER', reverse('log.views.index'))
+           or request.META.get('HTTP_REFERER', reverse('athletelog.views.index'))
     if submit_button == 'Ok':
         return http.HttpResponseRedirect(cont)
 
@@ -502,7 +502,7 @@ def friends_auth_list(request):
 
     context = {'athlete': athlete, 'continue': cont}
     context = RequestContext(request, context)
-    tpl = loader.get_template('log/settings_auth_requests.html')
+    tpl = loader.get_template('athletelog/settings_auth_requests.html')
     return http.HttpResponse(tpl.render(context))
 
 def _remove_auth_request(person, athlete):

@@ -22,18 +22,16 @@ import os
 from settings import PROJECT_DIR
 
 from django.conf.urls.defaults import *
-
-from hollo import log
-import log.views
+import athletelog.views
 
 urlpatterns = patterns('',
-    (r'^$', log.views.index),
+    (r'^$', athletelog.views.index),
 
     # Uncomment this for admin:
     (r'^admin/', include('django.contrib.admin.urls')),
 
     # Log URLs
-    (r'^log/', include('hollo.log.urls')),
+    (r'^log/', include('athletelog.urls')),
 
     # Site Media - TODO: Odstranit pri nahrani na server
     (r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': os.path.join(PROJECT_DIR, 'media')}),

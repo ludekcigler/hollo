@@ -423,49 +423,49 @@ def _tests():
     # normalize_time tests
     time = '4:08,7'
     time_result = TIME_RESULT_PATTERN.match(time).groupdict()
-    print 'hollo.log.models.normalize_time, %s, %s' % (time, normalize_time(time_result))
+    print 'athletelog.models.normalize_time, %s, %s' % (time, normalize_time(time_result))
 
     time = '8.63'
     time_result = TIME_RESULT_PATTERN.match(time).groupdict()
-    print 'hollo.log.models.normalize_time, %s, %s' % (time, normalize_time(time_result))
+    print 'athletelog.models.normalize_time, %s, %s' % (time, normalize_time(time_result))
 
     # compare_time tests
     time_a = '63.76'
     time_b = '1:04,5'
-    print 'hollo.log.models.compare_times %s, %s: %s' % (time_a, time_b, 
+    print 'athletelog.models.compare_times %s, %s: %s' % (time_a, time_b, 
                     compare_times(TIME_RESULT_PATTERN.match(time_a).groupdict(), TIME_RESULT_PATTERN.match(time_b).groupdict()))
 
     time_a = '63.76'
     time_b = '1:03,76'
-    print 'hollo.log.models.compare_times %s, %s: %s' % (time_a, time_b, 
+    print 'athletelog.models.compare_times %s, %s: %s' % (time_a, time_b, 
                     compare_times(TIME_RESULT_PATTERN.match(time_a).groupdict(), TIME_RESULT_PATTERN.match(time_b).groupdict()))
 
     time_a = '63.77'
     time_b = '1:03,76'
-    print 'hollo.log.models.compare_times %s, %s: %s' % (time_a, time_b, 
+    print 'athletelog.models.compare_times %s, %s: %s' % (time_a, time_b, 
                     compare_times(TIME_RESULT_PATTERN.match(time_a).groupdict(), TIME_RESULT_PATTERN.match(time_b).groupdict()))
 
     # normalize_distance tests
     dist = '2.6.58'
     dist_result = DISTANCE_RESULT_PATTERN.match(dist).groupdict()
     print dist_result
-    print 'hollo.log.models.normalize_distance, %s, %s' % (dist, normalize_distance(dist_result))
+    print 'athletelog.models.normalize_distance, %s, %s' % (dist, normalize_distance(dist_result))
 
     # compare_distances tests
     dist_a = '2.63.77'
     dist_b = '2.63.76'
-    print 'hollo.log.models.compare_distances %s, %s: %s' % (dist_a, dist_b, 
+    print 'athletelog.models.compare_distances %s, %s: %s' % (dist_a, dist_b, 
                     compare_distances(DISTANCE_RESULT_PATTERN.match(dist_a).groupdict(), DISTANCE_RESULT_PATTERN.match(dist_b).groupdict()))
 
     # normalize_points tests
     points = '6589'
     points_result = POINTS_RESULT_PATTERN.match(points).groupdict()
-    print 'hollo.log.models.normalize_points, %s, %s' % (points, normalize_points(points_result))
+    print 'athletelog.models.normalize_points, %s, %s' % (points, normalize_points(points_result))
 
     # compare_points tests
     points_a = '6377'
     points_b = '6376'
-    print 'hollo.log.models.compare_points %s, %s: %s' % (points_a, points_b, 
+    print 'athletelog.models.compare_points %s, %s: %s' % (points_a, points_b, 
                     compare_points(POINTS_RESULT_PATTERN.match(points_a).groupdict(), POINTS_RESULT_PATTERN.match(points_b).groupdict()))
 
     print bool(DISTANCE_RESULT_PATTERN.match('4.86'))

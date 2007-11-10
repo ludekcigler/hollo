@@ -35,10 +35,10 @@ from django.template import loader, Context, RequestContext
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 
-from hollo.log.views import login_required, athlete_view_allowed, athlete_edit_allowed, get_auth_request_message
-from hollo.log import models
-from hollo.log import common
-from hollo.log import forms
+from athletelog.views import login_required, athlete_view_allowed, athlete_edit_allowed, get_auth_request_message
+from athletelog import models
+from athletelog import common
+from athletelog import forms
 
 @login_required
 @athlete_view_allowed
@@ -115,7 +115,7 @@ def interval_view(request, athlete_id, view_type, first_day = None, last_day = N
         initial_context.update(context)
         context = initial_context
 
-    t = loader.get_template('log/competition.html')
+    t = loader.get_template('athletelog/competition.html')
 
     c = RequestContext(request, context)
     return http.HttpResponse(t.render(c))
@@ -210,7 +210,7 @@ def display_form(request, action, athlete, day, competition_data, save_func):
     submit_button = common.get_submit_button(request.POST)
 
     if not submit_button:
-        continue_url = request.META.get('HTTP_REFERER', reverse('log.views.competition.index', 
+        continue_url = request.META.get('HTTP_REFERER', reverse('athletelog.views.competition.index', 
                                                                 kwargs={'athlete_id': athlete.person.user.username}))
         competition_form = forms.CompetitionForm(initial=competition_data, auto_id='competition_%s')
         competition_form.fields["event"].choices = [(e.name, e.name) for e in models.TrackEvent.objects.all()]
@@ -229,12 +229,12 @@ def display_form(request, action, athlete, day, competition_data, save_func):
             if continue_url:
                 return http.HttpResponseRedirect(continue_url)
             else:
-                return http.HttpResponseRedirect(reverse('log.views.competition.index', kwargs={'athlete_id': athlete_id}))
+                return http.HttpResponseRedirect(reverse('athletelog.views.competition.index', kwargs={'athlete_id': athlete_id}))
 
     context['continue'] = continue_url
     context['competition_form'] = competition_form
     
-    t = loader.get_template('log/competition_form.html')
+    t = loader.get_template('athletelog/competition_form.html')
     c = RequestContext(request, context)
     return http.HttpResponse(t.render(c))
 
@@ -252,7 +252,7 @@ def remove_competition(request, athlete_id, competition_id):
         return http.HttpResponseNotFound()
     
     competition.delete()
-    return http.HttpResponseRedirect(request.META.get('HTTP_REFERER', reverse('log.views.index')))
+    return http.HttpResponseRedirect(request.META.get('HTTP_REFERER', reverse('athletelog.views.index')))
 
 
 @login_required
@@ -263,20 +263,20 @@ def change_view(request, athlete_id):
     """
     form = forms.CompetitionChangeViewForm(request.POST, auto_id="change_view_%s")
     if not form.is_valid():
-        return http.HttpResponseRedirect(reverse('log.views.competition.index',
+        return http.HttpResponseRedirect(reverse('athletelog.views.competition.index',
                                                  kwargs={'athlete_id': athlete_id}))
     if (form.cleaned_data['view_type'] == 'monthly'):
-        return http.HttpResponseRedirect(reverse('log.views.competition.monthly_view',
+        return http.HttpResponseRedirect(reverse('athletelog.views.competition.monthly_view',
                                             kwargs={'athlete_id': athlete_id,
                                                     'year': form.cleaned_data["year"],
                                                     'month': form.cleaned_data["month"]}))
     elif (form.cleaned_data['view_type'] == 'yearly'):
         month, year = int(request.POST['month']), int(request.POST['year'])
-        return http.HttpResponseRedirect(reverse('log.views.competition.yearly_view',
+        return http.HttpResponseRedirect(reverse('athletelog.views.competition.yearly_view',
                                             kwargs={'athlete_id': athlete_id,
                                                     'year': form.cleaned_data["year"]}))
     else:
-        return http.HttpResponseRedirect(reverse('log.views.competition.index',
+        return http.HttpResponseRedirect(reverse('athletelog.views.competition.index',
                                             kwargs={'athlete_id': athlete_id}))
 
 

@@ -27,7 +27,7 @@ from django.core import urlresolvers
 from django import http 
 from django.template import loader, Context, RequestContext
 
-from hollo.log import models
+from athletelog import models
 
 __all__ = ['user', 'workout', 'competition', 'settings']
 
@@ -104,9 +104,9 @@ def index(request):
             else:
                 #TODO: show error page
                 athlete_id = None
-        return http.HttpResponseRedirect(urlresolvers.reverse('log.views.workout.index', kwargs = {'athlete_id': athlete_id}))
+        return http.HttpResponseRedirect(urlresolvers.reverse('athletelog.views.workout.index', kwargs = {'athlete_id': athlete_id}))
     else:
-        return http.HttpResponseRedirect(urlresolvers.reverse('log.views.user.login'))
+        return http.HttpResponseRedirect(urlresolvers.reverse('athletelog.views.user.login'))
 
 @login_required
 def change_athlete(request, view_type):
@@ -117,7 +117,7 @@ def change_athlete(request, view_type):
     old_athlete = request.GET.has_key('old') and request.GET['old'] or None
     ctx = RequestContext(request, {'person': person, 'old_athlete': old_athlete,\
             'view_type': view_type})
-    tpl = loader.get_template('log/change_athlete.html')
+    tpl = loader.get_template('athletelog/change_athlete.html')
     return http.HttpResponse(tpl.render(ctx))
 
 
@@ -149,13 +149,13 @@ def get_auth_request_message(person):
 # Generate list of information about track events
 def js_event_info(request):
     track_events = models.TrackEvent.objects.all()
-    t = loader.get_template('log/js_event_info.js')
+    t = loader.get_template('athletelog/js_event_info.js')
     context = RequestContext(request, {'events': track_events})
     return http.HttpResponse(t.render(context))
 
 # Generate list of information about workout types
 def js_workout_type_info(request):
     workout_types = models.WorkoutType.objects.all()
-    t = loader.get_template('log/js_workout_type_info.js')
+    t = loader.get_template('athletelog/js_workout_type_info.js')
     context = RequestContext(request, {'workout_types': workout_types})
     return http.HttpResponse(t.render(context))

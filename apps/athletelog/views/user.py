@@ -28,10 +28,10 @@ from django.shortcuts import render_to_response
 from django.template import loader, Context, RequestContext
 from django.core.urlresolvers import reverse
 
-from hollo.log import views
+from athletelog import views
 
 def login(request):
-    t = loader.get_template('log/login.html')
+    t = loader.get_template('athletelog/login.html')
     context = {}
     if request.has_key('auth') and request.GET['auth']:
         context['login_failed'] = True
@@ -46,9 +46,9 @@ def auth(request):
     user = django.contrib.auth.authenticate(username=username, password=password)
     if user is not None and user.is_active:
         django.contrib.auth.login(request, user)
-        return http.HttpResponseRedirect(reverse('log.views.index'))
+        return http.HttpResponseRedirect(reverse('athletelog.views.index'))
     else:
-        return http.HttpResponseRedirect("%s?%s" % (reverse('log.views.user.login'), "auth=error"))
+        return http.HttpResponseRedirect("%s?%s" % (reverse('athletelog.views.user.login'), "auth=error"))
 
 
 def logout(request):

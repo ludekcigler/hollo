@@ -23,7 +23,7 @@ import time
 from django import newforms as forms
 from django.utils.dates import MONTHS
 
-from hollo.log import models
+from athletelog import models
 
 class ChangeViewForm(forms.Form):
     month = forms.ChoiceField(choices=[(month, MONTHS[month]) for month in xrange(1, 13)], label='Měsíc', initial=time.localtime()[1])

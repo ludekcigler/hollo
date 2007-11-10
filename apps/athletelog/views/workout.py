@@ -35,19 +35,19 @@ from django.template import loader, Context, RequestContext
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
 
-from hollo.log.views import login_required, athlete_view_allowed, \
+from athletelog.views import login_required, athlete_view_allowed, \
                             athlete_edit_allowed, get_auth_request_message, \
                             force_no_cache
-from hollo.log import models
-from hollo.log import common
-from hollo.log import forms
-from hollo.log.views import competition
+from athletelog import models
+from athletelog import common
+from athletelog import forms
+from athletelog.views import competition
 
 @login_required
 @athlete_view_allowed
 def index(request, athlete_id):
     year, week = datetime.date.today().isocalendar()[:2]
-    return http.HttpResponseRedirect(reverse('log.views.workout.weekly_view', 
+    return http.HttpResponseRedirect(reverse('athletelog.views.workout.weekly_view', 
                                      kwargs={'athlete_id': athlete_id,
                                              'year': year,
                                              'week': week}))
@@ -106,12 +106,12 @@ def weekly_view(request, athlete_id, week, year, detail_year = None, detail_mont
 
     if (detail_year and detail_month and detail_day):
         detail_year, detail_month, detail_day = int(detail_year), int(detail_month), int(detail_day)
-        t = loader.get_template('log/workout_weekly_detail.html')
+        t = loader.get_template('athletelog/workout_weekly_detail.html')
         context.update(day_info(athlete, detail_year, detail_month, detail_day))
     else:
         context["workout_summary"] = interval_summary(athlete, first_day, last_day)
         context["competition_summary"] = competition.interval_summary(athlete, first_day, last_day)
-        t = loader.get_template('log/workout_weekly.html')
+        t = loader.get_template('athletelog/workout_weekly.html')
 
 
     c = RequestContext(request, context)
@@ -200,11 +200,11 @@ def monthly_view(request, athlete_id, month, year, detail_day = None):
 
     if detail_day:
         context.update(day_info(athlete, year, month, int(detail_day)))
-        t = loader.get_template('log/workout_monthly_detail.html')
+        t = loader.get_template('athletelog/workout_monthly_detail.html')
     else:
         context["workout_summary"] = interval_summary(athlete, first_day, last_day)
         context["competition_summary"] = competition.interval_summary(athlete, first_day, last_day)
-        t = loader.get_template('log/workout_monthly.html')
+        t = loader.get_template('athletelog/workout_monthly.html')
 
     c = RequestContext(request, context)
     return http.HttpResponse(t.render(c))
@@ -220,15 +220,15 @@ def change_view(request, athlete_id):
     """
     form = forms.WorkoutChangeViewForm(request.POST, auto_id="change_view_%s")
     if not form.is_valid():
-        return http.HttpResponseRedirect(reverse('log.views.workout.index', kwargs={'athlete_id': athlete_id}))
+        return http.HttpResponseRedirect(reverse('athletelog.views.workout.index', kwargs={'athlete_id': athlete_id}))
 
     if (form.cleaned_data["view_type"] == 'weekly'):
-        return http.HttpResponseRedirect(reverse('log.views.workout.weekly_view',
+        return http.HttpResponseRedirect(reverse('athletelog.views.workout.weekly_view',
                                                  kwargs={'athlete_id': athlete_id,
                                                          'year': form.cleaned_data["year"],
                                                          'week': form.cleaned_data["week"]}))    
     else:
-        return http.HttpResponseRedirect(reverse('log.views.workout.monthly_view',
+        return http.HttpResponseRedirect(reverse('athletelog.views.workout.monthly_view',
                                                  kwargs={'athlete_id': athlete_id,
                                                          'year': form.cleaned_data["year"],
                                                          'month': form.cleaned_data["month"]}))
@@ -300,7 +300,7 @@ def display_form(request, action, athlete, date, workout_data, num_workout_items
 
     if not submit_button:
         # Default, the submit key was not pressed before
-        continue_url = request.META.get('HTTP_REFERER', reverse('log.views.workout.index', 
+        continue_url = request.META.get('HTTP_REFERER', reverse('athletelog.views.workout.index', 
                                                                 kwargs={'athlete_id': athlete.person.user.username}))
         workout_form = forms.WorkoutForm(initial=workout_data, auto_id='workout_%s')
         workout_item_forms = _create_workout_item_forms(num_workout_items, workout_items_data)
@@ -312,7 +312,7 @@ def display_form(request, action, athlete, date, workout_data, num_workout_items
             if continue_url:
                 return http.HttpResponseRedirect(continue_url)
             else:
-                return http.HttpResponseRedirect(reverse('log.views.workout.index', kwargs={'athlete_id': athlete_id}))
+                return http.HttpResponseRedirect(reverse('athletelog.views.workout.index', kwargs={'athlete_id': athlete_id}))
 
         num_workout_items = int(request.POST['num_workout_items'])
 
@@ -347,7 +347,7 @@ def display_form(request, action, athlete, date, workout_data, num_workout_items
     context['workout_form'] = workout_form
     context['workout_item_forms'] = workout_item_forms
 
-    t = loader.get_template('log/workout_form.html')
+    t = loader.get_template('athletelog/workout_form.html')
     c = RequestContext(request, context)
     return http.HttpResponse(t.render(c))
 
@@ -461,4 +461,4 @@ def remove_workout(request, athlete_id, workout_id):
         return http.HttpResponseNotFound()
     
     workout.delete()
-    return http.HttpResponseRedirect(request.META.get('HTTP_REFERER', reverse('log.views.index')))
+    return http.HttpResponseRedirect(request.META.get('HTTP_REFERER', reverse('athletelog.views.index')))

@@ -37,7 +37,7 @@ USE_I18N = True
 ADMIN_MEDIA_PREFIX = '/admin_media/'
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = 'secret-key'
+SECRET_KEY = '@0+_&)56aec5@fw!2x_q$=aw7_bqn4pnaod56x^iak04qj-l%!'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -53,7 +53,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.doc.XViewMiddleware',
 )
 
-ROOT_URLCONF = 'hollo.urls'
+ROOT_URLCONF = 'urls'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -68,7 +68,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.admin',
-    'hollo.log',
+    'athletelog',
 )
 
 from settings_local import *

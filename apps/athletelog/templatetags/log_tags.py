@@ -23,7 +23,7 @@
 from django import template
 from django.utils.dates import MONTHS
 
-from hollo.log import models
+from athletelog import models
 
 register = template.Library()
 

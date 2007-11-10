@@ -1,4 +1,4 @@
-{% load log_filters %}
+{% load athletelog_filters %}
 <h2>{{first_day|date:"F Y"|capfirst}} :: Tréninky</h2>
 <ul class="pager_menu">
     <li class="previous"><a href="{% url athletelog.views.workout.monthly_view athlete_id=athlete.person.user.username,year=previous_year,month=previous_month %}">Předchozí měsíc</a></li>

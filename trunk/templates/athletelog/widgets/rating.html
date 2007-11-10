@@ -1,3 +1,3 @@
-{% load log_filters %}
+{% load athletelog_filters %}
     <span class="textversion">{{ rating }}</span>
     {% for i in rating|range_from:"0" %}<img src="/site_media/athletelog/images/icons/star_{{ color }}.png" width="12" height="12" alt="*">{% endfor %}{% for i in rating|range_to:"5"  %}<img src="/site_media/athletelog/images/icons/star_gray.png" width="12" height="12" alt="-">{% endfor %}

@@ -71,4 +71,4 @@ INSTALLED_APPS = (
     'athletelog',
 )
 
-from settings_remote import *
+from hollo_settings_local import *

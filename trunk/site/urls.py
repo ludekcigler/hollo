@@ -19,7 +19,7 @@
 ##
 
 import os
-from settings import PROJECT_DIR
+from hollo_settings import PROJECT_DIR
 
 from django.conf.urls.defaults import *
 import athletelog.views

@@ -1,4 +1,4 @@
-{% load log_filters %}
+{% load athletelog_filters %}
 <h2>{{day|date:"j"}}. {{day|date:"F Y"|lower}}</h2>
 {% ifequal view_type "weekly" %}
 <a href="{% url athletelog.views.workout.weekly_view athlete_id=athlete.person.user.username,year=year,week=week %}"

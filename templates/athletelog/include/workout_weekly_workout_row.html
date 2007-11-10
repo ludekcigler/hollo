@@ -1,5 +1,5 @@
-{% load log_filters %}
-{% load log_tags %}
+{% load athletelog_filters %}
+{% load athletelog_tags %}
 {% if workout.workout_items.all|length_is:"0" %}
     {% if forloop.first|is_not %}
         {# If this is not the first phase, we need to produce the row header #}

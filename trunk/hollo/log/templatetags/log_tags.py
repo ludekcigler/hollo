@@ -54,7 +54,7 @@ def select_month(context, selected_month):
 def select_workout_type(context, selected_type):
     choices = []
     for type in models.WorkoutType.objects.all():
-        selected = (type == selected_type)
+        selected = (type.abbr == selected_type)
         choices.append({'value': type, 'selected': selected, 'name': type.abbr})
 
     return {'choices': choices}

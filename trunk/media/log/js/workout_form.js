@@ -62,7 +62,7 @@ var workoutForm = {
         if (WorkoutTypeInfo[$(this).val()])
             numType = WorkoutTypeInfo[$(this).val()].num_type;
         else
-            return
+            return;
 
         var labelElem = $(this).parent().parent().children('.num_data').children('label');
         
@@ -72,9 +72,11 @@ var workoutForm = {
         else if (numType == 'WEIGHT')
             labelText = 'kg';
         else if (numType == 'TIME')
-            labelText = 'min'
+            labelText = 'min';
+        else if (numType == 'COUNT')
+            labelText = 'počet';
         else
-            labelText = ''
+            labelText = '';
 
         labelElem.text(labelText);
     }

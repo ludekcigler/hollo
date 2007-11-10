@@ -1,7 +1,9 @@
-var WorkoutTypeInfo = {
-    {% for type in workout_types %}
-        '{{ type.abbr }}': {'name': '{{ type.name }}',
-                            'num_type': '{{ type.num_type }}'
-                           },
+var WorkoutTypeInfo =
+{
+    {% for t in workout_types %}
+    '{{ t.abbr }}': {
+                     'name': '{{ t.name }}',
+                     'num_type': '{{ t.num_type }}',
+                    },
     {% endfor %}
-}
+};

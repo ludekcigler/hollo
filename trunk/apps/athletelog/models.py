@@ -47,14 +47,14 @@ class Person(models.Model):
     # List of athletes which the person is allowed to watch
     watched_athletes = models.ManyToManyField('Athlete', related_name='watching_persons', blank=True)
 
-    def __str__(self):
+    def __unicode__(self):
         return self.full_name
 
     def _get_full_name(self):
         if self.user.first_name and self.user.last_name:
-            return "%s %s" % (self.user.first_name, self.user.last_name)
+            return u'%s %s' % (self.user.first_name, self.user.last_name)
         else:
-            return str(self.user)
+            return unicode(self.user)
 
     full_name = property(_get_full_name, doc = 'Full name of the Athlete')
     id = property(lambda self: self.user.id, doc='Id of the underlying user')
@@ -105,8 +105,8 @@ class Athlete(models.Model):
     # for the athlete
     blocked_persons = models.ManyToManyField('Person', related_name='blocking_athletes', blank=True)
 
-    def __str__(self):
-        return str(self.person)
+    def __unicode__(self):
+        return unicode(self.person)
 
     def allowed_edit_by(self, user):
         """
@@ -149,8 +149,8 @@ class Coach(models.Model):
         """
         return Athlete.objects.filter(group__coaches=self)
 
-    def __str__(self):
-        return str(self.person)
+    def __unicode__(self):
+        return unicode(self.person)
 
     class Admin:
         pass
@@ -162,7 +162,7 @@ class AthleteGroup(models.Model):
     name = models.CharField(maxlength = 100)
     coaches = models.ManyToManyField('Coach', related_name='athletegroups')
 
-    def __str__(self):
+    def __unicode__(self):
         return self.name
 
     class Admin:
@@ -177,7 +177,7 @@ class AuthorizationRequest(models.Model):
     message = models.CharField(maxlength=160, blank=True, default='')
     created = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
+    def __unicode__(self):
         return "Authorization request from %s to %s" % (self.person, self.athlete)
 
     class Admin:
@@ -196,7 +196,7 @@ class TrackEvent(models.Model):
     # Ordering of the track events
     order = models.DateField(auto_now_add=True)
 
-    def __str__(self):
+    def __unicode__(self):
         return self.name
 
     # Check if the result matches the expected one
@@ -268,7 +268,7 @@ class Workout(models.Model):
     MIN_RATING = 1
     MAX_RATING = 5
 
-    def __str__(self):
+    def __unicode__(self):
         return "%s, %s" % (str(self.athlete), self.day,)
 
     def _get_total_num_data(self, num_type):
@@ -305,7 +305,7 @@ class WorkoutType(models.Model):
     num_type = models.CharField(maxlength=8, choices=WORKOUT_TYPE_NUM_CHOICES, default='DISTANCE')
     order = models.DateField(auto_now_add=True)
 
-    def __str__(self):
+    def __unicode__(self):
         return self.abbr
 
     class Admin:
@@ -324,7 +324,7 @@ class WorkoutItem(models.Model):
     desc = models.TextField()
     num_data = models.DecimalField(decimal_places=2, max_digits=5, default=None, blank=True)
 
-    def __str__(self):
+    def __unicode__(self):
         return "%s: %s, %s" % (str(self.workout), self.type.abbr, self.desc,)
 
     class Admin:

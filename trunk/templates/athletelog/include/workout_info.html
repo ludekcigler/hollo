@@ -1,13 +1,13 @@
 {% load log_filters %}
 <h2>{{day|date:"j"}}. {{day|date:"F Y"|lower}}</h2>
 {% ifequal view_type "weekly" %}
-<a href="{% url log.views.workout.weekly_view athlete_id=athlete.person.user.username,year=year,week=week %}"
+<a href="{% url athletelog.views.workout.weekly_view athlete_id=athlete.person.user.username,year=year,week=week %}"
     class="workout_info_jump_back">
     <span>Zpět</span>
 </a>
 {% else %}
     {% ifequal view_type "monthly" %}
-<a href="{% url log.views.workout.monthly_view athlete_id=athlete.person.user.username,year=year,month=month %}"
+<a href="{% url athletelog.views.workout.monthly_view athlete_id=athlete.person.user.username,year=year,month=month %}"
     class="workout_info_jump_back">
     <span>Zpět</span>
 </a>
@@ -58,7 +58,7 @@
         <span class="textversion">Spokojenost: {{w.rating_satisfaction}} </span>
         {% with w.rating_satisfaction as rating %}
         {% with "yellow" as color %}
-        {% include 'log/widgets/rating.html' %}
+        {% include 'athletelog/widgets/rating.html' %}
         {% endwith %}
         {% endwith %}
     </li>
@@ -66,7 +66,7 @@
         <span class="textversion">Obtížnost: {{w.rating_difficulty}} </span>
         {% with w.rating_difficulty as rating %}
         {% with "red" as color %}
-        {% include 'log/widgets/rating.html' %}
+        {% include 'athletelog/widgets/rating.html' %}
         {% endwith %}
         {% endwith %}
     </li>
@@ -74,9 +74,9 @@
 
 {% if athlete_edit_allowed %}
 <p class="workout_info_buttons">
-    <a href="{% url log.views.workout.edit_form athlete_id=athlete.person.user.username,year=w.day.year,month=w.day.month,day=w.day.day,workout_id=w.id %}" class="edit_workout"
+    <a href="{% url athletelog.views.workout.edit_form athlete_id=athlete.person.user.username,year=w.day.year,month=w.day.month,day=w.day.day,workout_id=w.id %}" class="edit_workout"
         id="editWorkout_{{ w.day|date:"Y-m-d" }}_{{ w.id }}">Upravit fázi</a>
-    <a href="{% url log.views.workout.remove_workout athlete_id=athlete.person.user.username,workout_id=w.id %}" class="remove_workout"
+    <a href="{% url athletelog.views.workout.remove_workout athlete_id=athlete.person.user.username,workout_id=w.id %}" class="remove_workout"
         id="removeWorkout_{{ w.day|date:"Y-m-d" }}_{{ w.id }}">Odstranit fázi</a>
 </p>
 {% endif %}
@@ -84,7 +84,7 @@
 {% endfor %}
 {% if athlete_edit_allowed %}
 <p class="workout_info_buttons">
-    <a href="{% url log.views.workout.add_form athlete_id=athlete.person.user.username,year=day.year,month=day.month,day=day.day %}" class="add_workout"
+    <a href="{% url athletelog.views.workout.add_form athlete_id=athlete.person.user.username,year=day.year,month=day.month,day=day.day %}" class="add_workout"
         id="add_workout_{{ day|date:"Y-m-d" }}">Přidat fázi</a>
 </p>
 {% endif %}
@@ -119,12 +119,12 @@
             <td>{{ c.place }}</td>
             {% if athlete_edit_allowed %}
             <td>
-                <a href="{% url log.views.competition.edit_form athlete_id=athlete.person.user.username,year=c.day.year,month=c.day.month,day=c.day.day,competition_id=c.id %}" class="edit_competition" 
+                <a href="{% url athletelog.views.competition.edit_form athlete_id=athlete.person.user.username,year=c.day.year,month=c.day.month,day=c.day.day,competition_id=c.id %}" class="edit_competition" 
                 id="edit_competition_{{ c.day|date:"Y-m-d" }}_{{ c.id }}" title="Upravit závod">
                 <span>Upravit závod</span></a>
             </td>
             <td>
-                <a href="{% url log.views.competition.remove_competition athlete_id=athlete.person.user.username,competition_id=c.id %}" class="remove_competition" 
+                <a href="{% url athletelog.views.competition.remove_competition athlete_id=athlete.person.user.username,competition_id=c.id %}" class="remove_competition" 
                     id="remove_competition_{{ c.day|date:"Y-m-d" }}_{{ c.id }}" title="Odstranit závod">
                     <span>Odstranit závod</span></a>
             </td>
@@ -138,7 +138,7 @@
 {% endif %}
 {% if athlete_edit_allowed %}
 <p class="workout_info_buttons">
-    <a href="{% url log.views.competition.add_form athlete_id=athlete.person.user.username,year=day.year,month=day.month,day=day.day %}" class="add_competition"
+    <a href="{% url athletelog.views.competition.add_form athlete_id=athlete.person.user.username,year=day.year,month=day.month,day=day.day %}" class="add_competition"
         id="add_competition_{{ day|date:"Y-m-d" }}">Přidat závod</a>
 </p>
 {% endif %}

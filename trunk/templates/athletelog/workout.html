@@ -1,24 +1,44 @@
-{% extends 'log/workout_base.html' %}
+{% extends 'athletelog/workout_base.html' %}
 {% load log_tags %}
+{% load log_filters %}
 
 {% block javascripts %}
-    <script type="text/javascript" src="/site_media/log/js/change_view_form.js"></script>
+    <script type="text/javascript" src="/site_media/athletelog/js/change_view_form.js"></script>
+    <script type="text/javascript" src="/site_media/athletelog/js/athlete_selection.js"></script>
 {% endblock %}
 
 {% block content %}
 <div id="view_selection" class="corner_tl">
 <div class="corner_tr"><div class="corner_bl"><div class="corner_br content">
     <div id="athlete_selection">
-<h2 class="textversion">Zobrazený atlet</h2>
-    {% with "workout" as view_type %}
-    <a href="{% url log.views.change_athlete view_type=view_type %}?old={{ athlete.person.user.username }}">
-    {% endwith %}
-        <img src="{{ athlete.person.get_image_url|default:"/site_media/log/images/user_unknown.png" }}"
-        width="22" height="22" alt="{{ athlete }}" id="athlete_image">
-        <span id="athlete_name">{{ athlete }}</span>
-    </a>
+        <h2 class="textversion">Zobrazený atlet</h2>
+        {% with "workout" as view_type %}
+            <a href="{% url athletelog.views.change_athlete view_type=view_type %}?old={{ athlete.person.user.username }}"
+               id="athlete_selection_link">
+        {% endwith %}
+                <img src="{{ athlete.person.get_image_url|default:"/site_media/athletelog/images/user_unknown.png" }}"
+                 width="22" height="22" alt="{{ athlete }}" class="athlete_image">
+                <span class="athlete_name">{{ athlete }}</span>
+            </a>
     </div>
-<form action="{% url log.views.workout.change_view athlete_id=athlete.person.user.username %}" method="post">
+    {% if user.person.allowed_athletes|length|greater_than:"1" %}
+    <div id="athlete_selection_other_athletes">
+        <ul>
+        {% for a in user.person.allowed_athletes %}
+        {% ifnotequal a athlete %}
+        <li>
+            <a href="{% url athletelog.views.workout.index athlete_id=a.person.user.username  %}">
+            <img src="{{ a.person.get_image_url|default:"/site_media/athletelog/images/user_unknown.png" }}"
+             width="22" height="22" alt="{{ a }}" class="athlete_image">
+            <span class="athlete_name">{{ a }}</span>
+            </a>
+        </li>
+        {% endifnotequal %}
+        {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+<form action="{% url athletelog.views.workout.change_view athlete_id=athlete.person.user.username %}" method="post">
 <fieldset>
 <legend class="textversion">Zobrazení deníku</legend>
 <label for="change_view_view_type">Pohled</label>

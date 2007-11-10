@@ -38,7 +38,7 @@ from athletelog.views import login_required
 from athletelog import models
 from athletelog import forms
 from athletelog import common
-from settings import MEDIA_ROOT
+from hollo_settings import MEDIA_ROOT
 
 @login_required
 def index(request):
@@ -258,7 +258,7 @@ def friends(request):
 
     # Load athletes from my group, together with their status
     my_group_athletes = []
-    if athlete:
+    if athlete and athlete.group:
         for ath in athlete.group.athletes.exclude(pk=athlete):
             ath_data = {'athlete': ath, 'view_status': ath.person.get_view_status(athlete.person)}
             my_group_athletes.append(ath_data)
@@ -334,13 +334,16 @@ def friends_add(request):
     try:
         athlete = models.Athlete.objects.get(person=person)
 
-        person_group_athletes = [a for a in athlete.group.athletes.all() \
+        if athlete.group:
+            person_group_athletes = [a for a in athlete.group.athletes.all() \
                                  if (a != athlete) and (not a.person_id in person_watched_athletes)
                                  and (a.blocked_persons.filter(pk=person).count() == 0)]
-        # All other athlete from my group, except those that are not watched and those that do not block me
-        person_group_athletes.sort(cmp=(lambda x, y: \
+            # All other athlete from my group, except those that are not watched and those that do not block me
+            person_group_athletes.sort(cmp=(lambda x, y: \
                                 cmp(x['person'].person.user.last_name, y['person'].person.user.last_name) or \
                                 cmp(x['person'].person.user.first_name, y['person'].person.user.first_name)))
+        else:
+            person_group_athletes = []
 
     except ObjectDoesNotExist:
         athlete = None

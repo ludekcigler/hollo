@@ -59,7 +59,7 @@ h1 span {
     position: absolute;
     bottom: 0;
     left: 0;
-    background-image: url('/site_media/log/images/main_logo.png');
+    background-image: url('/site_media/athletelog/images/main_logo.png');
     background-repeat: no-repeat;
     background-position: top left;
     display: block;
@@ -109,15 +109,15 @@ table tbody td, table tbody th {
 }
 
 .information p.content {
-    background-image: url(/site_media/log/images/icons/info_large.png);
+    background-image: url(/site_media/athletelog/images/icons/info_large.png);
 }
 
 .error p.content {
-    background-image: url(/site_media/log/images/icons/error_large.png);
+    background-image: url(/site_media/athletelog/images/icons/error_large.png);
 }
 
 .warning p.content {
-    background-image: url(/site_media/log/images/icons/warning_large.png);
+    background-image: url(/site_media/athletelog/images/icons/warning_large.png);
 }
 
 /*-----------------------------------------------------------------------------*/
@@ -158,22 +158,22 @@ table tbody td, table tbody th {
 }
 
 .corner_tl {
-    background-image: url('/site_media/log/images/corners/top_left_small.png');
+    background-image: url('/site_media/athletelog/images/corners/top_left_small.png');
     background-position: top left;
 }
 
 .corner_tr {
-    background-image: url('/site_media/log/images/corners/top_right_small.png');
+    background-image: url('/site_media/athletelog/images/corners/top_right_small.png');
     background-position: top right;
 }
 
 .corner_bl {
-    background-image: url('/site_media/log/images/corners/bottom_left_small.png');
+    background-image: url('/site_media/athletelog/images/corners/bottom_left_small.png');
     background-position: bottom left;
 }
 
 .corner_br {
-    background-image: url('/site_media/log/images/corners/bottom_right_small.png');
+    background-image: url('/site_media/athletelog/images/corners/bottom_right_small.png');
     background-position: bottom right;
 }
 
@@ -257,6 +257,7 @@ table tbody td, table tbody th {
     color: white;
     background-color: steelblue;
     padding: 0;
+    position: relative;
 }
 
 #view_selection div.content
@@ -281,7 +282,7 @@ table tbody td, table tbody th {
     margin-right: 0.6em;
 }
 
-#athlete_selection a {
+#athlete_selection a, #athlete_selection_other_athletes a {
     color: white;
     text-decoration: none;
     font-weight: bold;
@@ -289,18 +290,38 @@ table tbody td, table tbody th {
     padding: 0.2em 0.4em 0.2em 0.2em;
 }
 
-#athlete_selection a:hover {
+#athlete_selection a:hover, #athlete_selection a.selected {
     background-color: lightsteelblue;
 }
 
-#athlete_image {
+.athlete_image {
     vertical-align: middle;
     background-color: white;
     border: 1px solid #333;
 }
 
-#athlete_name {
+.athlete_name {
     margin-left: 0.4em;
+}
+
+#athlete_selection_other_athletes {
+    display: none;
+    position: absolute;
+    top: 2.6em;
+    left: 1em;
+    background-color: lightsteelblue;
+    padding: 0.2em;
+}
+
+#athlete_selection_other_athletes ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#athlete_selection_other_athletes ul a:hover {
+    color: #333;
+    background-color: lightyellow;
 }
 
 /*----------------------------------------------------------------------------*/
@@ -342,23 +363,23 @@ table tbody td, table tbody th {
 }
 
 .summary a.edit_workout {
-    background-image: url(/site_media/log/images/icons/properties_middle.png);
+    background-image: url(/site_media/athletelog/images/icons/properties_middle.png);
 }
 
 .summary a.add_competition, .summary a.add_workout {
-    background-image: url(/site_media/log/images/icons/add_middle.png);
+    background-image: url(/site_media/athletelog/images/icons/add_middle.png);
 }
 
 .summary a.remove_workout {
-    background-image: url(/site_media/log/images/icons/remove_middle.png);
+    background-image: url(/site_media/athletelog/images/icons/remove_middle.png);
 }
 
 a.remove_competition {
-    background-image: url(/site_media/log/images/icons/remove_small.png);
+    background-image: url(/site_media/athletelog/images/icons/remove_small.png);
 }
 
 a.edit_competition {
-    background-image: url(/site_media/log/images/icons/properties_small.png);
+    background-image: url(/site_media/athletelog/images/icons/properties_small.png);
 }
 
 .summary table.competition a span, #competition_view table a span {
@@ -422,30 +443,30 @@ a.edit_competition {
 }
 
 .summary .workout .workout_additional_info .total_km {
-    background-image: url("/site_media/log/images/icons/km_small.png");
+    background-image: url("/site_media/athletelog/images/icons/km_small.png");
 }
 
 .summary .workout .workout_additional_info .total_kg {
-    background-image: url("/site_media/log/images/icons/kg_small.png");
+    background-image: url("/site_media/athletelog/images/icons/kg_small.png");
 }
 
 .summary .workout .workout_additional_info .weather {
-    background-image: url("/site_media/log/images/icons/weather_small.png");
+    background-image: url("/site_media/athletelog/images/icons/weather_small.png");
 }
 
 .summary .workout .workout_additional_info .satisfaction {
-    background-image: url("/site_media/log/images/icons/satisfaction_small.png");
+    background-image: url("/site_media/athletelog/images/icons/satisfaction_small.png");
 }
 
 .summary .workout .workout_additional_info .difficulty {
-    background-image: url("/site_media/log/images/icons/difficulty_small.png");
+    background-image: url("/site_media/athletelog/images/icons/difficulty_small.png");
 }
 
 .summary .workout_info_jump_back {
     position: absolute;
     top: 0.4em;
     right: 1.4em;
-    background-image: url(/site_media/log/images/icons/jump-to_small.png);
+    background-image: url(/site_media/athletelog/images/icons/jump-to_small.png);
     background-repeat: no-repeat;
     background-position: center center;
     width: 20px;
@@ -482,27 +503,27 @@ a.edit_competition {
 }
 
 .interval_summary .num_workouts {
-    background-image: url(/site_media/log/images/icons/workout_small.png);
+    background-image: url(/site_media/athletelog/images/icons/workout_small.png);
 }
 
 .interval_summary .num_competitions {
-    background-image: url(/site_media/log/images/icons/competition_small.png);
+    background-image: url(/site_media/athletelog/images/icons/competition_small.png);
 }
 
 .interval_summary .total_km {
-    background-image: url(/site_media/log/images/icons/km_small.png);
+    background-image: url(/site_media/athletelog/images/icons/km_small.png);
 }
 
 .interval_summary .total_kg {
-    background-image: url(/site_media/log/images/icons/kg_small.png);
+    background-image: url(/site_media/athletelog/images/icons/kg_small.png);
 }
 
 .interval_summary .satisfaction_avg {
-    background-image: url(/site_media/log/images/icons/satisfaction_small.png);
+    background-image: url(/site_media/athletelog/images/icons/satisfaction_small.png);
 }
 
 .interval_summary .difficulty_avg {
-    background-image: url(/site_media/log/images/icons/difficulty_small.png);
+    background-image: url(/site_media/athletelog/images/icons/difficulty_small.png);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -715,7 +736,7 @@ tbody tr.highlighted td, tbody tr.highlighted th, tbody td.highlighted {
     position: absolute;
     right: 3em;
     top: 0;
-    background-image: url('/site_media/log/images/version_number.png');
+    background-image: url('/site_media/athletelog/images/version_number.png');
     background-repeat: no-repeat;
 }
 
@@ -735,7 +756,7 @@ tbody tr.highlighted td, tbody tr.highlighted th, tbody td.highlighted {
 
 .jqDrag {
     height: 20px;
-    background: url('/site_media/log/images/drag_header.png') repeat-x;
+    background: url('/site_media/athletelog/images/drag_header.png') repeat-x;
     position: relative;
     cursor: move;
 }
@@ -743,14 +764,14 @@ tbody tr.highlighted td, tbody tr.highlighted th, tbody td.highlighted {
     position: absolute;
     right: 2px;
     top: 2px;
-    background: url('/site_media/log/images/form_close.png') no-repeat;
+    background: url('/site_media/athletelog/images/form_close.png') no-repeat;
     width: 16px;
     height: 16px;
     cursor: pointer;
 }
 
 .jqResize {
-    background: url('/site_media/log/images/resize_corner.png') no-repeat bottom right;
+    background: url('/site_media/athletelog/images/resize_corner.png') no-repeat bottom right;
     width: 20px;
     height: 20px;
     position: absolute;
@@ -769,11 +790,11 @@ tbody tr.highlighted td, tbody tr.highlighted th, tbody td.highlighted {
 
 
 form input.ok {
-   background-image: url('/site_media/log/images/icons/accept_small.png'); 
+   background-image: url('/site_media/athletelog/images/icons/accept_small.png'); 
 }
 
 form input.cancel {
-   background-image: url('/site_media/log/images/icons/cancel_small.png'); 
+   background-image: url('/site_media/athletelog/images/icons/cancel_small.png'); 
 }
 
 #workout_form table td {
@@ -781,7 +802,7 @@ form input.cancel {
 }
 
 #workout_form #add_workout_item {
-    background-image: url('/site_media/log/images/icons/add_small.png');
+    background-image: url('/site_media/athletelog/images/icons/add_small.png');
 }
 
 #workout_form .add_workout_item {
@@ -820,12 +841,12 @@ form .error {
 
 #workout_form, #competition_form {
     background-color: #BFCFFF;
-    background-image: url('/site_media/log/images/icons/workout_form_large.png');
+    background-image: url('/site_media/athletelog/images/icons/workout_form_large.png');
 }
 
 .settings_form {
     background-color: #FFF280;
-    background-image: url('/site_media/log/images/icons/settings_form_large.png');
+    background-image: url('/site_media/athletelog/images/icons/settings_form_large.png');
 }
 
 #workout_form h2, #competition_form h2, .settings_form h2 {
@@ -878,7 +899,7 @@ form .error {
 
 #workout_form .remove_workout_item {
     margin: 1.2em 0 0 0.1em;
-    background-image: url(/site_media/log/images/icons/remove_small.png);
+    background-image: url(/site_media/athletelog/images/icons/remove_small.png);
     background-position: center center;
     width: 20px;
     height: 20px;
@@ -909,7 +930,7 @@ form textarea {
     margin-right: 2em;
     font-weight: bold;
     padding-left: 24px;
-    background-image: url('/site_media/log/images/icons/weather_small.png');
+    background-image: url('/site_media/athletelog/images/icons/weather_small.png');
     background-repeat: no-repeat;
 }
 
@@ -1000,7 +1021,7 @@ form textarea {
 }
 
 .settings_content .group_name {
-    background-image: url(/site_media/log/images/icons/group_small.png);
+    background-image: url(/site_media/athletelog/images/icons/group_small.png);
     background-repeat: no-repeat;
     background-position: 0.2em center;
     padding: 0.2em 0.2em 0.2em 28px;
@@ -1041,17 +1062,17 @@ form textarea {
 .star_picker_element {
     width: 12px;
     height: 12px;
-    background-image: url(/site_media/log/images/icons/star_gray.gif);
+    background-image: url(/site_media/athletelog/images/icons/star_gray.gif);
     display: block;
     float: left;
 }
 
 .star_picker.yellow .selected, .star_picker .selected {
-    background-image: url(/site_media/log/images/icons/star_yellow.gif);
+    background-image: url(/site_media/athletelog/images/icons/star_yellow.gif);
 }
 
 .star_picker.red .selected {
-    background-image: url(/site_media/log/images/icons/star_red.gif);
+    background-image: url(/site_media/athletelog/images/icons/star_red.gif);
 }
 
 .star_picker_highlight {
@@ -1068,7 +1089,7 @@ form textarea {
 }
 
 .star_picker_highlight .highlighted {
-    background-image: url(/site_media/log/images/icons/star_highlight.gif);
+    background-image: url(/site_media/athletelog/images/icons/star_highlight.gif);
     cursor: pointer;
 }
 

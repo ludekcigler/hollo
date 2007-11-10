@@ -56,7 +56,10 @@ def greater_than(value, arg):
     """
     Return boolean indicating whether value is greater than arg
     """
-    return (int(value) > int(arg))
+    try:
+        return (int(value) > int(arg))
+    except TypeError:
+        return False
 
 
 @register.filter

@@ -1,4 +1,4 @@
-{% extends 'log/include/settings_base.html' %}
+{% extends 'athletelog/include/settings_base.html' %}
 {% load log_tags %}
 {% load log_filters %}
 {% block settings_content %}
@@ -16,10 +16,10 @@
 {% for a in person_group_athletes %}
     <tr>
         <td><img 
-            src="{{ a.person.get_image_url|default:"/site_media/log/images/user_unknown.png" }}" 
+            src="{{ a.person.get_image_url|default:"/site_media/athletelog/images/user_unknown.png" }}" 
             width="22" height="22" alt="{{ a }}">
         <td>{{ a }}</td>
-        <td><a href="{% url log.views.settings.friends_add_edit_message athlete_id=a.person.user.username %}">Sledovat</a></td>
+        <td><a href="{% url athletelog.views.settings.friends_add_edit_message athlete_id=a.person.user.username %}">Sledovat</a></td>
     </tr>
 {% endfor %}
 </table>
@@ -30,10 +30,10 @@
 {% for a in person_other_athletes %}
     <tr>
         <td><img 
-            src="{{ a.person.get_image_url|default:"/site_media/log/images/user_unknown.png" }}" 
+            src="{{ a.person.get_image_url|default:"/site_media/athletelog/images/user_unknown.png" }}" 
             width="22" height="22" alt="{{ a }}">
         <td>{{ a }}</td>
-        <td><a href="{% url log.views.settings.friends_add_edit_message athlete_id=a.person.user.username %}">Sledovat</a></td>
+        <td><a href="{% url athletelog.views.settings.friends_add_edit_message athlete_id=a.person.user.username %}">Sledovat</a></td>
     </tr>
 {% endfor %}
 </table>

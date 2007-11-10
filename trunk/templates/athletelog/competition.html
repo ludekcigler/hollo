@@ -1,7 +1,7 @@
-{% extends 'log/workout_base.html' %}
+{% extends 'athletelog/workout_base.html' %}
 
 {% block javascripts %}
-    <script type="text/javascript" src="/site_media/log/js/change_view_form.js"></script>
+    <script type="text/javascript" src="/site_media/athletelog/js/change_view_form.js"></script>
 {% endblock %}
 
 {% block title %}
@@ -21,9 +21,9 @@ Závody -
 {% block main_menu %}
     <li>
         {% if first_day %}
-        <a href="{% url log.views.workout.monthly_view athlete_id=athlete.person.user.username,year=first_day.year,month=first_day.month %}">
+        <a href="{% url athletelog.views.workout.monthly_view athlete_id=athlete.person.user.username,year=first_day.year,month=first_day.month %}">
         {% else %}
-        <a href="{% url log.views.workout.index athlete_id=athlete.person.user.username %}">
+        <a href="{% url athletelog.views.workout.index athlete_id=athlete.person.user.username %}">
         {% endif %}
         <span class="corner_tl"><span class="corner_tr"><span class="content">Deník</span></span></span></a></li>
     <li class="active"><a><span class="corner_tl"><span class="corner_tr"><span class="content">Závody</span></span></span></a></li>
@@ -37,13 +37,13 @@ Závody -
     <div id="athlete_selection">
         <h2 class="textversion">Zobrazený atlet</h2>
     {% with "competition" as view_type %}
-            <a href="{% url log.views.change_athlete view_type=view_type %}?old={{ athlete.person.user.username }}">
+            <a href="{% url athletelog.views.change_athlete view_type=view_type %}?old={{ athlete.person.user.username }}">
     {% endwith %}
-            <img src="{{ athlete.person.get_image_url|default:"/site_media/log/images/user_unknown.png" }}" width="22" height="22" alt="{{ athlete }}" id="athlete_image">
+            <img src="{{ athlete.person.get_image_url|default:"/site_media/athletelog/images/user_unknown.png" }}" width="22" height="22" alt="{{ athlete }}" id="athlete_image">
             <span id="athlete_name">{{ athlete }}</span>
             </a>
     </div>
-<form action="{% url log.views.competition.change_view athlete_id=athlete.person.user.username %}" method="post">
+<form action="{% url athletelog.views.competition.change_view athlete_id=athlete.person.user.username %}" method="post">
 <fieldset>
 <legend class="textversion">Zobrazení závodů</legend>
 <label for="change_view_view_type">Pohled</label>
@@ -73,12 +73,12 @@ Měsíční souhrn
 {% endifequal %}
 </h2>
 
-{% include 'log/include/competition_summary.html' %}
+{% include 'athletelog/include/competition_summary.html' %}
 </div>
 </div>
 
 <div id="competition_view">
-{% include 'log/include/competition_view.html' %}
+{% include 'athletelog/include/competition_view.html' %}
 </div>
 
 {% endblock %}

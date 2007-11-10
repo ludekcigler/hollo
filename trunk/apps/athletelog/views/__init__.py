@@ -26,6 +26,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core import urlresolvers
 from django import http 
 from django.template import loader, Context, RequestContext
+import django.shortcuts
 
 from athletelog import models
 
@@ -38,7 +39,7 @@ def login_required(view, *args, **kwargs):
     else:
         request = args[0]
 
-    person = models.Person.objects.get(user=request.user)
+    person = django.shortcuts.get_object_or_404(models.Person, user=request.user)
     if request.user.is_authenticated() and person:
         return view(*args, **kwargs)
     else:
@@ -94,7 +95,7 @@ def force_no_cache(view, *args, **kwargs):
 
 def index(request):
     if request.user.is_authenticated():
-        person = models.Person.objects.get(user=request.user)
+        person = django.shortcuts.get_object_or_404(models.Person, user=request.user)
         if models.Athlete.objects.filter(person__user=request.user).count() > 0:
             athlete_id = request.user.username
         else:

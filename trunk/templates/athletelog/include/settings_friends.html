@@ -1,4 +1,4 @@
-{% extends 'log/include/settings_base.html' %}
+{% extends 'athletelog/include/settings_base.html' %}
 {% load log_tags %}
 {% block settings_content %}
 {% settings_submenu "friends" %}
@@ -13,7 +13,7 @@
         {% with ath_data.athlete as athlete %}
         {% with ath_data.athlete.person.user.username as username %}
         {% with ath_data.view_status as view_status %}
-            {% include 'log/include/settings_friends_row.html' %}
+            {% include 'athletelog/include/settings_friends_row.html' %}
         {% endwith %}
         {% endwith %}
         {% endwith %}
@@ -28,14 +28,14 @@
     {% with p.athlete as athlete %}
     {% with p.person.user.username as username %}
     {% with p.view_status as view_status %}
-        {% include 'log/include/settings_friends_row.html' %}
+        {% include 'athletelog/include/settings_friends_row.html' %}
     {% endwith %}
     {% endwith %}
     {% endwith %}
     {% endwith %}
 {% endfor %}
 </dl>
-<a href="{% url log.views.settings.friends_add %}">Sledovat atleta</a>
+<a href="{% url athletelog.views.settings.friends_add %}">Sledovat atleta</a>
 {% if athlete %}
     {% if blocked_persons|length_is:"0" %}{% else %}
 <h4 class="group_name">Blokovaní</h4>
@@ -46,7 +46,7 @@
     {% with p.athlete as athlete %}
     {% with p.user.username as username %}
     {% with "True" as blocks %}
-        {% include 'log/include/settings_friends_row.html' %}
+        {% include 'athletelog/include/settings_friends_row.html' %}
     {% endwith %}
     {% endwith %}
     {% endwith %}

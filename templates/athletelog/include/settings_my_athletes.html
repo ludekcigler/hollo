@@ -1,4 +1,4 @@
-{% extends 'log/include/settings_base.html' %}
+{% extends 'athletelog/include/settings_base.html' %}
 {% load log_tags %}
 {% block settings_content %}
 {% settings_submenu "my_athletes" %}
@@ -9,7 +9,7 @@
 <h4 class="group_name">{{ group.name }}</h4>
     <ul id="my_group_athletes">
     {% for athlete in group.athletes.all %}
-        <li><a href="{% url log.views.workout.index athlete_id=athlete.person.user.username %}">{{ athlete }}</a></li>
+        <li><a href="{% url athletelog.views.workout.index athlete_id=athlete.person.user.username %}">{{ athlete }}</a></li>
     {% endfor %}
     </ul>
 {% endfor %}

@@ -1,4 +1,4 @@
-{% extends 'log/base.html' %}
+{% extends 'athletelog/base.html' %}
 {% block title %}
 Přihlášení :: Tréninkový deník
 {% endblock %}
@@ -18,7 +18,7 @@ Přihlášení :: Tréninkový deník
 {% endif %}
 <div class="corner_tl login_content"><div class="corner_tr"><div class="corner_bl"><div class="corner_br">
 <h2>Přihlášení</h2>
-<form action="{% url log.views.user.auth %}" method="post">
+<form action="{% url athletelog.views.user.auth %}" method="post">
 <fieldset>
 <label for="username">Uživatelské jméno</label>
 <input type="text" id="username" name="username" />

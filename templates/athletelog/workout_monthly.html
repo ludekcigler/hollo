@@ -1,18 +1,18 @@
 {% load log_tags %}
-{% extends 'log/workout.html' %}
+{% extends 'athletelog/workout.html' %}
 
 {% block title %}
 Tréninky - {{first_day|date:"F Y"}} :: Tréninkový deník
 {% endblock %}
 
 {% block custom_header %}
-    <script type="text/javascript" src="/site_media/log/js/workout_monthly_view.js"></script>
+    <script type="text/javascript" src="/site_media/athletelog/js/workout_monthly_view.js"></script>
 {% endblock %}
 
 {% block workout_summary %}
-{% include 'log/include/workout_monthly_summary.html' %}
+{% include 'athletelog/include/workout_monthly_summary.html' %}
 {% endblock %}
 
 {% block workout_view %}
-{% include 'log/include/workout_monthly.html' %}
+{% include 'athletelog/include/workout_monthly.html' %}
 {% endblock %}

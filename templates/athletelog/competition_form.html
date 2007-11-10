@@ -1,8 +1,8 @@
-{% extends 'log/base.html' %}
+{% extends 'athletelog/base.html' %}
 
 {% block javascripts %}
-    <script type="text/javascript" src="{% url log.views.js_event_info %}"></script>
-    <script type="text/javascript" src="/site_media/log/js/competition_form.js"></script>
+    <script type="text/javascript" src="{% url athletelog.views.js_event_info %}"></script>
+    <script type="text/javascript" src="/site_media/athletelog/js/competition_form.js"></script>
 {% endblock %}
 
 {% block title %}
@@ -13,7 +13,7 @@ Upravit závod :: Tréninkový deník
 {% endifequal %}
 {% endblock %}
 {% block page_body %}
-{% include 'log/include/competition_form.html' %}
+{% include 'athletelog/include/competition_form.html' %}
 {% endblock %}
 
 {% block custom_meta_tags %}

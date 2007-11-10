@@ -18,10 +18,10 @@ Některé Vámi zadané hodnoty jsou špatně - mrkněte se na ně znovu
 {% endif %}
 
 {% ifequal form_action "add" %}
-<form id="competition_edit" action="{% url log.views.competition.add_form athlete_id=athlete.person.user.username,year=day.year,month=day.month,day=day.day %}?continue={{ continue|urlencode }}" method="post">
+<form id="competition_edit" action="{% url athletelog.views.competition.add_form athlete_id=athlete.person.user.username,year=day.year,month=day.month,day=day.day %}?continue={{ continue|urlencode }}" method="post">
 {% else %}
 {% ifequal form_action "edit" %}
-<form id="competition_edit" action="{% url log.views.competition.edit_form athlete_id=athlete.person.user.username,year=day.year,month=day.month,day=day.day,competition_id=competition.id %}?continue={{ continue|urlencode }}" method="post">
+<form id="competition_edit" action="{% url athletelog.views.competition.edit_form athlete_id=athlete.person.user.username,year=day.year,month=day.month,day=day.day,competition_id=competition.id %}?continue={{ continue|urlencode }}" method="post">
 {% endifequal %}
 {% endifequal %}
 

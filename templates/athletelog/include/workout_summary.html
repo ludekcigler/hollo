@@ -12,14 +12,14 @@
     <li class="satisfaction_avg"><span>Průměrná spokojenost</span>
         {% with workout_summary.satisfaction_avg as rating %}
         {% with "yellow" as color %}
-        {% include 'log/widgets/rating.html' %}
+        {% include 'athletelog/widgets/rating.html' %}
         {% endwith %}
         {% endwith %}
     </li>
     <li class="difficulty_avg"><span>Průměrná obtížnost</span>
         {% with workout_summary.difficulty_avg as rating %}
         {% with "red" as color %}
-        {% include 'log/widgets/rating.html' %}
+        {% include 'athletelog/widgets/rating.html' %}
         {% endwith %}
         {% endwith %}
     </li>

@@ -20,10 +20,10 @@ Některé zadané hodnoty jsou špatně - mrkněte se na ně znovu
 {% endif %}
 
 {% ifequal form_action "add" %}
-<form id="workout_edit" action="{% url log.views.workout.add_form athlete_id=athlete.person.user.username,year=day.year,month=day.month,day=day.day %}?continue={{ continue|urlencode }}" method="post">
+<form id="workout_edit" action="{% url athletelog.views.workout.add_form athlete_id=athlete.person.user.username,year=day.year,month=day.month,day=day.day %}?continue={{ continue|urlencode }}" method="post">
 {% else %}
 {% ifequal form_action "edit" %}
-<form id="workout_edit" action="{% url log.views.workout.edit_form athlete_id=athlete.person.user.username,year=day.year,month=day.month,day=day.day,workout_id=workout.id %}?continue={{ continue|urlencode }}" method="post">
+<form id="workout_edit" action="{% url athletelog.views.workout.edit_form athlete_id=athlete.person.user.username,year=day.year,month=day.month,day=day.day,workout_id=workout.id %}?continue={{ continue|urlencode }}" method="post">
 {% endifequal %}
 {% endifequal %}
     <fieldset class="button_set">

@@ -1,4 +1,4 @@
-{% extends 'log/base.html' %}
+{% extends 'athletelog/base.html' %}
 
 {% block page_body %}
 <div id="header">
@@ -8,7 +8,7 @@
 <ul id="main_menu">
 {% block main_menu %}
     <li class="active"><a><span class="corner_tl"><span class="corner_tr"><span class="content">Deník</span></span></span></a></li>
-    <li><a href="{% url log.views.competition.monthly_view athlete_id=athlete.person.user.username,year=first_day.year,month=first_day.month %}"><span class="corner_tl"><span class="corner_tr"><span class="content">Závody</span></span></span></a></li>
+    <li><a href="{% url athletelog.views.competition.monthly_view athlete_id=athlete.person.user.username,year=first_day.year,month=first_day.month %}"><span class="corner_tl"><span class="corner_tr"><span class="content">Závody</span></span></span></a></li>
 {% endblock %}
 </ul>
 
@@ -17,10 +17,10 @@
     <li>{% if user.first_name and user.last_name %}{{ user.first_name }} {{ user.last_name }}
         {% else %}{{ user.username }}{% endif %}</li>
     {% if auth_request_message %}
-    <li><a href="{% url log.views.settings.friends_auth_list %}">{{ auth_request_message }}</a></li>
+    <li><a href="{% url athletelog.views.settings.friends_auth_list %}">{{ auth_request_message }}</a></li>
     {% endif %}
-    <li><a href="{% url log.views.settings.index %}">Nastavení</a></li>
-    <li><a href="{% url log.views.user.logout %}">Odhlásit</a></li>
+    <li><a href="{% url athletelog.views.settings.index %}">Nastavení</a></li>
+    <li><a href="{% url athletelog.views.user.logout %}">Odhlásit</a></li>
 </ul>
 </div>
 {% block content %}

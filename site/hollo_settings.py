@@ -71,4 +71,4 @@ INSTALLED_APPS = (
     'athletelog',
 )
 
-from settings_local import *
+from settings_remote import *

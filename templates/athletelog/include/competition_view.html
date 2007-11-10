@@ -12,14 +12,14 @@
 
 {% ifequal competition_view_type "monthly" %}
 <ul class="pager_menu">
-    <li class="previous"><a href="{% url log.views.competition.monthly_view athlete_id=athlete.person.user.username,year=previous_year,month=previous_month %}">Předchozí měsíc</a></li>
-    <li class="next"><a href="{% url log.views.competition.monthly_view athlete_id=athlete.person.user.username,year=next_year,month=next_month %}">Další měsíc</a></li>
+    <li class="previous"><a href="{% url athletelog.views.competition.monthly_view athlete_id=athlete.person.user.username,year=previous_year,month=previous_month %}">Předchozí měsíc</a></li>
+    <li class="next"><a href="{% url athletelog.views.competition.monthly_view athlete_id=athlete.person.user.username,year=next_year,month=next_month %}">Další měsíc</a></li>
 </ul>
 {% else %}
 {% ifequal competition_view_type "yearly" %}
 <ul class="pager_menu">
-    <li class="previous"><a href="{% url log.views.competition.yearly_view athlete_id=athlete.person.user.username,year=previous_year %}">Předchozí rok</a></li>
-    <li class="next"><a href="{% url log.views.competition.yearly_view athlete_id=athlete.person.user.username,year=next_year %}">Další rok</a></li>
+    <li class="previous"><a href="{% url athletelog.views.competition.yearly_view athlete_id=athlete.person.user.username,year=previous_year %}">Předchozí rok</a></li>
+    <li class="next"><a href="{% url athletelog.views.competition.yearly_view athlete_id=athlete.person.user.username,year=next_year %}">Další rok</a></li>
 </ul>
 {% endifequal %}
 {% endifequal %}
@@ -53,12 +53,12 @@
             <td>{{ c.result }}</td>
             <td>{{ c.place }}</td>
             <td>
-                <a href="{% url log.views.competition.edit_form athlete_id=athlete.person.user.username,year=c.day.year,month=c.day.month,day=c.day.day,competition_id=c.id %}" class="edit_competition" 
+                <a href="{% url athletelog.views.competition.edit_form athlete_id=athlete.person.user.username,year=c.day.year,month=c.day.month,day=c.day.day,competition_id=c.id %}" class="edit_competition" 
                 id="edit_competition_{{ c.day|date:"Y-m-d" }}_{{ c.id }}" title="Upravit závod">
                 <span>Upravit závod</span></a>
             </td>
             <td>
-                <a href="{% url log.views.competition.remove_competition athlete_id=athlete.person.user.username,competition_id=c.id %}" class="remove_competition" 
+                <a href="{% url athletelog.views.competition.remove_competition athlete_id=athlete.person.user.username,competition_id=c.id %}" class="remove_competition" 
                     id="remove_competition_{{ c.day|date:"Y-m-d" }}_{{ c.id }}" title="Odstranit závod">
                     <span>Odstranit závod</span></a>
             </td>
@@ -76,14 +76,14 @@
 
 {% ifequal competition_view_type "monthly" %}
 <ul class="pager_menu">
-    <li class="previous"><a href="{% url log.views.competition.monthly_view athlete_id=athlete.person.user.username,year=previous_year,month=previous_month %}">Předchozí měsíc</a></li>
-    <li class="next"><a href="{% url log.views.competition.monthly_view athlete_id=athlete.person.user.username,year=next_year,month=next_month %}">Další měsíc</a></li>
+    <li class="previous"><a href="{% url athletelog.views.competition.monthly_view athlete_id=athlete.person.user.username,year=previous_year,month=previous_month %}">Předchozí měsíc</a></li>
+    <li class="next"><a href="{% url athletelog.views.competition.monthly_view athlete_id=athlete.person.user.username,year=next_year,month=next_month %}">Další měsíc</a></li>
 </ul>
 {% else %}
 {% ifequal competition_view_type "yearly" %}
 <ul class="pager_menu">
-    <li class="previous"><a href="{% url log.views.competition.yearly_view athlete_id=athlete.person.user.username,year=previous_year %}">Předchozí rok</a></li>
-    <li class="next"><a href="{% url log.views.competition.yearly_view athlete_id=athlete.person.user.username,year=next_year %}">Další rok</a></li>
+    <li class="previous"><a href="{% url athletelog.views.competition.yearly_view athlete_id=athlete.person.user.username,year=previous_year %}">Předchozí rok</a></li>
+    <li class="next"><a href="{% url athletelog.views.competition.yearly_view athlete_id=athlete.person.user.username,year=next_year %}">Další rok</a></li>
 </ul>
 {% endifequal %}
 {% endifequal %}

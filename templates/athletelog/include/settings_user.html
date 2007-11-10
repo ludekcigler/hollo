@@ -1,4 +1,4 @@
-{% extends 'log/include/settings_base.html' %}
+{% extends 'athletelog/include/settings_base.html' %}
 {% load log_tags %}
 {% block settings_content %}
 {% settings_submenu "user" %}
@@ -12,7 +12,7 @@ Některé Vámi zadané hodnoty jsou špatně - mrkněte se na ně znovu
 </p>
 </div>
 {% endif %}
-<form id="settings_user_form" action="{% url log.views.settings.user %}?continue={{ continue|urlencode }}" method="post">
+<form id="settings_user_form" action="{% url athletelog.views.settings.user %}?continue={{ continue|urlencode }}" method="post">
     <fieldset>
         <legend class="textversion">Informace o uživateli</legend>
         <table cellspacing="0">
@@ -35,16 +35,16 @@ Některé Vámi zadané hodnoty jsou špatně - mrkněte se na ně znovu
                         {% if person.image %}
                         <img src="{{ person.get_image_url }}" width="36" height="36" alt="{{ user.id }}" >
                         <br />
-                        <a href="{% url log.views.settings.user_edit_image %}" title="Upravit obrázek" >Upravit</a>
-                        <a href="{% url log.views.settings.user_remove_image %}" title="Smazat obrázek" >Smazat</a>
+                        <a href="{% url athletelog.views.settings.user_edit_image %}" title="Upravit obrázek" >Upravit</a>
+                        <a href="{% url athletelog.views.settings.user_remove_image %}" title="Smazat obrázek" >Smazat</a>
                         {% else %}
-                        <a href="{% url log.views.settings.user_edit_image %}" title="Nahrát obrázek">Nahrát obrázek</a>
+                        <a href="{% url athletelog.views.settings.user_edit_image %}" title="Nahrát obrázek">Nahrát obrázek</a>
                         {% endif %}
                     </td>
                 </tr>
                 <tr>
                     <th scope="row"><label>Heslo</label></th>
-                    <td><a href="{% url log.views.settings.user_change_password %}" title="Změnit heslo">Změnit heslo</a></td>
+                    <td><a href="{% url athletelog.views.settings.user_change_password %}" title="Změnit heslo">Změnit heslo</a></td>
                 </tr>
                 {% if athlete %}
                 <tr {% if user_form.errors.club %}class="error"{% endif %}>

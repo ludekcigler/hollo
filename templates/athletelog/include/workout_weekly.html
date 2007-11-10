@@ -2,8 +2,8 @@
 {% load log_tags %}
 <h2>{{first_day|date:"W"}}. týden {{first_day|date:"Y"}} :: Tréninky</h2>
 <ul class="pager_menu">
-    <li class="previous"><a href="{% url log.views.workout.weekly_view athlete_id=athlete.person.user.username,year=previous_year,week=previous_week %}">Předchozí týden</a></li>
-    <li class="next"><a href="{% url log.views.workout.weekly_view athlete_id=athlete.person.user.username,year=next_year,week=next_week %}">Další týden</a></li>
+    <li class="previous"><a href="{% url athletelog.views.workout.weekly_view athlete_id=athlete.person.user.username,year=previous_year,week=previous_week %}">Předchozí týden</a></li>
+    <li class="next"><a href="{% url athletelog.views.workout.weekly_view athlete_id=athlete.person.user.username,year=next_year,week=next_week %}">Další týden</a></li>
 </ul>
 <div id="weekly_view">
 
@@ -25,7 +25,7 @@
                 {% if day_data.workouts|length_is:"0" and day_data.competitions|length_is:"0" %}
                     {# Zadny trenink ani zavod #}
             <tr class="first_from_day first_from_phase day_{{ day_data.day|date:"Y-m-d" }}">
-                    {% include 'log/include/workout_weekly_day_header.html' %}
+                    {% include 'athletelog/include/workout_weekly_day_header.html' %}
                 <td colspan="4">Žádný trénink tento den...</td>
             </tr>
                 {% else %}
@@ -33,35 +33,35 @@
                     {% if day_data.competitions|length_is:"0" %}
                     {# Zadny zavod, jenom treninky #}
             <tr class="first_from_day first_from_phase day_{{ day_data.day|date:"Y-m-d" }}">
-                        {% include 'log/include/workout_weekly_day_header.html' %}
+                        {% include 'athletelog/include/workout_weekly_day_header.html' %}
                         {% for workout in day_data.workouts %}
-                            {% include 'log/include/workout_weekly_workout_row.html' %}
+                            {% include 'athletelog/include/workout_weekly_workout_row.html' %}
                         {% endfor %}
                     {% else %}
 
                         {% if day_data.workouts|length_is:"0" %}
                         {# Zadny trenink, jenom zavody #}
             <tr class="first_from_day competition day_{{ day_data.day|date:"Y-m-d" }}">
-                            {% include 'log/include/workout_weekly_day_header.html' %}
+                            {% include 'athletelog/include/workout_weekly_day_header.html' %}
                             {% for competition in day_data.competitions %}
 
                                 {% if forloop.first|is_not %}
                                 <tr class="competition day_{{ day_data.day|date:"Y-m-d" }}">
                                 {% endif %}
 
-                                {% include 'log/include/workout_weekly_competition_row.html' %}
+                                {% include 'athletelog/include/workout_weekly_competition_row.html' %}
                                 </tr>
                             {% endfor %}
 
                         {% else %}
             <tr class="first_from_day first_from_phase day_{{ day_data.day|date:"Y-m-d" }}">
-                        {% include 'log/include/workout_weekly_day_header.html' %}
+                        {% include 'athletelog/include/workout_weekly_day_header.html' %}
                         {% for workout in day_data.workouts %}
-                            {% include 'log/include/workout_weekly_workout_row.html' %}
+                            {% include 'athletelog/include/workout_weekly_workout_row.html' %}
                         {% endfor %}
                         {% for competition in day_data.competitions %}
                             <tr class="competition day_{{ day_data.day|date:"Y-m-d" }}">
-                            {% include 'log/include/workout_weekly_competition_row.html' %}
+                            {% include 'athletelog/include/workout_weekly_competition_row.html' %}
                             </tr>
                         {% endfor %}
                         {% endif %}
@@ -76,6 +76,6 @@
 </div>
 
 <ul class="pager_menu">
-    <li class="previous"><a href="{% url log.views.workout.weekly_view athlete_id=athlete.person.user.username,year=previous_year,week=previous_week %}">Předchozí týden</a></li>
-    <li class="next"><a href="{% url log.views.workout.weekly_view athlete_id=athlete.person.user.username,year=next_year,week=next_week %}">Další týden</a></li>
+    <li class="previous"><a href="{% url athletelog.views.workout.weekly_view athlete_id=athlete.person.user.username,year=previous_year,week=previous_week %}">Předchozí týden</a></li>
+    <li class="next"><a href="{% url athletelog.views.workout.weekly_view athlete_id=athlete.person.user.username,year=next_year,week=next_week %}">Další týden</a></li>
 </ul>

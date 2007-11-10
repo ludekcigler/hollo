@@ -1,11 +1,15 @@
-var TrackEventInfo = {
-    {% for event in events %}
-        '{{ event.name }}': {'has_additional_info': 
-            {% if event.has_additional_info %}
-                true
-            {% else %}
-                false
-            {% endif %}
-            },
+var TrackEventInfo =
+{
+    {% for e in events %}
+    '{{ e.name }}': {
+                     'has_additional_info': 
+                     {% if e.has_additional_info %}
+                        true
+                     {% else %}
+                        false
+                     {% endif %},
+                     'result_type': '{{ t.result_type }}',
+                    },
     {% endfor %}
-}
+};
+

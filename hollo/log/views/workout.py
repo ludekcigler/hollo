@@ -270,7 +270,7 @@ def edit_form(request, athlete_id, day, month, year, workout_id):
     workout_items_data = {}
     for workout_item in workout.workout_items.all():
         seq = workout_item.sequence
-        workout_items_data['workout_item_%d_type' % seq] = workout_item.type
+        workout_items_data['workout_item_%d_type' % seq] = workout_item.type.abbr
         workout_items_data['workout_item_%d_desc' % seq] = workout_item.desc
         workout_items_data['workout_item_%d_num_data' % seq] = workout_item.num_data
     

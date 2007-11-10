@@ -23,8 +23,11 @@ from settings import PROJECT_DIR
 
 from django.conf.urls.defaults import *
 
+from hollo import log
+import log.views
+
 urlpatterns = patterns('',
-    (r'^$', 'hollo.log.views.index'),
+    (r'^$', log.views.index),
 
     # Uncomment this for admin:
     (r'^admin/', include('django.contrib.admin.urls')),

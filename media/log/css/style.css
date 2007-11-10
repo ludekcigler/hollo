@@ -855,6 +855,10 @@ form .error {
     width: 3em;
 }
 
+#workout_form .workout_items .num_data input {
+    text-align: right;
+}
+
 #workout_form .workout_items .remove_button {
     width: 20px;
 }

@@ -31,7 +31,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 PERSON_IMAGE_UPLOAD_DIR = 'avatars'
 TRACK_EVENT_RESULT_TYPE_CHOICES = (('T', 'Time'), ('L', 'Length'), ('P', 'Points'), )
-WORKOUT_TYPE_NUM_CHOICES = (('DISTANCE', 'Km'), ('WEIGHT', 'Kg'), ('TIME', 'Min'), ('NONE', 'None'))
+WORKOUT_TYPE_NUM_CHOICES = (('DISTANCE', 'Km'), ('WEIGHT', 'Kg'), ('TIME', 'Min'), ('COUNT', 'Počet'), ('NONE', 'None'))
 
 TIME_RESULT_PATTERN = re.compile('^((?P<h>\d{1,}):(?=\d{1,2}:))?((?P<min>\d{1,2}):)?(?P<sec>\d{1,2})([,\.](?P<msec>\d{1,2}))?$')
 DISTANCE_RESULT_PATTERN = re.compile('^((?P<km>\d+)[\.,](?=\d+[\.,]))?((?P<m>\d+)[\.,])?(?P<cm>\d+)$')

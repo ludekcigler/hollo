@@ -18,4 +18,4 @@
 ## along with this program. If not, see <http://www.gnu.org/licenses/>.
 ##
 
-__all__ = ['log_filters', 'log_tags',]
+__all__ = ['athletelog_filters', 'athletelog_tags',]

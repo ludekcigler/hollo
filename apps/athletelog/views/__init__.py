@@ -43,7 +43,7 @@ def login_required(view, *args, **kwargs):
     if request.user.is_authenticated() and person:
         return view(*args, **kwargs)
     else:
-        return index(request)
+        return http.HttpResponseRedirect(urlresolvers.reverse('athletelog.views.user.login'))
 
 @decorator.decorator
 def athlete_view_allowed(view, *args, **kwargs):
@@ -56,8 +56,8 @@ def athlete_view_allowed(view, *args, **kwargs):
     else: athlete_id = args[1]
 
     # Check if the user is either a coach or a person authorized to view the athlete logs
-    person = models.Person.objects.get(user=request.user)
-    athlete = models.Athlete.objects.get(person__user__username=athlete_id)
+    person = models.Person.objects.select_related().get(user=request.user)
+    athlete = models.Athlete.objects.select_related().get(person__user__username=athlete_id)
 
     if (athlete in person.allowed_athletes()):
         return view(*args, **kwargs)
@@ -74,7 +74,7 @@ def athlete_edit_allowed(view, *args, **kwargs):
     if kwargs.has_key('athlete_id'): athlete_id = kwargs['athlete_id']
     else: athlete_id = args[1]
 
-    athlete = models.Athlete.objects.get(person__user__username=athlete_id)
+    athlete = models.Athlete.objects.select_related().get(person__user__username=athlete_id)
 
     if athlete.allowed_edit_by(request.user):
         return view(*args, **kwargs)

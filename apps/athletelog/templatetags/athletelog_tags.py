@@ -55,7 +55,7 @@ def select_workout_type(context, selected_type):
     choices = []
     for type in models.WorkoutType.objects.all():
         selected = (type.abbr == selected_type)
-        choices.append({'value': type, 'selected': selected, 'name': type.abbr})
+        choices.append({'value': type, 'selected': selected, 'name': type.name})
 
     return {'choices': choices}
 

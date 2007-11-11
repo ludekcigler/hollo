@@ -59,7 +59,7 @@ def weekly_view(request, athlete_id, week, year, detail_year = None, detail_mont
     """
     View workout log for a single week
     """
-    athlete = models.Athlete.objects.get(person__user__username=athlete_id)
+    athlete = models.Athlete.objects.select_related().get(person__user__username=athlete_id)
 
     week, year = int(week), int(year)
     week = min(datetime.date(year, 12, 28).isocalendar()[1], max(1, week))

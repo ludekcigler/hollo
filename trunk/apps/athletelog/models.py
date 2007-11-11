@@ -322,7 +322,7 @@ class WorkoutItem(models.Model):
     sequence = models.IntegerField()
     type = models.ForeignKey('WorkoutType', related_name='workout_items')
     desc = models.TextField()
-    num_data = models.DecimalField(decimal_places=2, max_digits=5, default=None, blank=True)
+    num_data = models.DecimalField(decimal_places=2, max_digits=10, default=None, blank=True)
 
     def __unicode__(self):
         return "%s: %s, %s" % (str(self.workout), self.type.abbr, self.desc,)

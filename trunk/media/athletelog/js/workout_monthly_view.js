@@ -1,4 +1,4 @@
-hollo.workout.monthly = {
+athletelog.ui.workout_monthly_view = {
     highlight_day: function () {
         $(this).addClass('highlighted');
     },
@@ -9,8 +9,8 @@ hollo.workout.monthly = {
 }
 
 $(document).ready(function () {
-    $('#monthlyView tbody td:not(.empty)').click(hollo.workout.select_day).hover(hollo.workout.monthly.highlight_day, hollo.workout.monthly.unhighlight_day);
-
-    hollo.workout.select_view('monthly');
+    $('#monthly_view tbody td:not(.empty)').click(athletelog.ui.workout.select_day)
+        .hover(athletelog.ui.workout_monthly_view.highlight_day,
+                athletelog.ui.workout_monthly_view.unhighlight_day);
 });
 

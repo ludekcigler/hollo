@@ -1,11 +1,9 @@
-var athletelog = new Object();
-
-athletelog.athlete_selection = {
-    onInit: function () {
-        $('#athlete_selection_link').click(function (aEvent) { athletelog.athlete_selection.toggleSelection(aEvent); });
+athletelog.ui.athlete_selection = {
+    init: function () {
+        $('#athlete_selection_link').click(function (aEvent) { athletelog.ui.athlete_selection.toggle_selection(aEvent); });
     },
 
-    toggleSelection: function (aEvent) {
+    toggle_selection: function (aEvent) {
         $('#athlete_selection_other_athletes').toggle();
         $('#athlete_selection_link').toggleClass('selected');
         aEvent.preventDefault();
@@ -13,7 +11,5 @@ athletelog.athlete_selection = {
 };
 
 $(document).ready(function () {
-    athletelog.athlete_selection.onInit();
+    athletelog.ui.athlete_selection.init();
 });
-
-

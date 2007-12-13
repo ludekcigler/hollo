@@ -22,6 +22,8 @@
 User's administration views for the athlete log application
 """
 
+import urllib2
+
 import django.contrib.auth
 from django import http 
 from django.shortcuts import render_to_response
@@ -33,7 +35,9 @@ from athletelog import views
 def login(request):
     t = loader.get_template('athletelog/login.html')
     context = {}
-    if request.has_key('auth') and request.GET['auth']:
+    if request.GET.has_key('continue'):
+        context['continue_url'] = request.GET['continue']
+    if request.GET.has_key('auth') and request.GET['auth']:
         context['login_failed'] = True
     c = RequestContext(request, context)
     return http.HttpResponse(t.render(c))
@@ -44,11 +48,15 @@ def auth(request):
     password = request.POST['password']
     
     user = django.contrib.auth.authenticate(username=username, password=password)
+    continue_url = request.GET.has_key('continue') and request.GET['continue']
     if user is not None and user.is_active:
         django.contrib.auth.login(request, user)
-        return http.HttpResponseRedirect(reverse('athletelog.views.index'))
+        return http.HttpResponseRedirect(continue_url or reverse('athletelog.views.index'))
     else:
-        return http.HttpResponseRedirect("%s?%s" % (reverse('athletelog.views.user.login'), "auth=error"))
+        query_string = 'auth=error'
+        if continue_url:
+            query_string += ('&continue=%s' % urllib2.quote(continue_url))
+        return http.HttpResponseRedirect("%s?%s" % (reverse('athletelog.views.user.login'), query_string))
 
 
 def logout(request):

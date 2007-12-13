@@ -163,7 +163,6 @@ def user_upload_image(request):
     # Check the MIME type of the uploaded file
     if not re.match('^image/(jpeg|gif|png)$', image['content-type']):
         # TODO: redirect to correct error page
-        raise
         return http.HttpResponseRedirect(continue_url)
 
     try:
@@ -176,7 +175,7 @@ def user_upload_image(request):
         image_file.close()
     except IOError:
         # TODO: redirect to error page
-        raise
+        return http.HttpResponseRedirect(continue_url)
 
     try:
         # Remove old file

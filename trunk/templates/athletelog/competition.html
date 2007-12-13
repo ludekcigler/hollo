@@ -36,7 +36,7 @@ Závody -
 <div class="corner_tl"><div class="corner_tr"><div class="corner_bl"><div class="corner_br">
 <div class="content">
 
-    <div id="athlete_selection">
+    <div id="athlete_selection" class="athlete_{{ athlete.person.user.username }}">
         <h2 class="textversion">Zobrazený atlet</h2>
     {% with "competition" as view_type %}
             <a href="{% url athletelog.views.change_athlete view_type=view_type %}?old={{ athlete.person.user.username }}"

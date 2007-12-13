@@ -5,12 +5,14 @@
 {% block javascripts %}
     <script type="text/javascript" src="/site_media/athletelog/js/change_view_form.js"></script>
     <script type="text/javascript" src="/site_media/athletelog/js/athlete_selection.js"></script>
+
+    <script type="text/javascript" src="/site_media/athletelog/js/workout.js"></script>
 {% endblock %}
 
 {% block content %}
 <div id="view_selection" class="corner_tl">
 <div class="corner_tr"><div class="corner_bl"><div class="corner_br content">
-    <div id="athlete_selection">
+    <div id="athlete_selection" class="athlete_{{ athlete.person.user.username }}">
         <h2 class="textversion">Zobrazený atlet</h2>
         {% with "workout" as view_type %}
             <a href="{% url athletelog.views.change_athlete view_type=view_type %}?old={{ athlete.person.user.username }}"

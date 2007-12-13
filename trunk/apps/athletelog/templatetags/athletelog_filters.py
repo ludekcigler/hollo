@@ -19,6 +19,11 @@
 ##
 
 from django import template
+from django.db.models.query import QuerySet
+from django.core.serializers import serialize
+from django.utils import simplejson
+
+import athletelog.common
 
 """
 Custom filters for the Log application
@@ -104,3 +109,7 @@ def trunc_unicode(value, length):
     length = int(length)
     return unicode(value)[0:length]
 
+
+@register.filter
+def jsonify(object):
+    return athletelog.common.jsonify(object)

@@ -275,6 +275,10 @@ table tbody td, table tbody th {
     margin-right: 0.5em;
 }
 
+#view_selection input {
+    text-align: right;
+}
+
 #athlete_selection {
     float: left;
     border-right: 1px solid white;
@@ -564,7 +568,7 @@ a.edit_competition {
     color: #999;
 }
 
-#weekly_view tbody th a:hover {
+#weekly_view tbody th a:hover, #weekly_view tbody tr.highlighted a {
     color: #666;
     text-decoration: none;
 }
@@ -625,7 +629,7 @@ tbody tr.highlighted td, tbody tr.highlighted th, tbody td.highlighted {
     color: #999;
 }
 
-#monthly_view .day a:hover {
+#monthly_view .day a:hover, #monthly_view .highlighted a {
     text-decoration: none;
     color: #666;
 }
@@ -719,7 +723,7 @@ tbody tr.highlighted td, tbody tr.highlighted th, tbody td.highlighted {
 
 #login_form button {
     float: right;
-    margin: 0.2em 0 0.6em;
+    margin: 0.2em -0.3em 0.6em;
 }
 
 #login_form label {
@@ -727,7 +731,7 @@ tbody tr.highlighted td, tbody tr.highlighted th, tbody td.highlighted {
 }
 
 #login_form input {
-    width: 15em;
+    width: 100%;
 }
 
 #versionNumber {
@@ -897,7 +901,7 @@ form .error {
     width: 100%;
 }
 
-#workout_form .remove_workout_item {
+#workout_form .workout_items input.remove_workout_item {
     margin: 1.2em 0 0 0.1em;
     background-image: url(/site_media/athletelog/images/icons/remove_small.png);
     background-position: center center;
@@ -1098,3 +1102,19 @@ form textarea {
 }
 
 /*----------------------------------------------------------------------------*/
+
+#progress_display {
+    position: fixed;
+    top: 0.2em;
+    left: 50%;
+    margin-left: -4.5em;
+    background-image: url('/site_media/athletelog/images/icons/progress.gif');
+    padding: 0.2em 0.2em 0.2em 24px;
+    min-height: 20px;
+    line-height: 1.5em;
+    vertical-align: baseline;
+    background-color: salmon;
+    font-weight: bold;
+    background-repeat: no-repeat;
+    background-position: left middle;
+}

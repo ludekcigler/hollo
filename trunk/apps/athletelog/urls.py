@@ -94,7 +94,18 @@ urlpatterns = patterns('athletelog.views',
     (r'^competition/(?P<athlete_id>\w+)/add/(?P<year>\d{4})/(?P<month>\d{,2})/(?P<day>\d{,2})/$', athletelog.views.competition.add_form),
     (r'^competition/(?P<athlete_id>\w+)/edit/(?P<year>\d{4})/(?P<month>\d{,2})/(?P<day>\d{,2})/(?P<competition_id>\d+)/$', athletelog.views.competition.edit_form),
 
+    # Hijax webpage snippets
+    (r'^snippets/workout/(?P<athlete_id>\w+)/day/(?P<year>\d{4})/(?P<month>\d{,2})/(?P<day>\d{,2})/$', athletelog.views.workout.daily_summary_snippet),
+    (r'^snippets/workout/(?P<athlete_id>\w+)/week/(?P<year>\d{4})/(?P<week>\d{,2})/$', athletelog.views.workout.weekly_summary_snippet),
+    (r'^snippets/workout/(?P<athlete_id>\w+)/month/(?P<year>\d{4})/(?P<month>\d{,2})/$', athletelog.views.workout.monthly_summary_snippet),
+
     # Javascript-generating views
     (r'^js/event_info/', athletelog.views.js_event_info),
     (r'^js/workout_type_info/', athletelog.views.js_workout_type_info),
+    #(r'^js/', athletelog.views.js_engine_experimental),
+
+    # REST JSON API
+    #(r'^api/workout/(?P<athlete_id>\w+)/week/(?P<year>\d{4})/(?P<week>\d{,2})/$', athletelog.views.workout.api_weekly_view),
+    #(r'^api/workout/(?P<athlete_id>\w+)/month/(?P<year>\d{4})/(?P<month>\d{,2})/$', athletelog.views.workout.api_monthly_view),
+
 )

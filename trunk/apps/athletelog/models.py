@@ -25,13 +25,14 @@ DB models for Hollo
 import re
 
 from django.db import models
+from django.db.models import Q
 
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 
 PERSON_IMAGE_UPLOAD_DIR = 'avatars'
 TRACK_EVENT_RESULT_TYPE_CHOICES = (('T', 'Time'), ('L', 'Length'), ('P', 'Points'), )
-WORKOUT_TYPE_NUM_CHOICES = (('DISTANCE', 'Km'), ('WEIGHT', 'Kg'), ('TIME', 'Min'), ('COUNT', 'Počet'), ('NONE', 'None'))
+WORKOUT_TYPE_NUM_CHOICES = (('DISTANCE', u'Km'), ('WEIGHT', u'Kg'), ('TIME', u'Min'), ('COUNT', u'Počet'), ('NONE', u'None'))
 
 TIME_RESULT_PATTERN = re.compile('^((?P<h>\d{1,}):(?=\d{1,2}:))?((?P<min>\d{1,2}):)?(?P<sec>\d{1,2})([,\.](?P<msec>\d{1,2}))?$')
 DISTANCE_RESULT_PATTERN = re.compile('^((?P<km>\d+)[\.,](?=\d+[\.,]))?((?P<m>\d+)[\.,])?(?P<cm>\d+)$')
@@ -63,10 +64,29 @@ class Person(models.Model):
         """
         Returns list of athletes which the person is authorized to view
         """
-        retval = set(self.watched_athletes.all())
-        retval.update(Athlete.objects.filter(group__coaches__person=self))
-        retval.update(Athlete.objects.filter(person=self))
-        return list(retval)
+        athletes = set(self.watched_athletes.all())
+        athletes.update(Athlete.objects.filter(group__coaches__person=self))
+        athletes.update(Athlete.objects.filter(person=self))
+        athlete_primary_keys = set()
+        retval = []
+        
+        for a in athletes:
+            if not a.pk in athlete_primary_keys:
+                retval.append(a)
+                athlete_primary_keys.add(a.pk)
+                
+        return retval
+
+    def jsonify(self):
+        """
+        Converts object to a dictionary containing only lists, dicts and strings
+        """
+        ret = {'username': self.user.username, 'image_url': self.get_image_url(),
+               'first_name': self.user.first_name, 'last_name': self.user.last_name,
+               'watched_athletes': [a.pk for a in self.watched_athletes.all()],
+               'allowed_athletes': [a.pk for a in self.allowed_athletes()],
+               'full_name': self.full_name, 'id': self.id}
+        return ret
 
     def get_view_status(self, person):
         """
@@ -98,12 +118,17 @@ class Athlete(models.Model):
     """
     person = models.OneToOneField(Person)
     # Name of the club
-    club = models.CharField(maxlength = 100, blank=True)
+    club = models.CharField(max_length = 100, blank=True)
     # Group of athletes this person belongs to
     group = models.ForeignKey('AthleteGroup', related_name='athletes', blank=True, null=True)
     # List of persons who are not allowed to request authorization
     # for the athlete
     blocked_persons = models.ManyToManyField('Person', related_name='blocking_athletes', blank=True)
+
+    def jsonify(self):
+        ret = {'person': self.person.jsonify(), 'club': self.club, 'group': self.group,
+               'blocked_persons': [p.jsonify() for p in self.blocked_persons.all()]}
+        return ret
 
     def __unicode__(self):
         return unicode(self.person)
@@ -149,6 +174,10 @@ class Coach(models.Model):
         """
         return Athlete.objects.filter(group__coaches=self)
 
+    def jsonify(self):
+        ret = {'person': self.person.jsonify(), 'athletes': [a.jsonify() for a in self.athletes()]}
+        return ret
+
     def __unicode__(self):
         return unicode(self.person)
 
@@ -159,11 +188,15 @@ class AthleteGroup(models.Model):
     """
     Group of athletes
     """
-    name = models.CharField(maxlength = 100)
+    name = models.CharField(max_length = 100)
     coaches = models.ManyToManyField('Coach', related_name='athletegroups')
 
     def __unicode__(self):
         return self.name
+
+    def jsonify(self):
+        ret = {'name': self.name, 'coaches': [c.pk for c in self.coaches.all()]}
+        return ret
 
     class Admin:
         pass
@@ -174,8 +207,12 @@ class AuthorizationRequest(models.Model):
     """
     person = models.ForeignKey('Person', related_name='auth_request_from')
     athlete = models.ForeignKey('Athlete', related_name='auth_request_to')
-    message = models.CharField(maxlength=160, blank=True, default='')
+    message = models.CharField(max_length=160, blank=True, default='')
     created = models.DateTimeField(auto_now_add=True)
+
+    def jsonify(self):
+        return {'person': self.person.jsonify(), 'athlete': self.athlete.jsonify(),
+                'message': self.message}
 
     def __unicode__(self):
         return "Authorization request from %s to %s" % (self.person, self.athlete)
@@ -187,14 +224,17 @@ class TrackEvent(models.Model):
     """
     One event on the track (or outside..), e.g. 100m, Javelin etc.
     """
-    name = models.CharField(maxlength=30, primary_key=True)
+    name = models.CharField(max_length=30, primary_key=True)
     # Does the event contain additional info? (used for cross-country etc.)
     has_additional_info = models.BooleanField(default=False)
     # Order of results (determines the result pattern)
-    result_type = models.CharField(maxlength=1, choices=TRACK_EVENT_RESULT_TYPE_CHOICES, default='T')
+    result_type = models.CharField(max_length=1, choices=TRACK_EVENT_RESULT_TYPE_CHOICES, default='T')
 
     # Ordering of the track events
     order = models.DateField(auto_now_add=True)
+
+    def jsonify(self):
+        return {'name': self.name, 'has_additional_info': self.has_additional_info, 'result_type': self.result_type}
 
     def __unicode__(self):
         return self.name
@@ -222,11 +262,11 @@ class Competition(models.Model):
     """
     athlete = models.ForeignKey('Athlete')
     day = models.DateField()
-    place = models.CharField(maxlength = 100, default='')
+    place = models.CharField(max_length = 100, default='')
     event = models.ForeignKey('TrackEvent')
     # Additional info about an event, in case the event has such
-    event_info = models.CharField(maxlength=100, default='')
-    result = models.CharField(maxlength=100)
+    event_info = models.CharField(max_length=100, default='')
+    result = models.CharField(max_length=100)
     note = models.TextField(blank=True, default='')
 
     def __cmp__(self, other):
@@ -251,6 +291,10 @@ class Competition(models.Model):
 
         return NotImplemented
 
+    def jsonify(self):
+        return {'athlete': self.athlete.jsonify(), 'day': unicode(self.day), 'place': self.place,
+                'event': self.event, 'event_info': self.event_info, 'result': self.result}
+
     class Admin:
         pass
 
@@ -260,7 +304,7 @@ class Workout(models.Model):
     """
     day = models.DateField()
     athlete = models.ForeignKey('Athlete')
-    weather = models.CharField(maxlength=100, blank=True, default='')
+    weather = models.CharField(max_length=100, blank=True, default='')
     note = models.TextField(blank=True, default='')
     rating_satisfaction = models.SmallIntegerField(default=3)
     rating_difficulty = models.SmallIntegerField(default=3)
@@ -292,6 +336,12 @@ class Workout(models.Model):
 
     num_workout_items = property(_get_num_workout_items, 'Number of workout items in the workout')
 
+    def jsonify(self):
+        return {'day': self.day, 'athlete': self.athlete.jsonify(), 'weather': self.weather,
+                'note': self.note, 'rating_satisfaction': self.rating_satisfaction,
+                'rating_difficulty': self.rating_difficulty, 'total_km': self.total_km,
+                'total_kg': self.total_kg, 'workout_items': [i.jsonify() for i in self.workout_items]}
+
     class Admin:
         list_display = ('day', 'athlete', 'weather')
 
@@ -299,14 +349,17 @@ class WorkoutType(models.Model):
     """
     Workout type list
     """
-    abbr = models.CharField(maxlength = 10)
-    name = models.CharField(maxlength = 30)
+    abbr = models.CharField(max_length = 10)
+    name = models.CharField(max_length = 30)
     # Type of numeric data associated with the workout (eg. km, kg, minutes, ...)
-    num_type = models.CharField(maxlength=8, choices=WORKOUT_TYPE_NUM_CHOICES, default='DISTANCE')
+    num_type = models.CharField(max_length=8, choices=WORKOUT_TYPE_NUM_CHOICES, default='DISTANCE')
     order = models.DateField(auto_now_add=True)
 
     def __unicode__(self):
         return self.abbr
+
+    def jsonify(self):
+        return {'abbr': self.abbr, 'name': self.name, 'num_type': self.num_type}
 
     class Admin:
         pass
@@ -326,6 +379,10 @@ class WorkoutItem(models.Model):
 
     def __unicode__(self):
         return "%s: %s, %s" % (str(self.workout), self.type.abbr, self.desc,)
+
+    def jsonify(self):
+        return {'workout': self.workout.pk, 'sequence': self.sequence, 'type': self.type.jsonify(),
+                'desc': self.desc, 'num_data': self.num_data}
 
     class Admin:
         pass

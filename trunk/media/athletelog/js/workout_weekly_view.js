@@ -1,20 +1,19 @@
+athletelog.ui.workout_weekly_view = {
+    highlight_day: function (aEvent) {
+        var dayClass = athletelog.utils.get_day_class(this);
+        $(this).parents('tbody').find('tr.' + dayClass).addClass('highlighted');
+    },
 
-hollo.workout.weekly = {
-    //Returns all rows in weekly view that correspond to the same day as the input row
-        highlight_day: function () {
-            var dayClass = hollo.utils.get_day_class(this);
-            $(this).parents('tbody').find('tr.' + dayClass).addClass('highlighted');
-        },
-
-        unhighlight_day: function () {
-            var dayClass = hollo.utils.get_day_class(this);
-            $(this).parents('tbody').find('tr.' + dayClass).removeClass('highlighted');
-        }
+    unhighlight_day: function () {
+        var dayClass = athletelog.utils.get_day_class(this);
+        $(this).parents('tbody').find('tr.' + dayClass).removeClass('highlighted');
+    }
 }
 
 $(document).ready(function(event) {
-    var dayRows = $('#weeklyView tbody tr');
-    $('#weeklyView tbody tr').click(hollo.workout.select_day);
-    $('#weeklyView tbody tr').hover(hollo.workout.weekly.highlight_day, hollo.workout.weekly.unhighlight_day);
-    hollo.workout.select_view('weekly');
+    var dayRows = $('#weekly_view tbody tr');
+    $('#weekly_view tbody tr').click(athletelog.ui.workout.select_day);
+    $('#weekly_view tbody tr').hover(athletelog.ui.workout_weekly_view.highlight_day,
+                                    athletelog.ui.workout_weekly_view.unhighlight_day);
+
 });

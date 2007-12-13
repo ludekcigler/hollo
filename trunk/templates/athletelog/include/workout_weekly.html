@@ -24,7 +24,7 @@
                     
                 {% if day_data.workouts|length_is:"0" and day_data.competitions|length_is:"0" %}
                     {# Zadny trenink ani zavod #}
-            <tr class="first_from_day first_from_phase day_{{ day_data.day|date:"Y-m-d" }}">
+            <tr class="first_from_day first_from_phase day_{{ day_data.date|date:"Y-m-d" }}">
                     {% include 'athletelog/include/workout_weekly_day_header.html' %}
                 <td colspan="4">Žádný trénink tento den...</td>
             </tr>
@@ -32,7 +32,7 @@
 
                     {% if day_data.competitions|length_is:"0" %}
                     {# Zadny zavod, jenom treninky #}
-            <tr class="first_from_day first_from_phase day_{{ day_data.day|date:"Y-m-d" }}">
+            <tr class="first_from_day first_from_phase day_{{ day_data.date|date:"Y-m-d" }}">
                         {% include 'athletelog/include/workout_weekly_day_header.html' %}
                         {% for workout in day_data.workouts %}
                             {% include 'athletelog/include/workout_weekly_workout_row.html' %}
@@ -41,12 +41,12 @@
 
                         {% if day_data.workouts|length_is:"0" %}
                         {# Zadny trenink, jenom zavody #}
-            <tr class="first_from_day competition day_{{ day_data.day|date:"Y-m-d" }}">
+            <tr class="first_from_day competition day_{{ day_data.date|date:"Y-m-d" }}">
                             {% include 'athletelog/include/workout_weekly_day_header.html' %}
                             {% for competition in day_data.competitions %}
 
                                 {% if forloop.first|is_not %}
-                                <tr class="competition day_{{ day_data.day|date:"Y-m-d" }}">
+                                <tr class="competition day_{{ day_data.date|date:"Y-m-d" }}">
                                 {% endif %}
 
                                 {% include 'athletelog/include/workout_weekly_competition_row.html' %}
@@ -54,13 +54,13 @@
                             {% endfor %}
 
                         {% else %}
-            <tr class="first_from_day first_from_phase day_{{ day_data.day|date:"Y-m-d" }}">
+            <tr class="first_from_day first_from_phase day_{{ day_data.date|date:"Y-m-d" }}">
                         {% include 'athletelog/include/workout_weekly_day_header.html' %}
                         {% for workout in day_data.workouts %}
                             {% include 'athletelog/include/workout_weekly_workout_row.html' %}
                         {% endfor %}
                         {% for competition in day_data.competitions %}
-                            <tr class="competition day_{{ day_data.day|date:"Y-m-d" }}">
+                            <tr class="competition day_{{ day_data.date|date:"Y-m-d" }}">
                             {% include 'athletelog/include/workout_weekly_competition_row.html' %}
                             </tr>
                         {% endfor %}

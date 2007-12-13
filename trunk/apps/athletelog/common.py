@@ -24,6 +24,11 @@ import calendar
 import datetime
 import itertools
 
+import django.db.models
+from django.db.models.query import QuerySet
+from django.core.serializers import serialize
+from django.utils import simplejson
+
 """
 Miscellaneous utility functions
 """
@@ -115,6 +120,22 @@ def get_submit_button(postContents):
             return m.group(1)
     return None
 
-if __name__ == "__main__":
-    for d in xrange(1, 8):
-        print iso_week_day_to_gregorian(2002, 14, d)
+
+from django.core.serializers import json
+import types
+
+class AthleteLogJSONEncoder(json.DateTimeAwareJSONEncoder):
+    def default(self, obj):
+        if 'jsonify' in dir(obj):
+            return obj.jsonify()
+        elif isinstance(obj, django.db.models.Model):
+            return unicode(obj)
+        elif not obj:
+            return []
+        else:
+            return json.DateTimeAwareJSONEncoder.default(self, obj)
+
+def jsonify(object):
+    if isinstance(object, QuerySet):
+        return serialize('json', object)
+    return simplejson.dumps(object, cls=AthleteLogJSONEncoder)

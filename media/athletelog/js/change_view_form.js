@@ -1,49 +1,49 @@
-var logChangeViewForm = 
+athletelog.ui.change_view_form = 
 {
     init: function ()
     {
-        $('#view_selection #change_view_view_type').bind('change', null, logChangeViewForm.changeView)
+        $('#view_selection #change_view_view_type').bind('change', null, athletelog.ui.change_view_form.change_view)
             .trigger('change');
 
     },
 
-    changeView: function (aEvent)
+    change_view: function (aEvent)
     {
-        var viewType = $(this).val();
-        var viewSelection = $('#view_selection');
+        var view_type = $(this).val();
+        var view_selection = $('#view_selection');
 
-        function toggleFormVisibility(aHidden, aVisible) 
+        function toggle_form_visibility(aHidden, aVisible) 
         {
             for (var i = 0; i < aHidden.length; ++i) 
             {
-                viewSelection.find('#' + aHidden[i]).css('display', 'none');
-                viewSelection.find('label[@for=' + aHidden[i] + ']').css('display', 'none');
+                view_selection.find('#' + aHidden[i]).css('display', 'none');
+                view_selection.find('label[@for=' + aHidden[i] + ']').css('display', 'none');
             }
 
             for (var i = 0; i < aVisible.length; ++i) 
             {
-                viewSelection.find('#' + aVisible[i]).css('display', 'inline');
-                viewSelection.find('label[@for=' + aVisible[i] + ']').css('display', 'inline');
+                view_selection.find('#' + aVisible[i]).css('display', 'inline');
+                view_selection.find('label[@for=' + aVisible[i] + ']').css('display', 'inline');
             }
         }
 
-        switch (viewType) {
+        switch (view_type) {
             case "weekly":
-                toggleFormVisibility(/* hide */ ['change_view_month'], /* show */ ['change_view_week', 'change_view_year']);
+                toggle_form_visibility(/* hide */ ['change_view_month'], /* show */ ['change_view_week', 'change_view_year']);
                 break;
             case "monthly":
-                toggleFormVisibility(['change_view_week'], ['change_view_month', 'change_view_year']);
+                toggle_form_visibility(['change_view_week'], ['change_view_month', 'change_view_year']);
                 break;
             case "yearly":
-                toggleFormVisibility(['change_view_week', 'change_view_month'], ['change_view_year']);
+                toggle_form_visibility(['change_view_week', 'change_view_month'], ['change_view_year']);
                 break;
             default:
-                toggleFormVisibility(['change_view_week', 'change_view_month', 'change_view_year'], []);
+                toggle_form_visibility(['change_view_week', 'change_view_month', 'change_view_year'], []);
                 break;
         }
     }
 }
 
 $(document).ready(function() {
-    logChangeViewForm.init();
+    athletelog.ui.change_view_form.init();
 });

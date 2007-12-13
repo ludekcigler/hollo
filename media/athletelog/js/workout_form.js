@@ -1,4 +1,4 @@
-const WORKOUT_FORM_MAX_RATING = 5;
+var WORKOUT_FORM_MAX_RATING = 5;
 
 function WorkoutFormStarPickerListener (aFormField) {
     var mFormField = aFormField;
@@ -131,13 +131,15 @@ var workoutForm = {
              .filter('#workout_item_0_' + changedProperties[i])
                 .attr('id', 'workout_item_' + workoutItemCount + '_' + changedProperties[i])
                 .attr('name', 'workout_item_' + workoutItemCount + '_' + changedProperties[i])
+                .val('')
                 .prev('label')
                     .attr('for', 'workout_item_' + workoutItemCount + '_' + changedProperties[i]);
         }
 
         // Rename the remove button
         $(itemRow).children('.remove_workout_item')
-            .attr('name', 'submit_remove_workout_item_' + workoutItemCount);
+            .attr('name', 'submit_remove_workout_item_' + workoutItemCount)
+            .attr('value', '--');
 
         $('.workout_items tbody').append(itemRow);
 

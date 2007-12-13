@@ -27,3 +27,12 @@
 .info_box p.content {
     margin: 0;
 }
+
+#workout_form .workout_items td {
+    padding: 0;
+}
+
+#workout_form, #competition_form {
+    background-image: url(/site_media/athletelog/images/icons/workout_form_large.gif);
+}
+

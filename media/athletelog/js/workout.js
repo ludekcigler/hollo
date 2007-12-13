@@ -2,128 +2,36 @@
  * General functions for the workout view
  */
 
-hollo.workout = {
+athletelog.ui.workout = {
 
-    select_day: function (evt) {
-        var day = hollo.utils.get_day_class(this).match(/(\d{4})-(\d{2})-(\d{2})/);
+    select_day: function (aEvent) {
+        var day = athletelog.utils.get_day_class(this).match(/(\d{4})-(\d{2})-(\d{2})/);
         if (!day) { return; }
 
-        $('#workoutSummary').load(
-            hollo.utils.get_server_root() + '/log/ajax/workout/info/' + day[1] + '/' + day[2] + '/' + day[3] + '/',
-            {'sid': Math.random()},
-            hollo.workout.display_info)
+        var athlete_id = athletelog.utils.get_athlete_id();
+
+        if (!athletelog.ui.workout.summary_content)
+            athletelog.ui.workout.summary_content = $('#workout_summary .content').html();
+
+
+        athletelog.ui.progress_display.show();
+        $('#workout_summary .content').load(
+            athletelog.utils.get_server_root() + '/log/snippets/workout/' + athlete_id  + '/day/' + day[1] + '/' + day[2] + '/' + day[3] + '/',
+            athletelog.ui.workout.display_info);
+
+        aEvent.preventDefault();
     },
 
     display_info: function (responseText, code, response) {
-        hollo.workout.assign_info_signals();
+        $('#workout_summary .workout_info_jump_back').click(athletelog.ui.workout.restore_summary);
+        athletelog.ui.progress_display.hide();
     },
 
-    // Assigns signals to buttons on the workout info view
-    assign_info_signals: function () {
-        $('#workoutSummary a.editWorkout').click(hollo.workout.show_edit_form);
-        $('#workoutSummary a.removeWorkout').click(hollo.workout.remove);
-        $('#workoutSummary a.addWorkout').click(hollo.workout.show_add_form);
-        $('#workoutSummary a.addCompetition').click(hollo.competition.show_add_form);
+    restore_summary: function (aEvent) {
+        $('#workout_summary .content').html(athletelog.ui.workout.summary_content);
+        athletelog.ui.workout.summary_content = null;
+        aEvent.preventDefault();
     },
 
-    show_edit_form: function(evt) {
-        var dayMatch = this.id.match(/^[^_]+_(\d{4})-(\d{2})-(\d{2})_([^_]+)$/);
-
-        $.get(hollo.utils.get_server_root() + '/log/ajax/workout/edit_form/' + dayMatch[1] + '/' + dayMatch[2] + '/' + dayMatch[3] + '/' + dayMatch[4] + '/', 
-              {'sid': Math.random()},
-              hollo.workout.show_form_callback);
-
-        evt.preventDefault();
-    },
-
-    show_add_form: function(evt) {
-        var dayMatch = this.id.match(/^[^_]+_(\d{4})-(\d{2})-(\d{2})$/);
-
-        $.get(hollo.utils.get_server_root() + '/log/ajax/workout/add_form/' + dayMatch[1] + '/' + dayMatch[2] + '/' + dayMatch[3] + '/',
-              {'sid': Math.random()},
-              hollo.workout.show_form_callback);
-
-        evt.preventDefault();
-    },
-
-    show_form_callback: function (responseText, code, response) {
-        hollo.utils.show_edit_form(responseText, code, response);
-        hollo.workout.assign_form_signals();
-    },
-
-    remove: function(evt) {
-        var dayMatch = evt.currentTarget.id.match('^[^_]+_([^_]+)_([^_]+)$');
-        var day = dayMatch[1];
-        var workoutId = dayMatch[2];
-        evt.preventDefault();
-    },
-
-    // Change workout view
-    change_view: function(evt) {
-        if ($('#viewType')[0].value == "weekly") {
-            // Weekly view
-            document.location.href = hollo.utils.get_server_root() + '/log/week/' +
-                                  hollo.utils.number_format($('#year')[0].value, "0000") + '/' +
-                                  hollo.utils.number_format($('#week')[0].value, "00") + '/';
-        } else if ($('#viewType')[0].value == "monthly") {
-            // Monthly view
-            document.location.href = hollo.utils.get_server_root() + '/log/month/' +
-                                  hollo.utils.number_format($('#year')[0].value, "0000") + '/' +
-                                  hollo.utils.number_format($('#month')[0].value, "00") + '/';
-        }
-        evt.preventDefault();
-    },
-
-    select_view: function (viewType) {
-        if (viewType == "weekly") {
-            $('#viewSelection #month').css('display', 'none');
-            $('#viewSelection label[@for=month]').css('display', 'none');
-            $('#viewSelection #week').css('display', 'inline');
-            $('#viewSelection label[@for=week]').css('display', 'inline');
-        } else {
-            $('#viewSelection #week').css('display', 'none');
-            $('#viewSelection label[@for=week]').css('display', 'none');
-            $('#viewSelection #month').css('display', 'inline');
-            $('#viewSelection label[@for=month]').css('display', 'inline');
-        }
-        $('#viewType')[0].value = viewType;
-    },
-
-    assign_form_signals: function () {
-        $('#editFormWindow .removeWorkoutItem').click(hollo.workout.remove_item);
-        $('#editFormWindow #addWorkoutItem').click(hollo.workout.add_item);
-        $('#editFormWindow #workoutEditFormClose').click(hollo.workout.close_form);
-        $('#editFormWindow').jqDrag('.jqDrag').jqResize('.jqResize');
-    },
-
-    remove_item: function (evt) {
-        if ($('#numWorkoutItems')[0].value > 1) {
-            $(this).unbind();
-            $(this).parents('tr').remove();
-            $('#numWorkoutItems')[0].value = $('#workoutEdit table tbody tr').length;
-        }
-        evt.preventDefault();
-    },
-
-    add_item: function (evt) {
-        var row = $('#editFormWindow table tbody tr')[0].cloneNode(true);
-        $('#editFormWindow table tbody').append(row);
-        $(row).find('.removeWorkoutItem').click(hollo.workout.remove_item);
-        
-        $('#numWorkoutItems')[0].value = $('#workoutEdit table tbody tr').length;
-        evt.preventDefault();
-    },
-
-    close_form: function (evt) {
-        $('#editFormWindow .removeWorkoutItem').unbind();
-        $('#editFormWindow #addWorkoutItem').unbind();
-        $('#editFormWindow #workoutEditFormClose').unbind();
-        $('#editFormWindow').remove();
-        evt.preventDefault();
-    }
+    summary_content: null
 };
-
-$(document).ready(function () {
-    $('#viewSelectionSubmit').click(hollo.workout.change_view);
-    $('#viewType').change(function () { hollo.workout.select_view(this.value); });
-});

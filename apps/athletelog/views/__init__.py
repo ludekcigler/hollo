@@ -21,6 +21,7 @@
 import datetime
 import decorator
 import time
+import urllib2
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.core import urlresolvers
@@ -39,11 +40,19 @@ def login_required(view, *args, **kwargs):
     else:
         request = args[0]
 
-    person = django.shortcuts.get_object_or_404(models.Person, user=request.user)
+    continue_url = urllib2.quote(request.META['PATH_INFO'])
+    if not request.user.username:
+        return http.HttpResponseRedirect(urlresolvers.reverse('athletelog.views.user.login') + ('?continue=%s' % continue_url))
+
+    try:
+        person = models.Person.objects.get(user=request.user)
+    except ObjectDoesNotExist:
+        return http.HttpResponseRedirect(urlresolvers.reverse('athletelog.views.user.login') + ('?continue=%s' % continue_url))
+        
     if request.user.is_authenticated() and person:
         return view(*args, **kwargs)
     else:
-        return http.HttpResponseRedirect(urlresolvers.reverse('athletelog.views.user.login'))
+        return http.HttpResponseRedirect(urlresolvers.reverse('athletelog.views.user.login') + ('?continue=%s' % continue_url))
 
 @decorator.decorator
 def athlete_view_allowed(view, *args, **kwargs):
@@ -160,3 +169,22 @@ def js_workout_type_info(request):
     t = loader.get_template('athletelog/js_workout_type_info.js')
     context = RequestContext(request, {'workout_types': workout_types})
     return http.HttpResponse(t.render(context))
+
+
+# Load experimental Javascript-only version
+@login_required
+def js_engine_experimental(request):
+    person = django.shortcuts.get_object_or_404(models.Person, user=request.user)
+    if models.Athlete.objects.filter(person__user=request.user).count() > 0:
+            athlete = models.Athlete.objects.select_related().get(person=person)
+    else:
+        allowed_athletes = person.allowed_athletes()
+        if len(allowed_athletes) > 0:
+            athlete = allowed_athletes[0].select_related()
+        else:
+            #TODO: show error page
+            return http.HttpResponseNotFound()
+
+    tpl = loader.get_template('athletelog/js_index.html')
+    context = RequestContext(request, {'person': person, 'athlete': athlete})
+    return http.HttpResponse(tpl.render(context))

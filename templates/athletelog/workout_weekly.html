@@ -4,7 +4,11 @@
 Tréninky - {{first_day|date:"W"}}. týden {{first_day|date:"Y"}} :: Tréninkový deník
 {% endblock %}
 
-{% block custom_header %}
+{% block javascripts %}
+    <script type="text/javascript" src="/site_media/athletelog/js/change_view_form.js"></script>
+    <script type="text/javascript" src="/site_media/athletelog/js/athlete_selection.js"></script>
+
+    <script type="text/javascript" src="/site_media/athletelog/js/workout.js"></script>
     <script type="text/javascript" src="/site_media/athletelog/js/workout_weekly_view.js"></script>
 {% endblock %}
 

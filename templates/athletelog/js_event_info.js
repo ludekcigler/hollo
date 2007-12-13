@@ -8,8 +8,12 @@ var TrackEventInfo =
                      {% else %}
                         false
                      {% endif %},
-                     'result_type': '{{ t.result_type }}',
-                    },
+                     'result_type': '{{ t.result_type }}'
+                    }
+        {% if forloop.last %}
+        {% else %}
+                    ,
+        {% endif %}
     {% endfor %}
 };
 

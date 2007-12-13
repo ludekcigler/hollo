@@ -52,15 +52,10 @@ def index(request, athlete_id):
                                              'year': year,
                                              'week': week}))
 
-@login_required
-@athlete_view_allowed
-@force_no_cache
-def weekly_view(request, athlete_id, week, year, detail_year = None, detail_month = None, detail_day = None):
+def _weekly_view_context(request, athlete, week, year):
     """
-    View workout log for a single week
+    Loads context for weekly view
     """
-    athlete = models.Athlete.objects.select_related().get(person__user__username=athlete_id)
-
     week, year = int(week), int(year)
     week = min(datetime.date(year, 12, 28).isocalendar()[1], max(1, week))
     week_data = []
@@ -92,25 +87,44 @@ def weekly_view(request, athlete_id, week, year, detail_year = None, detail_mont
     first_day = common.iso_week_day_to_gregorian(year, week, 1)
     last_day = common.iso_week_day_to_gregorian(year, week, 7)
 
-    change_view_data = {'view_type': 'weekly', 'week': week, 'year': year, 'month': first_day.month}
-    change_view_form = forms.WorkoutChangeViewForm(change_view_data, auto_id="change_view_%s")
-
     context = {'week': week, 'year': year, 'previous_week': previous_week, \
                'previous_year': previous_year, 'next_week': next_week, \
                'next_year': next_year, 'week_data': week_data, \
-               'first_day': first_day, 'view_type': 'weekly',
+               'first_day': first_day, 
+               'last_day': last_day,
+              }
+    return context
+
+@login_required
+@athlete_view_allowed
+@force_no_cache
+def weekly_view(request, athlete_id, week, year, detail_year = None, detail_month = None, detail_day = None):
+    """
+    View workout log for a single week
+    """
+    try:
+        athlete = models.Athlete.objects.select_related().get(person__user__username=athlete_id)
+    except ObjectDoesNotExist:
+        return http.HttpResponseNotFound()
+
+    context = _weekly_view_context(request, athlete, week, year)
+
+    change_view_data = {'view_type': 'weekly', 'week': context['week'], 'year': context['year'], 'month': context['first_day'].month}
+    change_view_form = forms.WorkoutChangeViewForm(change_view_data, auto_id="change_view_%s")
+
+    context.update({'view_type': 'weekly',
                'athlete': athlete,
                'athlete_edit_allowed': athlete.allowed_edit_by(request.user),
                'auth_request_message': get_auth_request_message(request.user.person),
-               'change_view_form': change_view_form}
+               'change_view_form': change_view_form})
 
     if (detail_year and detail_month and detail_day):
         detail_year, detail_month, detail_day = int(detail_year), int(detail_month), int(detail_day)
         t = loader.get_template('athletelog/workout_weekly_detail.html')
         context.update(day_info(athlete, detail_year, detail_month, detail_day))
     else:
-        context["workout_summary"] = interval_summary(athlete, first_day, last_day)
-        context["competition_summary"] = competition.interval_summary(athlete, first_day, last_day)
+        context["workout_summary"] = interval_summary(athlete, context['first_day'], context['last_day'])
+        context["competition_summary"] = competition.interval_summary(athlete, context['first_day'], context['last_day'])
         t = loader.get_template('athletelog/workout_weekly.html')
 
 
@@ -148,7 +162,7 @@ def monthly_view(request, athlete_id, month, year, detail_day = None):
     """
     View workout log for a single month
     """
-    athlete = models.Athlete.objects.get(person__user__username=athlete_id)
+    athlete = models.Athlete.objects.select_related().get(person__user__username=athlete_id)
 
     year, month = int(year), int(month)
     month_data = []
@@ -462,3 +476,70 @@ def remove_workout(request, athlete_id, workout_id):
     
     workout.delete()
     return http.HttpResponseRedirect(request.META.get('HTTP_REFERER', reverse('athletelog.views.index')))
+
+@login_required
+@athlete_view_allowed
+def api_weekly_view(request, athlete_id, week, year):
+    try:
+        athlete = models.Athlete.objects.select_related().get(person__user__username=athlete_id)
+    except ObjectDoesNotExist:
+        return http.HttpResponseNotFound()
+
+    context = _weekly_view_context(request, athlete, week, year)
+
+    return http.HttpResponse(common.jsonify(context))
+
+def api_monthly_view(request, athlete_id, month, year):
+    return http.HttpResponseNotFound()
+
+@login_required
+@athlete_view_allowed
+def daily_summary_snippet(request, athlete_id, year, month, day):
+    try:
+        athlete = models.Athlete.objects.get(person__user__username=athlete_id)
+    except ObjectDoesNotExist:
+        return http.HttpResponseNotFound()
+
+    year, month, day = int(year), int(month), int(day)
+
+    context = day_info(athlete, year, month, day)
+    context["athlete"] = athlete
+    context["athlete_edit_allowed"] = athlete.allowed_edit_by(request.user)
+
+    t = loader.get_template('athletelog/include/workout_info.html')
+    c = RequestContext(request, context)
+    return http.HttpResponse(t.render(c))
+
+@login_required
+@athlete_view_allowed
+def weekly_summary_snippet(request, athlete_id, year, week):
+    year, week = int(year), int(week)
+    first_day = common.iso_week_day_to_gregorian(year, week, 1)
+    last_day = common.iso_week_day_to_gregorian(year, week, 7)
+
+    return interval_summary_snippet(request, athlete_id, first_day, last_day)
+
+@login_required
+@athlete_view_allowed
+def monthly_summary_snippet(request, athlete_id, year, month):
+    year, month = int(year), int(month)
+    first_day = datetime.date(year, month, 1)
+    last_day = datetime.date(year, month, calendar.monthrange(year, month)[1])
+
+    return interval_summary_snippet(request, athlete_id, first_day, last_day)
+
+def interval_summary_snippet(request, athlete_id, first_day, last_day):
+    try:
+        athlete = models.Athlete.objects.get(person__user__username=athlete_id)
+    except ObjectDoesNotExist:
+        return http.HttpResponseNotFound()
+
+    context = {}
+    context["workout_summary"] = interval_summary(athlete, first_day, last_day)
+    context["competition_summary"] = competition.interval_summary(athlete, first_day, last_day)
+    context["athlete_edit_allowed"] = athlete.allowed_edit_by(request.user)
+
+    t = loader.get_template('athletelog/include/workout_summary.html')
+    c = RequestContext(request, context)
+    return http.HttpResponse(t.render(c))
+

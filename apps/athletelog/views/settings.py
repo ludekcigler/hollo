@@ -208,9 +208,8 @@ def user_change_password(request):
         password_form = forms.SettingsPasswordForm(request.POST, auto_id='user_%s')
         if password_form.is_valid():
             if password_form.cleaned_data['password'] == password_form.cleaned_data['password_retype']:
-                person = models.Person.objects.get(user=request.user)
-                person.user.set_password(password_form.cleaned_data['password'])
-                person.save()
+                request.user.set_password(password_form.cleaned_data['password'])
+                request.user.save()
                 return http.HttpResponseRedirect(continue_url)
             else:
                 form_error_message = 'Zadaná hesla si neodpovídají'

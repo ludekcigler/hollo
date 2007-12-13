@@ -48,7 +48,7 @@ athletelog.ui.progress_display = {
         var progress_display = document.getElementById('progress_display');
 
         if (!progress_display) {
-            $('body').append('<div id="progress_display">Načítám...</div>');
+            $('body').append('<div id="progress_display">Loading...</div>');
         } else {
             $(progress_display).show();
         }

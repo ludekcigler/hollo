@@ -21,7 +21,7 @@
 import datetime
 import decorator
 import time
-import urllib2
+import urllib
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.core import urlresolvers
@@ -40,7 +40,7 @@ def login_required(view, *args, **kwargs):
     else:
         request = args[0]
 
-    continue_url = urllib2.quote(request.META['PATH_INFO'])
+    continue_url = urllib.quote(request.META['PATH_INFO'])
     if not request.user.username:
         return http.HttpResponseRedirect(urlresolvers.reverse('athletelog.views.user.login') + ('?continue=%s' % continue_url))
 

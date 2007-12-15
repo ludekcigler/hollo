@@ -64,18 +64,11 @@ class Person(models.Model):
         """
         Returns list of athletes which the person is authorized to view
         """
-        athletes = set(self.watched_athletes.all())
-        athletes.update(Athlete.objects.filter(group__coaches__person=self))
-        athletes.update(Athlete.objects.filter(person=self))
-        athlete_primary_keys = set()
-        retval = []
-        
-        for a in athletes:
-            if not a.pk in athlete_primary_keys:
-                retval.append(a)
-                athlete_primary_keys.add(a.pk)
-                
-        return retval
+        athletes = list(Athlete.objects.filter(Q(watching_persons=self) | Q(person=self)).distinct())
+        athletes.extend(Athlete.objects.filter(group__coaches__person=self).distinct())
+
+        athletes.sort(lambda x, y: cmp(x.person.user.last_name, y.person.user.last_name) or cmp(x.person.user.first_name, y.person.user.first_name))
+        return [athletes[i] for i in xrange(0, len(athletes)) if i == len(athletes) - 1 or athletes[i + 1] != athletes[i]]
 
     def jsonify(self):
         """

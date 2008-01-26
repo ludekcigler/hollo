@@ -1,0 +1,90 @@
+{% load athletelog_filters %}
+<h2>{{first_day|date:"F Y"|capfirst}} :: Tréninky</h2>
+<ul class="pager_menu">
+    <li class="previous"><a href="{% url athletelog.views.workout.monthly_view athlete_id=athlete.person.user.username,year=previous_year,month=previous_month %}">Předchozí měsíc</a></li>
+    <li class="next"><a href="{% url athletelog.views.workout.monthly_view athlete_id=athlete.person.user.username,year=next_year,month=next_month %}">Další měsíc</a></li>
+</ul>
+<div id="monthly_view">
+
+<div class="table_header_bg corner_tl"><div class="corner_tr">
+
+<table cellspacing="0">
+    <thead>
+        <tr>
+            <th><span class="textversion">Týden</span></th>
+            <th>Pondělí</th>
+            <th>Úterý</th>
+            <th>Středa</th>
+            <th>Čtvrtek</th>
+            <th>Pátek</th>
+            <th>Sobota</th>
+            <th>Neděle</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for week_data in month_data %}
+            <tr>
+                <th>
+                    <a href="{% url athletelog.views.workout.weekly_view athlete_id=athlete.person.user.username,year=first_day.year,week=week_data.week %}" title="{{week_data.week}}. týden">{{week_data.week}}</a>
+                </th>
+                {% for day_data in week_data.days %}
+
+                    {% if day_data %}
+                <td class="day_{{day_data.date|date:"Y-m-d"}}">
+                    <ul>
+                        <li class="day">
+                            <a href="{% url athletelog.views.workout.monthly_view_detail athlete_id=athlete.person.user.username,year=day_data.date.year,month=day_data.date.month,detail_day=day_data.date.day %}" 
+                                class="editDay" title="Detail pro {{ day_data.date|date:"j.n" }}">{{day_data.date|date:"j"}}</a>
+                        </li>
+                        {% if day_data.workouts|length_is:"0" and day_data.competitions|length_is:"0" %}
+                        <li>Volno</li>
+                        {% else %}
+
+                        {% if day_data.workouts|length_is:"0"|is_not %}
+                        <li><ul class="phases">
+                            {% for workout in day_data.workouts %}
+                                {% if workout.workout_items.all|length_is:"0" %}
+                                <li>Nic</li>
+                                {% else %}
+                                <li>
+                                    {% for phase_item in workout.workout_items.all %}
+                                    {{phase_item.type}}{% if forloop.last|is_not %}, {% endif %}
+                                    {% endfor %}
+                                </li>
+                                {% endif %}
+                                <li class="km">{{workout.total_km}} km</li>
+                            {% endfor %}
+                        </ul></li>
+                        {% endif %}
+
+                        {% if day_data.competitions|length_is:"0"|is_not %}
+                        <li>
+                            {%for competition in day_data.competitions %}
+                            {{ competition.event }}: {{ competition.result }}{% if forloop.last|is_not %}, {% endif %}
+                            {% endfor %}
+                        </li>
+                        {% endif %}
+
+                        {% endif %}
+                    </ul>
+                    
+                </td>
+                    {% else %}
+                <td class="empty">
+                    &nbsp;
+                </td>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</div></div>
+
+</div>
+
+<ul class="pager_menu">
+    <li class="previous"><a href="{% url athletelog.views.workout.monthly_view athlete_id=athlete.person.user.username,year=previous_year,month=previous_month %}">Předchozí měsíc</a></li>
+    <li class="next"><a href="{% url athletelog.views.workout.monthly_view athlete_id=athlete.person.user.username,year=next_year,month=next_month %}">Další měsíc</a></li>
+</ul>

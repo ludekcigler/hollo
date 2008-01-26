@@ -34,6 +34,7 @@ from django import http
 from django.template import loader, Context, RequestContext
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
+from django.utils import simplejson
 
 from athletelog.views import login_required, athlete_view_allowed, athlete_edit_allowed, get_auth_request_message
 from athletelog import models
@@ -122,7 +123,7 @@ def interval_view(request, athlete_id, view_type, first_day = None, last_day = N
 
 @login_required
 @athlete_edit_allowed
-def add_form(request, athlete_id, year, month, day):
+def add_form(request, athlete_id, year, month, day, template = 'athletelog/competition_form.html'):
     """
     Display competition add form for given day
     """
@@ -130,11 +131,11 @@ def add_form(request, athlete_id, year, month, day):
     date = datetime.date(year, month, day)
     athlete = models.Athlete.objects.get(person__user__username=athlete_id)
     competition_data = {'day': date, 'event': '50 m', 'place': '', 'result': ''}
-    return display_form(request, 'add', athlete, date, competition_data, add_submit)
+    return display_form(request, 'add', athlete, date, competition_data, add_submit, template)
 
 @login_required
 @athlete_edit_allowed
-def edit_form(request, athlete_id, year, month, day, competition_id):
+def edit_form(request, athlete_id, year, month, day, competition_id, template = 'athletelog/competition_form.html'):
     """
     Display edit form for competition
     """
@@ -146,7 +147,7 @@ def edit_form(request, athlete_id, year, month, day, competition_id):
     competition_data = {'id': competition_id, 'day': date, 'event': competition.event.name,
                         'event_info': competition.event_info, 'result': competition.result,
                         'place': competition.place, 'note': competition.note}
-    return display_form(request, 'edit', athlete, date, competition_data, edit_submit)
+    return display_form(request, 'edit', athlete, date, competition_data, edit_submit, template)
 
 
 def add_submit(request, athlete, competition_form):
@@ -154,7 +155,7 @@ def add_submit(request, athlete, competition_form):
     Add new competition
     """
     if not competition_form.is_valid():
-        return False
+        return False, competition_form.errors
 
     try:
         event = models.TrackEvent.objects.get(name=competition_form.cleaned_data['event'])
@@ -174,14 +175,16 @@ def add_submit(request, athlete, competition_form):
                                      result=competition_form.cleaned_data['result'],
                                      note=competition_form.cleaned_data['note'])
     competition.save()
-    return True
+    return True, []
 
 def edit_submit(request, athlete, competition_form):
     """
     Edit a competition
     """
-    if not competition_form.is_valid() or not competition_form.data['id']:
-        return False
+    if not competition_form.is_valid():
+        return False, competition_form.errors
+    if not competition_form.data['id']:
+        return False, ['id']
 
     competition_id = competition_form.cleaned_data['id']
 
@@ -199,9 +202,9 @@ def edit_submit(request, athlete, competition_form):
     competition.result = competition_form.cleaned_data['result']
     competition.note = competition_form.cleaned_data['note']
     competition.save()
-    return True
+    return True, []
 
-def display_form(request, action, athlete, day, competition_data, save_func):
+def display_form(request, action, athlete, day, competition_data, save_func, template):
     context = {}
     context['day'] = day
     context['form_action'] = action
@@ -221,7 +224,8 @@ def display_form(request, action, athlete, day, competition_data, save_func):
         competition_form.fields["event"].choices = [(e.name, e.name) for e in models.TrackEvent.objects.all()]
         
         if submit_button == 'ok':
-            if save_func(request, athlete, competition_form):
+            form_valid, errors = save_func(request, athlete, competition_form)
+            if form_valid:
                 return http.HttpResponseRedirect(continue_url)
             else:
                 context['form_errors'] = True
@@ -234,7 +238,7 @@ def display_form(request, action, athlete, day, competition_data, save_func):
     context['continue'] = continue_url
     context['competition_form'] = competition_form
     
-    t = loader.get_template('athletelog/competition_form.html')
+    t = loader.get_template(template)
     c = RequestContext(request, context)
     return http.HttpResponse(t.render(c))
 
@@ -318,5 +322,54 @@ def interval_summary(athlete, first_day=None, last_day=None):
     summary["competitions_other"] = competitions_other
 
     return summary
-        
 
+ 
+@login_required
+@athlete_edit_allowed
+def add_form_snippet(request, athlete_id, year, month, day):
+    return add_form(request, athlete_id, year, month, day, template='athletelog/include/competition_form.html')
+
+@login_required
+@athlete_edit_allowed
+def edit_form_snippet(request, athlete_id, year, month, day, competition_id):
+    return edit_form(request, athlete_id, year, month, day, competition_id, template='athletelog/include/competition_form.html')
+
+@login_required
+@athlete_view_allowed
+def total_summary_snippet(request, athlete_id):
+    pass
+
+@login_required
+@athlete_view_allowed
+def yearly_summary_snippet(request, athlete_id, year):
+    pass
+
+@login_required
+@athlete_view_allowed
+def monthly_summary_snippet(request, athlete_id, year, month):
+    pass
+
+@login_required
+@athlete_edit_allowed
+def api_add_competition(request, athlete_id):
+    return _api_save_competition(request, athlete_id, add_submit)
+
+@login_required
+@athlete_edit_allowed
+def api_edit_competition(request, athlete_id):
+    return _api_save_competition(request, athlete_id, edit_submit)
+
+def _api_save_competition(request, athlete_id, save_func):
+    try:
+        athlete = models.Athlete.objects.get(person__user__username=athlete_id)
+    except ObjectDoesNotExist:
+        return http.HttpResponseNotFound()
+        
+    competition_form = forms.CompetitionForm(request.POST, auto_id='competition_%s')
+    competition_form.fields["event"].choices = [(e.name, e.name) for e in models.TrackEvent.objects.all()]
+
+    form_valid, errors = save_func(request, athlete, competition_form)
+    errors_cleaned = ['competition_%s' % field for field in errors]
+
+    response = {'response': form_valid and 'ok' or 'failed', 'errors': errors_cleaned}
+    return http.HttpResponse(simplejson.dumps(response))

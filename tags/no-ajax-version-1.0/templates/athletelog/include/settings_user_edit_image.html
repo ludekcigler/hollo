@@ -1,0 +1,22 @@
+{% load athletelog_tags %}
+<div class="settings_form">
+<div class="corner_tl"><div class="corner_tr"><div class="corner_bl"><div class="corner_br content">
+<h2>Upravit obrázek</h2>
+<form action="{% url athletelog.views.settings.user_upload_image %}?continue={{ continue|urlencode }}" method="post"
+enctype="multipart/form-data">
+    <fieldset>
+        <legend class="textversion">Obrázek</legend>
+        <p>Nahrát můžete jakýkoliv obrázek, nejlépe PNG, GIF nebo JPEG. Obrázky nahrávejte
+        v rozumné velikosti, tj. nejprve je zmenšete na rozlišení 36x36 pixelů.
+        </p>
+        <label for="user_image">Obrázek</label>
+        {{image_form.image}}
+    </fieldset>
+    <fieldset class="button_set">
+        <legend class="textversion">Uložit</legend>
+        <input type="submit" name="submit_ok" class="ok button" value="Uložit">
+        <input type="submit" name="submit_cancel" class="cancel button" value="Zrušit">
+    </fieldset>
+</form>
+</div></div></div></div>
+</div>

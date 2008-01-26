@@ -1,0 +1,38 @@
+#header {
+    height: 80px;
+}
+
+#main_menu li {
+    width: 3em;
+    text-align: center;
+}
+
+#main_menu a:hover * {
+    cursor: pointer;
+}
+
+#workout_view div.table_header_bg, #competition_view div.table_header_bg {
+    width: 99%;
+}
+
+.pager_menu {
+    height: 1px;
+    width: 99%;
+}
+
+.info_box {
+    margin: 0.5em 0;
+}
+
+.info_box p.content {
+    margin: 0;
+}
+
+#workout_form .workout_items td {
+    padding: 0;
+}
+
+#workout_form, #competition_form {
+    background-image: url(/site_media/athletelog/images/icons/workout_form_large.gif);
+}
+

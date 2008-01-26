@@ -1,7 +1,6 @@
 {% load athletelog_tags %}
 
-<div id="workout_form">
-<div class="corner_tl"><div class="corner_tr"><div class="corner_bl"><div class="corner_br content">
+<div id="workout_form" {% if form_errors %}class="error"{% endif %}>
 
 {% ifequal form_action "add" %}
 <h2>Nový trénink</h2>
@@ -11,13 +10,11 @@
 {% endifequal %}
 {% endifequal %}
 
-{% if form_errors %}
 <div class="info_box error">
 <p class="content">
 Některé zadané hodnoty jsou špatně - mrkněte se na ně znovu
 </p>
 </div>
-{% endif %}
 
 {% ifequal form_action "add" %}
 <form id="workout_edit" action="{% url athletelog.views.workout.add_form athlete_id=athlete.person.user.username,year=day.year,month=day.month,day=day.day %}?continue={{ continue|urlencode }}" method="post">
@@ -67,14 +64,13 @@ Některé zadané hodnoty jsou špatně - mrkněte se na ně znovu
                         <label for="workout_item_{{ forloop.counter0 }}_desc">Popis</label>
                         <input type="text" id="workout_item_{{ forloop.counter0 }}_desc"
                             name="workout_item_{{ forloop.counter0 }}_desc" value="{{ form.data.desc }}{{ form.initial.desc }}" />
+                        <span class="error_message">Popis nemůže být prázdný</span>
                     </td>
                     <td class="num_data {% if form.errors.num_data %}error{% endif %}">
                         <label for="workout_item_{{ forloop.counter0 }}_num_data">km/kg</label>
                         <input type="text" id="workout_item_{{ forloop.counter0 }}_num_data"
                             name="workout_item_{{ forloop.counter0 }}_num_data" value="{{ form.data.num_data }}{{ form.initial.num_data}}" />
-                        {% if form.errors.num_data %}
-                        <span class="error_message">Je potřeba zadat číslo</span>
-                        {% endif %}
+                        <span class="error_message">Zadejte číslo</span>
                     </td>
                     <td class="remove_button">
                         <input type="submit" name="submit_remove_workout_item_{{ forloop.counter0 }}" class="remove_workout_item" value="" />
@@ -127,5 +123,4 @@ Některé zadané hodnoty jsou špatně - mrkněte se na ně znovu
         </table>
     </fieldset>
 </form>
-</div></div></div></div>
 </div>

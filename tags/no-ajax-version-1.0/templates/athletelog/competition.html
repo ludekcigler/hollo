@@ -1,0 +1,104 @@
+{% extends 'athletelog/workout_base.html' %}
+{% load athletelog_filters %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="/site_media/athletelog/js/change_view_form.js"></script>
+    <script type="text/javascript" src="/site_media/athletelog/js/athlete_selection.js"></script>
+{% endblock %}
+
+{% block title %}
+Závody - 
+{% ifequal competition_view_type "monthly" %}
+{{first_day|date:"F Y"}}
+{% else %}
+    {% ifequal competition_view_type "yearly" %}
+    {{first_day|date:"Y"}}
+    {% else %}
+    vše
+    {% endifequal %}
+{% endifequal %}
+:: Tréninkový deník
+{% endblock %}
+
+{% block main_menu %}
+    <li>
+        {% if first_day %}
+        <a href="{% url athletelog.views.workout.monthly_view athlete_id=athlete.person.user.username,year=first_day.year,month=first_day.month %}">
+        {% else %}
+        <a href="{% url athletelog.views.workout.index athlete_id=athlete.person.user.username %}">
+        {% endif %}
+        <span class="corner_tl"><span class="corner_tr"><span class="content">Deník</span></span></span></a></li>
+    <li class="active"><a><span class="corner_tl"><span class="corner_tr"><span class="content">Závody</span></span></span></a></li>
+{% endblock %}
+
+{% block content %}
+<div id="view_selection">
+<div class="corner_tl"><div class="corner_tr"><div class="corner_bl"><div class="corner_br">
+<div class="content">
+
+    <div id="athlete_selection" class="athlete_{{ athlete.person.user.username }}">
+        <h2 class="textversion">Zobrazený atlet</h2>
+    {% with "competition" as view_type %}
+            <a href="{% url athletelog.views.change_athlete view_type=view_type %}?old={{ athlete.person.user.username }}"
+             id="athlete_selection_link">
+    {% endwith %}
+            <img src="{{ athlete.person.get_image_url|default:"/site_media/athletelog/images/user_unknown.png" }}" width="22" height="22" alt="{{ athlete }}" class="athlete_image">
+            <span class="athlete_name">{{ athlete }}</span>
+            </a>
+    </div>
+    {% if user.person.allowed_athletes|length|greater_than:"1" %}
+    <div id="athlete_selection_other_athletes">
+        <ul>
+        {% for a in user.person.allowed_athletes %}
+        {% ifnotequal a athlete %}
+        <li>
+            <a href="{% url athletelog.views.competition.index athlete_id=a.person.user.username  %}">
+            <img src="{{ a.person.get_image_url|default:"/site_media/athletelog/images/user_unknown.png" }}"
+             width="22" height="22" alt="{{ a }}" class="athlete_image">
+            <span class="athlete_name">{{ a }}</span>
+            </a>
+        </li>
+        {% endifnotequal %}
+        {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+<form action="{% url athletelog.views.competition.change_view athlete_id=athlete.person.user.username %}" method="post">
+<fieldset>
+<legend class="textversion">Zobrazení závodů</legend>
+<label for="change_view_view_type">Pohled</label>
+{{change_view_form.view_type}}
+<label for="change_view_month">Měsíc</label>
+{{change_view_form.month}}
+<label for="change_view_year">Rok</label>
+{{change_view_form.year}}
+<button type="submit" id="change_view_submit">Zobrazit</button>
+</fieldset>
+</form>
+
+</div>
+</div></div></div></div>
+</div>
+
+<div id="competition_summary" class="summary"><div class="content">
+<h2>
+{% ifequal competition_view_type "monthly" %}
+Měsíční souhrn
+{% else %}
+    {% ifequal competition_view_type "yearly" %}
+    Roční souhrn
+    {% else %}
+    Celkový souhrn
+    {% endifequal %}
+{% endifequal %}
+</h2>
+
+{% include 'athletelog/include/competition_summary.html' %}
+</div>
+</div>
+
+<div id="competition_view">
+{% include 'athletelog/include/competition_view.html' %}
+</div>
+
+{% endblock %}

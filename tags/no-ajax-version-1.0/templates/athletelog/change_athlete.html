@@ -1,0 +1,22 @@
+{% extends 'athletelog/base.html' %}
+{% block title %}Změnit zobrazeného atleta :: Tréninkový deník{% endblock %}
+{% block page_body %}
+<h2>Změnit zobrazeného atleta</h2>
+<ul>
+{% for athlete in person.allowed_athletes %}
+    {% ifequal athlete.person.user.username old_athlete %}
+    <li class="active">
+    {% else %}
+    <li>
+    {% endifequal %}
+    {% ifequal view_type "workout" %}
+    <a href="{% url athletelog.views.workout.index athlete_id=athlete.person.user.username %}">{{ athlete }}</a></li>
+    {% else %}
+    {% ifequal view_type "competition" %}
+    <a href="{% url athletelog.views.competition.index athlete_id=athlete.person.user.username %}">{{ athlete }}</a></li>
+    {% endifequal %}
+    {% endifequal %}
+{% endfor %}
+</ul>
+
+{% endblock %}

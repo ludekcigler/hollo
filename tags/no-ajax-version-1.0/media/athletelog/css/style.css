@@ -1,0 +1,1120 @@
+body {
+    font-size: 0.8em;
+    font-family: "Verdana", Helvetica, sans-serif;
+    padding: 0;
+    margin: 0;
+}
+
+a:hover {
+    text-decoration: none;
+}
+/*
+div {
+    border: 1px solid red;
+}
+
+form {
+    border: 1px solid green;
+}*/
+
+img {
+    border: none;
+}
+
+table {
+    border-spacing: 0;
+}
+
+.jsInfo {
+    display: none;
+}
+
+#footer {
+    border-top: 1px solid #CCC;
+    font-size: 0.7em;
+    margin: 3em 70% 0 0;
+    padding: 1em;
+    clear: both;
+}
+
+#body {
+    margin: 0 1.2em 1.2em;
+}
+
+
+h1, h2, h3, h4, legend {
+    font-family: "Trebuchet MS", Arial, sans-serif;
+}
+
+h1 {
+    font-size: 1.2em;
+    position: absolute;
+    left: 1em;
+    bottom: 0.2em;
+    margin: 0;
+    color: #666;
+}
+
+h1 span {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    background-image: url('/site_media/athletelog/images/main_logo.png');
+    background-repeat: no-repeat;
+    background-position: top left;
+    display: block;
+    width: 260px;
+    height: 55px;
+}
+
+h2 {
+    font-size: 1.5em;
+}
+
+fieldset {
+    border: none;
+}
+
+.textversion {
+    display: none;
+}
+
+.table_header_bg
+{
+    background-color: #E9E9FF;
+    padding: 0;
+    margin: 0;
+}
+
+table tbody td, table tbody th {
+    background-color: white;
+}
+
+/*----------------------------------------------------------------------------*/
+
+.info_box {
+    border-top: 1px solid #FEE97F;
+    border-bottom: 1px solid #FEE97F;
+    background-color: #FFF9BF;
+    margin: 3em 0 3em 0;
+}
+
+.info_box p.content {
+    margin: -1.5em 0 -1.5em 0;
+    font-size: 1.1em;
+    font-family: "Trebuchet MS", Verdana, sans-serif;
+    background-repeat: no-repeat;
+    background-position: 1em center;
+    padding: 2em 1em 2em 8em;
+}
+
+.information p.content {
+    background-image: url(/site_media/athletelog/images/icons/info_large.png);
+}
+
+.error p.content {
+    background-image: url(/site_media/athletelog/images/icons/error_large.png);
+}
+
+.warning p.content {
+    background-image: url(/site_media/athletelog/images/icons/warning_large.png);
+}
+
+/*-----------------------------------------------------------------------------*/
+
+.pager_menu {
+    list-style: none;
+    margin: 0.4em 0;
+    padding: 0;
+    text-align: right;
+}
+
+.pager_menu li {
+    display: inline;
+    padding: 0;
+    margin: 0;
+}
+
+.pager_menu .previous {
+    padding-right: 0;
+    margin-right: 0.5em;
+}
+
+.pager_menu .previous a:before {
+    content: "< ";
+    
+}
+
+.pager_menu .next a:after {
+    content: " >";
+}
+
+/*-----------------------------------------------------------------------------*/
+
+.corner_tl, .corner_tr, .corner_bl, .corner_br {
+    padding: 0;
+    margin: 0;
+    background-repeat: no-repeat;
+}
+
+.corner_tl {
+    background-image: url('/site_media/athletelog/images/corners/top_left_small.png');
+    background-position: top left;
+}
+
+.corner_tr {
+    background-image: url('/site_media/athletelog/images/corners/top_right_small.png');
+    background-position: top right;
+}
+
+.corner_bl {
+    background-image: url('/site_media/athletelog/images/corners/bottom_left_small.png');
+    background-position: bottom left;
+}
+
+.corner_br {
+    background-image: url('/site_media/athletelog/images/corners/bottom_right_small.png');
+    background-position: bottom right;
+}
+
+/*------------------------------------------------------------------------------*/
+
+#header {
+    margin: 0;
+    padding: 0;
+    position: relative;
+    min-height: 80px;
+}
+
+
+#header ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+#user_info {
+    position: absolute;
+    right: 0;
+    top: 0.4em;
+}
+
+#user_info li {
+    display: block;
+    float: left;
+    border-left: 1px solid black;
+    padding: 0 0.4em;
+}
+
+#user_info li:first-child {
+    border-left: none;
+    font-weight: bold;
+}
+
+#main_menu {
+    position: absolute;
+    right: 2em;
+    bottom: 0;
+    font-size: 1.1em;
+    font-family: "Trebuchet MS", Arial, sans-serif;
+}
+
+#main_menu li {
+    border-left: 4px solid white;
+    float: left;
+    padding: 0;
+}
+
+#main_menu a {
+    display: block;
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    background-color: lightsteelblue;
+    border: none;
+    padding: 0;
+}
+
+#main_menu a span {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+#main_menu a .content {
+    padding: 0.2em 0.6em;
+}
+
+#main_menu li.active a {
+    background-color: steelblue;
+}
+
+#main_menu a:hover {
+    background-color: midnightblue;
+}
+
+#view_selection {
+    color: white;
+    background-color: steelblue;
+    padding: 0;
+    position: relative;
+}
+
+#view_selection div.content
+{
+    padding: 0.4em;
+}
+
+#view_selection form, #view_selection fieldset {
+    display: block;
+    margin: 0;
+    padding: 0.1em;
+}
+
+#view_selection select, #view_selection input {
+    margin-right: 0.5em;
+}
+
+#view_selection input {
+    text-align: right;
+}
+
+#athlete_selection {
+    float: left;
+    border-right: 1px solid white;
+    padding: 0em 0.6em;
+    margin-right: 0.6em;
+}
+
+#athlete_selection a, #athlete_selection_other_athletes a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    display: block;
+    padding: 0.2em 0.4em 0.2em 0.2em;
+}
+
+#athlete_selection a:hover, #athlete_selection a.selected {
+    background-color: lightsteelblue;
+}
+
+.athlete_image {
+    vertical-align: middle;
+    background-color: white;
+    border: 1px solid #333;
+}
+
+.athlete_name {
+    margin-left: 0.4em;
+}
+
+#athlete_selection_other_athletes {
+    display: none;
+    position: absolute;
+    top: 2.6em;
+    left: 1em;
+    background-color: lightsteelblue;
+    padding: 0.2em;
+}
+
+#athlete_selection_other_athletes ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#athlete_selection_other_athletes ul a:hover {
+    color: #333;
+    background-color: lightyellow;
+}
+
+/*----------------------------------------------------------------------------*/
+
+.summary {
+    width: 35%;
+    float: right;
+    margin: 1em 0 0;
+    position: relative;
+}
+
+.summary div.content {
+    padding: 0 1em;
+}
+
+.summary div div.workout, .summary div div.competition {
+    padding: 0;
+    border-bottom: 1px solid gray;
+}
+
+.summary div.workout p {
+    margin: 0;
+    min-height: 30px;
+    height: 1em;
+}
+
+.summary p.workout_info_buttons {
+    text-align: right;
+}
+
+.summary p.workout_info_buttons a {
+    display: inline;
+    text-decoration: none;
+    color: #333;
+    background-repeat: no-repeat;
+    background-position: center left;
+    padding: 0.4em 0.4em 0.4em 28px;
+    border: 1px solid white;
+}
+
+.summary a.edit_workout {
+    background-image: url(/site_media/athletelog/images/icons/properties_middle.png);
+}
+
+.summary a.add_competition, .summary a.add_workout {
+    background-image: url(/site_media/athletelog/images/icons/add_middle.png);
+}
+
+.summary a.remove_workout {
+    background-image: url(/site_media/athletelog/images/icons/remove_middle.png);
+}
+
+a.remove_competition {
+    background-image: url(/site_media/athletelog/images/icons/remove_small.png);
+}
+
+a.edit_competition {
+    background-image: url(/site_media/athletelog/images/icons/properties_small.png);
+}
+
+.summary table.competition a span, #competition_view table a span {
+    display: none;
+}
+
+.summary table.competition a, #competition_view table a {
+    display: block;
+    width: 20px;
+    height: 20px;
+    text-decoration: none;
+    background-repeat: no-repeat;
+    background-position: center center;
+    border: 1px solid white;
+}
+
+.summary a:hover {
+    background-color: #FFFFBF;
+    border: 1px solid gray;
+}
+
+.summary h2 {
+    margin: 0 0 0.5em;
+}
+
+.summary table {
+    width: 100%;
+}
+
+.summary table thead th {
+    border-bottom: 1px solid gray;
+    text-align: left;
+}
+
+.summary table th, .summary table td {
+    padding: 0.1em 0.3em;
+}
+
+.summary table .type {
+    width: 10%;
+}
+
+.summary table td.num_data {
+    text-align: right;
+    width: 5%;
+}
+
+.summary .workout .workout_additional_info {
+    margin: 0.8em 0;
+    padding: 0;
+    list-style: none;
+}
+
+.summary .workout .workout_additional_info li {
+    padding: 0.3em 0.7em;
+    margin-left: 0.5em;
+    background-repeat: no-repeat;
+    background-position: left center;
+    border-bottom: 1px dotted gray;
+    text-align: right;
+}
+
+.summary .workout .workout_additional_info .total_km {
+    background-image: url("/site_media/athletelog/images/icons/km_small.png");
+}
+
+.summary .workout .workout_additional_info .total_kg {
+    background-image: url("/site_media/athletelog/images/icons/kg_small.png");
+}
+
+.summary .workout .workout_additional_info .weather {
+    background-image: url("/site_media/athletelog/images/icons/weather_small.png");
+}
+
+.summary .workout .workout_additional_info .satisfaction {
+    background-image: url("/site_media/athletelog/images/icons/satisfaction_small.png");
+}
+
+.summary .workout .workout_additional_info .difficulty {
+    background-image: url("/site_media/athletelog/images/icons/difficulty_small.png");
+}
+
+.summary .workout_info_jump_back {
+    position: absolute;
+    top: 0.4em;
+    right: 1.4em;
+    background-image: url(/site_media/athletelog/images/icons/jump-to_small.png);
+    background-repeat: no-repeat;
+    background-position: center center;
+    width: 20px;
+    height: 20px;
+}
+
+.summary .workout_info_jump_back:hover {
+    background-color: transparent;
+    border: none;
+    opacity: 0.8;
+}
+
+.summary .workout_info_jump_back span {
+    display: none;
+}
+
+.interval_summary {
+    list-style-type: none;
+    margin: 0;
+    padding: 0 0.8em;
+}
+
+.interval_summary li {
+    display: block;
+    border-bottom: 1px dotted gray;
+    padding: 0.3em 0.7em;
+    text-align: right;
+    background-repeat: no-repeat;
+    background-position: left center;
+}
+
+.interval_summary li span {
+    display: none;
+}
+
+.interval_summary .num_workouts {
+    background-image: url(/site_media/athletelog/images/icons/workout_small.png);
+}
+
+.interval_summary .num_competitions {
+    background-image: url(/site_media/athletelog/images/icons/competition_small.png);
+}
+
+.interval_summary .total_km {
+    background-image: url(/site_media/athletelog/images/icons/km_small.png);
+}
+
+.interval_summary .total_kg {
+    background-image: url(/site_media/athletelog/images/icons/kg_small.png);
+}
+
+.interval_summary .satisfaction_avg {
+    background-image: url(/site_media/athletelog/images/icons/satisfaction_small.png);
+}
+
+.interval_summary .difficulty_avg {
+    background-image: url(/site_media/athletelog/images/icons/difficulty_small.png);
+}
+
+/*----------------------------------------------------------------------------*/
+
+#workout_view, #competition_view {
+    margin: 1em 35% 0 0;
+    border-right: 1px dotted #666;
+    padding: 0 1.2em 0 0;
+    min-height: 28em;
+}
+
+#workout_view h2, #competition_view h2 {
+    margin: 0 0 -0.8em 0;
+}
+
+#workout_view table, #competition_view table {
+    width: 100%;
+}
+#weekly_view tbody td {
+    padding: 0.05em 0.5em;
+}
+
+#workout_view thead th, #competition_view thead th {
+    text-align: left;
+    padding: 0.05em 0.2em;
+}
+
+#weekly_view tbody th {
+    font-size: 1.8em;
+    font-weight: bold;
+    font-family: "Trebuchet MS", Arial, sans-serif;
+    text-align: center;
+    padding: 0.2em 0.5em;
+    width: 1.5em;
+}
+
+#weekly_view tbody th a {
+    color: #999;
+}
+
+#weekly_view tbody th a:hover, #weekly_view tbody tr.highlighted a {
+    color: #666;
+    text-decoration: none;
+}
+
+#weekly_view tbody th span {
+    font-size: 0.5em;
+    color: black;
+    display: block;
+}
+
+#weekly_view tbody td.phase {
+    width: 1em;
+    text-align: center;
+}
+
+#weekly_view tbody td.type {
+    width: 3em;
+}
+
+#weekly_view tbody td.num_data {
+    width: 1em;
+    text-align: right;
+}
+
+#weekly_view tbody td {
+    border-top: 1px dotted #CCC;
+}
+
+tbody tr.highlighted td, tbody tr.highlighted th, tbody td.highlighted {
+    background-color: #E9E9FF;
+    cursor: pointer;
+}
+
+
+#weekly_view tbody tr.first_from_day td, #weekly_view tbody tr.first_from_day th {
+    border-top: 1px solid #666;
+}
+
+#weekly_view tr.first_from_phase td, #weekly_view tr.firstFrom_phase th {
+    border-top: 1px solid #CCC;
+}
+
+#weekly_view, #monthly_view {
+    margin: 0;
+    border-bottom: 1px solid gray;
+}
+
+#monthly_view tbody td ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+#monthly_view .day a {
+    font-family: "Trebuchet MS", Arial, sans-serif;
+    font-size: 1.4em;
+    font-weight: bold;
+    color: #999;
+}
+
+#monthly_view .day a:hover, #monthly_view .highlighted a {
+    text-decoration: none;
+    color: #666;
+}
+
+#monthly_view tbody td, #monthly_view tbody th {
+    padding: 0.3em;
+    border-top: 1px solid gray;
+}
+
+#monthly_view tbody td {
+    border-left: 1px dotted gray;
+    vertical-align: top;
+    width: 13.2%;
+}
+
+#monthly_view .num_data {
+    color: #666;
+}
+
+#monthly_view tbody th {
+    font-family: "Trebuchet MS", Arial, sans-serif;
+    padding: 0.35em;
+    width: 3%;
+}
+
+#monthly_view tbody td p {
+    margin: 0;
+    padding: 0;
+    float: right;
+}
+
+/*----------------------------------------------------------------------------*/
+
+#competition_view thead th {
+    border-bottom: 1px solid gray;
+}
+
+#competition_view tbody th, #competition_view tbody td {
+    text-align: left;
+    border-bottom: 1px dotted #CCC;
+}
+
+#competition_view tbody tr:last-child th, #competition_view tbody tr:last-child td {
+    border-bottom: 1px solid gray;
+}
+
+#competition_view .date {
+    width: 20%;
+}
+
+#competition_view .place {
+    width: 15%;
+}
+
+#competition_view .result {
+    width: 25%;
+}
+
+/*----------------------------------------------------------------------------*/
+
+#edit_form_window {
+    position: fixed;
+    overflow: auto;
+    background-color: white;
+    border: 2px solid black;
+}
+
+#login_form {
+    float: left;
+    width: 19.5em;
+    margin: 0 0 1em;
+}
+
+#login_form .login_content {
+    background-color: steelblue;
+    color: white;
+}
+
+#login_form .corner_br {
+    padding: 1em 0;
+}
+
+#login_form form {
+    margin: 0 1em;
+}
+
+#login_form h2 {
+    margin: 0.5em 1em;
+    border-bottom: 1px solid white;
+}
+
+#login_form button {
+    float: right;
+    margin: 0.2em -0.3em 0.6em;
+}
+
+#login_form label {
+    display: block;
+}
+
+#login_form input {
+    width: 100%;
+}
+
+#versionNumber {
+    width: 120px;
+    height: 120px;
+    position: absolute;
+    right: 3em;
+    top: 0;
+    background-image: url('/site_media/athletelog/images/version_number.png');
+    background-repeat: no-repeat;
+}
+
+#welcome {
+    margin-left: 21em;
+    min-height: 25em;
+    border-left: 1px dotted gray;
+    padding: 0 1em;
+}
+
+#login_header {
+    height: 80px;
+    position: relative;
+    border-bottom: 1px solid #333;
+    margin: 0 0 1em;
+}
+
+.jqDrag {
+    height: 20px;
+    background: url('/site_media/athletelog/images/drag_header.png') repeat-x;
+    position: relative;
+    cursor: move;
+}
+.jqDrag #workout_edit_form_close, .jqDrag #competition_edit_form_close {
+    position: absolute;
+    right: 2px;
+    top: 2px;
+    background: url('/site_media/athletelog/images/form_close.png') no-repeat;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.jqResize {
+    background: url('/site_media/athletelog/images/resize_corner.png') no-repeat bottom right;
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    cursor: se-resize;
+}
+
+#display_user_form {
+    position: absolute;
+    right: 300px;
+    top: 0px;
+    border-left: 1px solid gray;
+    padding-left: 1em;
+}
+
+
+form input.ok {
+   background-image: url('/site_media/athletelog/images/icons/accept_small.png'); 
+}
+
+form input.cancel {
+   background-image: url('/site_media/athletelog/images/icons/cancel_small.png'); 
+}
+
+#workout_form table td {
+    background-color: transparent;
+}
+
+#workout_form #add_workout_item {
+    background-image: url('/site_media/athletelog/images/icons/add_small.png');
+}
+
+#workout_form .add_workout_item {
+    clear: both;
+    text-align: right;
+    padding: 0.2em 0;
+    margin: 0.2em;
+}
+
+form fieldset.button_set {
+    border-top: 1px solid gray;
+    text-align: right;
+    padding-top: 1em;
+}
+
+form .error input, form .error select {
+    border: 1px solid red;
+}
+
+form .error {
+    color: red;
+}
+
+#workout_form, #competition_form, .settings_form {
+    width: 60%;
+    margin: 1em auto;
+    background-repeat: no-repeat;
+    background-position: right top;
+    color: black;
+    position: relative;
+}
+
+#workout_form div.content, #competition_form div.content, .settings_form div.content {
+    padding: 1em 1em 6.5em;
+}
+
+#workout_form, #competition_form {
+    background-color: #BFCFFF;
+    background-image: url('/site_media/athletelog/images/icons/workout_form_large.png');
+}
+
+.settings_form {
+    background-color: #FFF280;
+    background-image: url('/site_media/athletelog/images/icons/settings_form_large.png');
+}
+
+#workout_form h2, #competition_form h2, .settings_form h2 {
+    margin: 0.4em 80px 2em 0;
+    border-bottom: 1px solid gray;
+    padding: 0 0 0.4em 0.2em;
+}
+
+.settings_form h2 {
+    margin-bottom: 1em;
+}
+
+#workout_form .workout_items table {
+    width: 100%;
+}
+
+#workout_form .workout_items td {
+    padding: 0.1em 0.3em;
+}
+
+
+#workout_form .workout_items .type {
+    width: 3em;
+}
+
+#workout_form .workout_items .num_data {
+    width: 3em;
+}
+
+#workout_form .workout_items .num_data input {
+    text-align: right;
+}
+
+#workout_form .workout_items .remove_button {
+    width: 20px;
+}
+
+#workout_form .workout_items label {
+    display: block;
+    font-size: 0.8em;
+}
+
+#workout_form .workout_items legend {
+    font-weight: bold;
+}
+
+#workout_form .workout_items td input {
+    width: 100%;
+}
+
+#workout_form .workout_items input.remove_workout_item {
+    margin: 1.2em 0 0 0.1em;
+    background-image: url(/site_media/athletelog/images/icons/remove_small.png);
+    background-position: center center;
+    width: 20px;
+    height: 20px;
+}
+
+#workout_form .workout_additional_info table {
+    width: 100%;
+}
+
+#workout_form .workout_additional_info th {
+    background-color: transparent;
+    text-align: right;
+    padding: 0.2em 1.5em;
+    width: 5em;
+    font-weight: normal;
+    vertical-align: top;
+}
+
+#workout_form .workout_additional_info input, #workout_form .workout_additional_info textarea {
+    width: 100%;
+}
+
+form textarea {
+    height: 5em;
+}
+
+#workout_form .workout_weather label {
+    margin-right: 2em;
+    font-weight: bold;
+    padding-left: 24px;
+    background-image: url('/site_media/athletelog/images/icons/weather_small.png');
+    background-repeat: no-repeat;
+}
+
+#workout_form .workout_weather input {
+    width: 20em;
+}
+
+#workout_form .button_set, #competition_form .button_set, .settings_form .button_set {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin: 1em;
+    width: 70%;
+}
+
+#workout_form input.button, #competition_form input.button, .settings_form input.button {
+   background-repeat: no-repeat;
+   background-position: 5px center;
+   padding: 0.2em 0.2em 0.2em 24px;
+}
+
+
+#competition_form label {
+    float: left;
+    clear: left;
+    width: 10em;
+    text-align: right;
+    padding: 0.3em;
+}
+
+#competition_form .competition input, #competition_form .competition textarea, #competition_form .competition select {
+    float: left;
+    margin: 0.2em;
+}
+
+#competition_form .competition input, #competition_form .competition textarea {
+    width: 60%;
+}
+
+.settings_content {
+    background-color: #FFF9BF;
+    padding: 1em;
+}
+
+#settings_menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    background-color: #FFF280;
+    font-weight: bold;
+}
+
+#settings_menu li {
+    display: inline;
+    font-family: "Trebuchet MS", Verdana, Arial, sans-serif;
+    padding: 0.5em 0.8em;
+}
+
+#settings_menu li a {
+    text-decoration: none;
+}
+
+#settings_menu li.active {
+    background-color: #FFF9BF;
+
+}
+
+.settings_form table tbody th, .settings_form table tbody td {
+    background-color: transparent;
+}
+
+.settings_form table th {
+    text-align: right;
+    padding: 0.2em 0.4em;
+    font-weight: normal;
+}
+
+#my_group_athletes {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+#my_group_athletes li {
+    display: block;
+    border-bottom: 1px dotted gray;
+    padding: 0.2em;
+}
+
+.settings_content .group_name {
+    background-image: url(/site_media/athletelog/images/icons/group_small.png);
+    background-repeat: no-repeat;
+    background-position: 0.2em center;
+    padding: 0.2em 0.2em 0.2em 28px;
+}
+
+.settings_form dl dt {
+    margin-top: 0.2em;
+}
+
+.settings_form dl dd {
+    border-bottom: 1px dotted gray;
+    margin-top: -1.8em;
+    margin-left: 0;
+    padding: 0.4em;
+    text-align: right;
+}
+
+.settings_form dl dd span {
+    border-left: 1px solid gray;
+    padding: 0.1em 0.4em;
+}
+
+.settings_form dl dd span:first-child {
+    border: none;    
+}
+ /*----------------------------------------------------------------------------*/
+
+.star_picker span {
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+.star_picker {
+    position: relative;
+    display: block;
+    float: left;
+}
+
+.star_picker_element {
+    width: 12px;
+    height: 12px;
+    background-image: url(/site_media/athletelog/images/icons/star_gray.gif);
+    display: block;
+    float: left;
+}
+
+.star_picker.yellow .selected, .star_picker .selected {
+    background-image: url(/site_media/athletelog/images/icons/star_yellow.gif);
+}
+
+.star_picker.red .selected {
+    background-image: url(/site_media/athletelog/images/icons/star_red.gif);
+}
+
+.star_picker_highlight {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.star_picker_highlight_element {
+    width: 12px;
+    height: 12px;
+    display: block;
+    float: left;
+}
+
+.star_picker_highlight .highlighted {
+    background-image: url(/site_media/athletelog/images/icons/star_highlight.gif);
+    cursor: pointer;
+}
+
+.star_picker_highlight_element:hover {
+    cursor: pointer;
+}
+
+/*----------------------------------------------------------------------------*/
+
+#progress_display {
+    position: fixed;
+    top: 0.2em;
+    left: 50%;
+    margin-left: -4.5em;
+    background-image: url('/site_media/athletelog/images/icons/progress.gif');
+    padding: 0.2em 0.2em 0.2em 24px;
+    min-height: 20px;
+    line-height: 1.5em;
+    vertical-align: baseline;
+    background-color: salmon;
+    font-weight: bold;
+    background-repeat: no-repeat;
+    background-position: left middle;
+}

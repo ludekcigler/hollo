@@ -34,6 +34,7 @@ from django import http
 from django.template import loader, Context, RequestContext
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
+from django.utils import simplejson
 
 from athletelog.views import login_required, athlete_view_allowed, \
                             athlete_edit_allowed, get_auth_request_message, \
@@ -47,12 +48,13 @@ from athletelog.views import competition
 @athlete_view_allowed
 def index(request, athlete_id):
     year, week = datetime.date.today().isocalendar()[:2]
+    return weekly_view(request, athlete_id, year, week)
     return http.HttpResponseRedirect(reverse('athletelog.views.workout.weekly_view', 
                                      kwargs={'athlete_id': athlete_id,
                                              'year': year,
                                              'week': week}))
 
-def _weekly_view_context(request, athlete, week, year):
+def _weekly_view_context(request, athlete, year, week):
     """
     Loads context for weekly view
     """
@@ -98,7 +100,7 @@ def _weekly_view_context(request, athlete, week, year):
 @login_required
 @athlete_view_allowed
 @force_no_cache
-def weekly_view(request, athlete_id, week, year, detail_year = None, detail_month = None, detail_day = None):
+def weekly_view(request, athlete_id, year, week, detail_year = None, detail_month = None, detail_day = None, template = 'athletelog/workout_weekly.html'):
     """
     View workout log for a single week
     """
@@ -107,7 +109,7 @@ def weekly_view(request, athlete_id, week, year, detail_year = None, detail_mont
     except ObjectDoesNotExist:
         return http.HttpResponseNotFound()
 
-    context = _weekly_view_context(request, athlete, week, year)
+    context = _weekly_view_context(request, athlete, year, week)
 
     change_view_data = {'view_type': 'weekly', 'week': context['week'], 'year': context['year'], 'month': context['first_day'].month}
     change_view_form = forms.WorkoutChangeViewForm(change_view_data, auto_id="change_view_%s")
@@ -125,7 +127,7 @@ def weekly_view(request, athlete_id, week, year, detail_year = None, detail_mont
     else:
         context["workout_summary"] = interval_summary(athlete, context['first_day'], context['last_day'])
         context["competition_summary"] = competition.interval_summary(athlete, context['first_day'], context['last_day'])
-        t = loader.get_template('athletelog/workout_weekly.html')
+        t = loader.get_template(template)
 
 
     c = RequestContext(request, context)
@@ -158,7 +160,7 @@ def interval_summary(athlete, min_date, max_date):
 @login_required
 @athlete_view_allowed
 @force_no_cache
-def monthly_view(request, athlete_id, month, year, detail_day = None):
+def monthly_view(request, athlete_id, year, month, detail_day = None, template = 'athletelog/workout_monthly.html'):
     """
     View workout log for a single month
     """
@@ -218,7 +220,7 @@ def monthly_view(request, athlete_id, month, year, detail_day = None):
     else:
         context["workout_summary"] = interval_summary(athlete, first_day, last_day)
         context["competition_summary"] = competition.interval_summary(athlete, first_day, last_day)
-        t = loader.get_template('athletelog/workout_monthly.html')
+        t = loader.get_template(template)
 
     c = RequestContext(request, context)
     return http.HttpResponse(t.render(c))
@@ -260,17 +262,17 @@ def day_info(athlete, year, month, day):
 
 @login_required
 @athlete_edit_allowed
-def add_form(request, athlete_id, year, month, day):
+def add_form(request, athlete_id, year, month, day, template = 'athletelog/workout_form.html'):
     athlete = get_object_or_404(models.Athlete, person__user__username=athlete_id)
     year, month, day = int(year), int(month), int(day)
     date = datetime.date(year, month, day)
     workout_data = {'num_workout_items': 3, 'rating_satisfaction': 3, 'rating_difficulty': 3, 'day': date}
 
-    return display_form(request, 'add', athlete, date, workout_data, 3, {}, add_submit)
+    return display_form(request, 'add', athlete, date, workout_data, 3, {}, add_submit, template)
 
 @login_required
 @athlete_edit_allowed
-def edit_form(request, athlete_id, day, month, year, workout_id):
+def edit_form(request, athlete_id, year, month, day, workout_id, template = 'athletelog/workout_form.html'):
     athlete = get_object_or_404(models.Athlete, person__user__username=athlete_id)
     year, month, day = int(year), int(month), int(day)
     date = datetime.date(year, month, day)
@@ -289,10 +291,10 @@ def edit_form(request, athlete_id, day, month, year, workout_id):
         workout_items_data['workout_item_%d_num_data' % seq] = workout_item.num_data
     
     return display_form(request, 'edit', athlete, date, workout_data,
-                        num_workout_items, workout_items_data, edit_submit)
+                        num_workout_items, workout_items_data, edit_submit, template)
     
 
-def display_form(request, action, athlete, date, workout_data, num_workout_items, workout_items_data, save_func):
+def display_form(request, action, athlete, date, workout_data, num_workout_items, workout_items_data, save_func, template):
     """
     Return HTML add/edit form for given workout
     @param action               Either "add" or "edit"
@@ -333,7 +335,8 @@ def display_form(request, action, athlete, date, workout_data, num_workout_items
         if submit_button == 'ok':
             workout_form = forms.WorkoutForm(request.POST.copy(), auto_id='workout_%s')
             workout_item_forms = _create_workout_item_forms(num_workout_items, data=request.POST.copy())
-            if save_func(request, athlete, workout_form, workout_item_forms):
+            form_valid, errors = save_func(request, athlete, workout_form, workout_item_forms)
+            if form_valid:
                 return http.HttpResponseRedirect(continue_url)
             else:
                 # There were errors in workout form -- redisplay the form
@@ -361,7 +364,7 @@ def display_form(request, action, athlete, date, workout_data, num_workout_items
     context['workout_form'] = workout_form
     context['workout_item_forms'] = workout_item_forms
 
-    t = loader.get_template('athletelog/workout_form.html')
+    t = loader.get_template(template)
     c = RequestContext(request, context)
     return http.HttpResponse(t.render(c))
 
@@ -399,12 +402,21 @@ def add_submit(request, athlete, workout_form, workout_item_forms):
     """
     Add new workout for given day
     """
+    errors = {'workout': [], 'workout_items': []}
+    forms_valid = True
     # Check validity in the forms
     if not workout_form.is_valid():
-        return False
+        errors['workout'] = workout_form.errors
+        forms_valid = forms_valid and False
     for form in workout_item_forms:
+        workout_item_errors = []
         if not form.is_valid():
-            return False
+            workout_item_errors = form.errors
+            forms_valid = forms_valid and False
+        errors['workout_items'].append(workout_item_errors)
+
+    if not forms_valid:
+        return False, errors
 
     num_workout_items = workout_form.cleaned_data['num_workout_items']
     day = workout_form.cleaned_data['day']
@@ -419,19 +431,28 @@ def add_submit(request, athlete, workout_form, workout_item_forms):
 
     _workout_items_save(request, workout, workout_item_forms)
 
-    return True
+    return True, errors
 
 
 def edit_submit(request, athlete, workout_form, workout_item_forms):
     """
     Submit "edit workout" form
     """
+    errors = {'workout': [], 'workout_items': []}
+    forms_valid = True
     # Check validity in the forms
     if not workout_form.is_valid():
-        return False
+        errors['workout'] = workout_form.errors
+        forms_valid = forms_valid and False
     for form in workout_item_forms:
+        workout_item_errors = []
         if not form.is_valid():
-            return False
+            workout_item_errors = form.errors
+            forms_valid = forms_valid and False
+        errors['workout_items'].append(workout_item_errors)
+
+    if not forms_valid:
+        return False, errors
 
     num_workout_items = workout_form.cleaned_data['num_workout_items']
     day = workout_form.cleaned_data['day']
@@ -447,7 +468,7 @@ def edit_submit(request, athlete, workout_form, workout_item_forms):
     workout.workout_items.all().delete()
     _workout_items_save(request, workout, workout_item_forms)
 
-    return True
+    return True, errors
 
 def _workout_items_save(request, workout, workout_items_forms):
     for form, sequence in zip(workout_items_forms, range(0, len(workout_items_forms))):
@@ -517,7 +538,7 @@ def weekly_summary_snippet(request, athlete_id, year, week):
     first_day = common.iso_week_day_to_gregorian(year, week, 1)
     last_day = common.iso_week_day_to_gregorian(year, week, 7)
 
-    return interval_summary_snippet(request, athlete_id, first_day, last_day)
+    return interval_summary_snippet(request, athlete_id, first_day, last_day, template='athletelog/include/workout_weekly_summary.html')
 
 @login_required
 @athlete_view_allowed
@@ -526,9 +547,9 @@ def monthly_summary_snippet(request, athlete_id, year, month):
     first_day = datetime.date(year, month, 1)
     last_day = datetime.date(year, month, calendar.monthrange(year, month)[1])
 
-    return interval_summary_snippet(request, athlete_id, first_day, last_day)
+    return interval_summary_snippet(request, athlete_id, first_day, last_day, template='athletelog/include/workout_monthly_summary.html')
 
-def interval_summary_snippet(request, athlete_id, first_day, last_day):
+def interval_summary_snippet(request, athlete_id, first_day, last_day, template='athletelog/include/workout_summary.html'):
     try:
         athlete = models.Athlete.objects.get(person__user__username=athlete_id)
     except ObjectDoesNotExist:
@@ -539,7 +560,58 @@ def interval_summary_snippet(request, athlete_id, first_day, last_day):
     context["competition_summary"] = competition.interval_summary(athlete, first_day, last_day)
     context["athlete_edit_allowed"] = athlete.allowed_edit_by(request.user)
 
-    t = loader.get_template('athletelog/include/workout_summary.html')
+    t = loader.get_template(template)
     c = RequestContext(request, context)
     return http.HttpResponse(t.render(c))
 
+@login_required
+@athlete_view_allowed
+def weekly_view_snippet(request, athlete_id, year, week):
+    return weekly_view(request, athlete_id, year, week, template='athletelog/include/workout_weekly.html')
+
+@login_required
+@athlete_view_allowed
+def monthly_view_snippet(request, athlete_id, year, month):
+    return monthly_view(request, athlete_id, year, month, template='athletelog/include/workout_monthly.html')
+
+@login_required
+@athlete_edit_allowed
+def add_form_snippet(request, athlete_id, year, month, day):
+    return add_form(request, athlete_id, year, month, day, template = 'athletelog/include/workout_form.html');
+
+@login_required
+@athlete_edit_allowed
+def edit_form_snippet(request, athlete_id, year, month, day, workout_id):
+    return edit_form(request, athlete_id, year, month, day, workout_id, template = 'athletelog/include/workout_form.html');
+
+@login_required
+@athlete_edit_allowed
+def api_add_workout(request, athlete_id):
+    return _api_save_workout(request, athlete_id, add_submit)
+
+@login_required
+@athlete_edit_allowed
+def api_edit_workout(request, athlete_id):
+    return _api_save_workout(request, athlete_id, edit_submit)
+
+def _api_save_workout(request, athlete_id, save_func):
+    try:
+        athlete = models.Athlete.objects.get(person__user__username=athlete_id)
+    except ObjectDoesNotExist:
+        return http.HttpResponseNotFound()
+    if request.POST.has_key('num_workout_items'):
+        num_workout_items = int(request.POST['num_workout_items'])
+    else:
+        num_workout_items = 0
+
+    workout_form = forms.WorkoutForm(request.POST.copy(), auto_id='workout_%s')
+    workout_item_forms = _create_workout_item_forms(num_workout_items, data=request.POST.copy())
+
+    form_valid, errors = save_func(request, athlete, workout_form, workout_item_forms)
+
+    errors_cleaned = ['workout_%s' % field for field in errors['workout']]
+    for i, item_errors in zip(xrange(0, len(errors['workout_items'])), errors['workout_items']):
+        errors_cleaned.extend(['workout_item_%d_%s' % (i, elem) for elem in item_errors])
+
+    response = {'response': form_valid and 'ok' or 'failed', 'errors': errors_cleaned}
+    return http.HttpResponse(simplejson.dumps(response))

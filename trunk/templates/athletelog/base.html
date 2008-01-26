@@ -4,12 +4,17 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>{% block title %}{% endblock %}</title>
     <link href="/site_media/athletelog/css/style.css" rel="stylesheet" type="text/css">
-	<link rel="shortcut icon" type="image/x-icon" href="/site_media/athletelog/images/icon.ico">
+	<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
     <!--[if lte IE 6]>
     <link href="/site_media/athletelog/css/style_ie.css" rel="stylesheet" type="text/css" />
     <![endif]-->
     <script type="text/javascript" src="/site_media/athletelog/js/jquery.js"></script>
+    <script type="text/javascript" src="/site_media/athletelog/js/formatDate.js"></script>
+    <script type="text/javascript" src="/site_media/athletelog/js/jquery.corner.js"></script>
     <script type="text/javascript" src="/site_media/athletelog/js/athletelog.js"></script>
+    <script type="text/javascript" src="/site_media/athletelog/js/star_picker.js"></script>
+    <script type="text/javascript" src="{% url athletelog.views.js_workout_type_info %}"></script>
+    <script type="text/javascript" src="{% url athletelog.views.js_event_info %}"></script>
     {% block javascripts %}
     {% endblock %}
 
@@ -18,7 +23,7 @@
 </head>
 <body>
 <div id="body">
-{% block page_body %}
+{% block content %}
 {% endblock %}
 <div id="footer">
 <p>

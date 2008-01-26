@@ -1,0 +1,65 @@
+{% load athletelog_tags %}
+<div id="competition_form">
+<div class="corner_tl"><div class="corner_tr"><div class="corner_bl"><div class="corner_br content">
+{% ifequal form_action "add" %}
+<h2>Nový závod</h2>
+{% else %}
+{% ifequal form_action "edit" %}
+<h2>Upravit závod</h2>
+{% endifequal %}
+{% endifequal %}
+
+{% if form_errors %}
+<div class="info_box error">
+<p class="content">
+Některé Vámi zadané hodnoty jsou špatně - mrkněte se na ně znovu
+</p>
+</div>
+{% endif %}
+
+{% ifequal form_action "add" %}
+<form id="competition_edit" action="{% url athletelog.views.competition.add_form athlete_id=athlete.person.user.username,year=day.year,month=day.month,day=day.day %}?continue={{ continue|urlencode }}" method="post">
+{% else %}
+{% ifequal form_action "edit" %}
+<form id="competition_edit" action="{% url athletelog.views.competition.edit_form athlete_id=athlete.person.user.username,year=day.year,month=day.month,day=day.day,competition_id=competition.id %}?continue={{ continue|urlencode }}" method="post">
+{% endifequal %}
+{% endifequal %}
+
+    <fieldset class="button_set">
+        <legend class="textversion">Uložit</legend>
+        <input type="submit" name="submit_ok" class="ok button" value="Uložit">
+        <input type="submit" name="submit_cancel" class="cancel button" value="Zrušit">
+    </fieldset>
+    <fieldset class="competition">
+        <legend class="textversion">Závod</legend>
+        <p class="event {% if competition_form.errors.event %}error{% endif %}">
+        <label for="competition_event">Disciplína</label>
+        {{ competition_form.event }}
+        </p>
+
+        <p class="event_info {% if competition_form.errors.event_info %}error{% endif %}">
+        <label for="competition_event_info">Podrobnosti</label>
+        {{ competition_form.event_info }}
+        </p>
+
+        <p class="result {% if competition_form.errors.result %}error{% endif %}">
+        <label for="competition_result">Výkon</label>
+        {{ competition_form.result }}
+        </p>
+
+        <p class="place {% if competition_form.errors.place %}error{% endif %}">
+        <label for="competition_place">Místo</label>
+        {{ competition_form.place }}
+        </p>
+
+        <p class="note {% if competition_form.errors.note %}error{% endif %}">
+        <label for="competition_note">Poznámka</label>
+        {{ competition_form.note }}
+        </p>
+
+        {{ competition_form.day }}
+        {{ competition_form.id }}
+    </fieldset>
+</form>
+</div></div></div></div>
+</div>

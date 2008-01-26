@@ -1,0 +1,71 @@
+{% extends 'athletelog/workout_base.html' %}
+{% load athletelog_tags %}
+{% load athletelog_filters %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="/site_media/athletelog/js/change_view_form.js"></script>
+    <script type="text/javascript" src="/site_media/athletelog/js/athlete_selection.js"></script>
+
+    <script type="text/javascript" src="/site_media/athletelog/js/workout.js"></script>
+{% endblock %}
+
+{% block content %}
+<div id="view_selection" class="corner_tl">
+<div class="corner_tr"><div class="corner_bl"><div class="corner_br content">
+    <div id="athlete_selection" class="athlete_{{ athlete.person.user.username }}">
+        <h2 class="textversion">Zobrazený atlet</h2>
+        {% with "workout" as view_type %}
+            <a href="{% url athletelog.views.change_athlete view_type=view_type %}?old={{ athlete.person.user.username }}"
+               id="athlete_selection_link">
+        {% endwith %}
+                <img src="{{ athlete.person.get_image_url|default:"/site_media/athletelog/images/user_unknown.png" }}"
+                 width="22" height="22" alt="{{ athlete }}" class="athlete_image">
+                <span class="athlete_name">{{ athlete }}</span>
+            </a>
+    </div>
+    {% if user.person.allowed_athletes|length|greater_than:"1" %}
+    <div id="athlete_selection_other_athletes">
+        <ul>
+        {% for a in user.person.allowed_athletes %}
+        {% ifnotequal a athlete %}
+        <li>
+            <a href="{% url athletelog.views.workout.index athlete_id=a.person.user.username  %}">
+            <img src="{{ a.person.get_image_url|default:"/site_media/athletelog/images/user_unknown.png" }}"
+             width="22" height="22" alt="{{ a }}" class="athlete_image">
+            <span class="athlete_name">{{ a }}</span>
+            </a>
+        </li>
+        {% endifnotequal %}
+        {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+<form action="{% url athletelog.views.workout.change_view athlete_id=athlete.person.user.username %}" method="post">
+<fieldset>
+<legend class="textversion">Zobrazení deníku</legend>
+<label for="change_view_view_type">Pohled</label>
+{{change_view_form.view_type}}
+<label for="change_view_week">Týden</label>
+{{change_view_form.week}}
+<label for="change_view_month">Měsíc</label>
+{{change_view_form.month}}
+<label for="change_view_year">Rok</label>
+{{change_view_form.year}}
+<button type="submit" id="change_view_submit">Zobrazit</button>
+</fieldset>
+</form>
+
+</div></div></div>
+</div>
+
+<div id="workout_summary" class="summary"><div class="content">
+{% block workout_summary %}
+{% endblock %}
+</div></div>
+
+<div id="workout_view">
+{% block workout_view %}
+{% endblock %}
+</div>
+
+{% endblock %}

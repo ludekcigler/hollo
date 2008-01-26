@@ -1,0 +1,43 @@
+{% extends 'athletelog/include/settings_base.html' %}
+{% load athletelog_tags %}
+{% load athletelog_filters %}
+{% block settings_content %}
+{% settings_submenu "friends" %}
+
+<div class="settings_content">
+<h3 class="textversion">Kamarádi</h3>
+<h4>Sledovat atleta</h4>
+{% if person_group_athletes|length_is:"0" and person_other_athletes|length_is:"0" %}
+<p>Není koho dalšího byste mohli sledovat...</p>
+{% else %}
+{% if person_group_athletes|length_is:"0"|is_not %}
+<h5>Moje skupina</h5>
+<table cellspacing="0">
+{% for a in person_group_athletes %}
+    <tr>
+        <td><img 
+            src="{{ a.person.get_image_url|default:"/site_media/athletelog/images/user_unknown.png" }}" 
+            width="22" height="22" alt="{{ a }}">
+        <td>{{ a }}</td>
+        <td><a href="{% url athletelog.views.settings.friends_add_edit_message athlete_id=a.person.user.username %}">Sledovat</a></td>
+    </tr>
+{% endfor %}
+</table>
+{% endif %}
+{% if person_other_athletes|length_is:"0"|is_not %}
+<h5>Ostatní atleti</h5>
+<table cellspacing="0">
+{% for a in person_other_athletes %}
+    <tr>
+        <td><img 
+            src="{{ a.person.get_image_url|default:"/site_media/athletelog/images/user_unknown.png" }}" 
+            width="22" height="22" alt="{{ a }}">
+        <td>{{ a }}</td>
+        <td><a href="{% url athletelog.views.settings.friends_add_edit_message athlete_id=a.person.user.username %}">Sledovat</a></td>
+    </tr>
+{% endfor %}
+</table>
+{% endif %}
+{% endif %}
+</div>
+{% endblock %}

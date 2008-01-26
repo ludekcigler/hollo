@@ -96,8 +96,19 @@ urlpatterns = patterns('athletelog.views',
 
     # Hijax webpage snippets
     (r'^snippets/workout/(?P<athlete_id>\w+)/day/(?P<year>\d{4})/(?P<month>\d{,2})/(?P<day>\d{,2})/$', athletelog.views.workout.daily_summary_snippet),
-    (r'^snippets/workout/(?P<athlete_id>\w+)/week/(?P<year>\d{4})/(?P<week>\d{,2})/$', athletelog.views.workout.weekly_summary_snippet),
-    (r'^snippets/workout/(?P<athlete_id>\w+)/month/(?P<year>\d{4})/(?P<month>\d{,2})/$', athletelog.views.workout.monthly_summary_snippet),
+    (r'^snippets/workout/(?P<athlete_id>\w+)/weekly_summary/(?P<year>\d{4})/(?P<week>\d{,2})/$', athletelog.views.workout.weekly_summary_snippet),
+    (r'^snippets/workout/(?P<athlete_id>\w+)/monthly_summary/(?P<year>\d{4})/(?P<month>\d{,2})/$', athletelog.views.workout.monthly_summary_snippet),
+
+    (r'^snippets/workout/(?P<athlete_id>\w+)/add/(?P<year>\d{4})/(?P<month>\d{,2})/(?P<day>\d{,2})/$', athletelog.views.workout.add_form_snippet),
+    (r'^snippets/workout/(?P<athlete_id>\w+)/edit/(?P<year>\d{4})/(?P<month>\d{,2})/(?P<day>\d{,2})/(?P<workout_id>\d+)/$', athletelog.views.workout.edit_form_snippet),
+    (r'^snippets/workout/(?P<athlete_id>\w+)/week/(?P<year>\d{4})/(?P<week>\d{,2})/$', athletelog.views.workout.weekly_view_snippet),
+    (r'^snippets/workout/(?P<athlete_id>\w+)/month/(?P<year>\d{4})/(?P<month>\d{,2})/$', athletelog.views.workout.monthly_view_snippet),
+
+    (r'^snippets/competition/(?P<athlete_id>\w+)/add/(?P<year>\d{4})/(?P<month>\d{,2})/(?P<day>\d{,2})/$', athletelog.views.competition.add_form_snippet),
+    (r'^snippets/competition/(?P<athlete_id>\w+)/edit/(?P<year>\d{4})/(?P<month>\d{,2})/(?P<day>\d{,2})/(?P<competition_id>\d+)/$', athletelog.views.competition.edit_form_snippet),
+    (r'^snippets/competition/(?P<athlete_id>\w+)/total_summary/$', athletelog.views.competition.total_summary_snippet),
+    (r'^snippets/competition/(?P<athlete_id>\w+)/yearly_summary/(?P<year>\d{4})/$', athletelog.views.competition.yearly_summary_snippet),
+    (r'^snippets/competition/(?P<athlete_id>\w+)/monthly_summary/(?P<year>\d{4})/(?P<month>\d{,2})/$', athletelog.views.competition.monthly_summary_snippet),
 
     # Javascript-generating views
     (r'^js/event_info/', athletelog.views.js_event_info),
@@ -107,5 +118,9 @@ urlpatterns = patterns('athletelog.views',
     # REST JSON API
     #(r'^api/workout/(?P<athlete_id>\w+)/week/(?P<year>\d{4})/(?P<week>\d{,2})/$', athletelog.views.workout.api_weekly_view),
     #(r'^api/workout/(?P<athlete_id>\w+)/month/(?P<year>\d{4})/(?P<month>\d{,2})/$', athletelog.views.workout.api_monthly_view),
+    (r'^api/workout/(?P<athlete_id>\w+)/add/$', athletelog.views.workout.api_add_workout),
+    (r'^api/workout/(?P<athlete_id>\w+)/edit/$', athletelog.views.workout.api_edit_workout),
+    (r'^api/competition/(?P<athlete_id>\w+)/add/$', athletelog.views.competition.api_add_competition),
+    (r'^api/competition/(?P<athlete_id>\w+)/edit/$', athletelog.views.competition.api_edit_competition),
 
 )

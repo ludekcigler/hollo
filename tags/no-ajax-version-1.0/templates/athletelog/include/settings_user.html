@@ -1,0 +1,72 @@
+{% extends 'athletelog/include/settings_base.html' %}
+{% load athletelog_tags %}
+{% block settings_content %}
+{% settings_submenu "user" %}
+
+<div class="settings_content">
+<h3 class="textversion">Obecné nastavení</h3>
+{% if form_errors %}
+<div class="info_box error">
+<p class="content">
+Některé Vámi zadané hodnoty jsou špatně - mrkněte se na ně znovu
+</p>
+</div>
+{% endif %}
+<form id="settings_user_form" action="{% url athletelog.views.settings.user %}?continue={{ continue|urlencode }}" method="post">
+    <fieldset>
+        <legend class="textversion">Informace o uživateli</legend>
+        <table cellspacing="0">
+            <tbody>
+                <tr {% if user_form.errors.first_name %}class="error"{% endif %}>
+                    <th scope="row"><label for="user_first_name">Jméno</label></th>
+                    <td>{{user_form.first_name}}</td>
+                </tr>
+                <tr {% if user_form.errors.last_name %}class="error"{% endif %}>
+                    <th scope="row"><label for="user_last_name">Příjmení</label></th>
+                    <td>{{user_form.last_name}}</td>
+                </tr>
+                <tr {% if user_form.errors.email %}class="error"{% endif %}>
+                    <th scope="row"><label for="user_email">Email</label></th>
+                    <td>{{user_form.email}}</td>
+                </tr>
+                <tr>
+                    <th scope="row"><label>Obrázek</label></th>
+                    <td>
+                        {% if person.image %}
+                        <img src="{{ person.get_image_url }}" width="36" height="36" alt="{{ user.id }}" >
+                        <br />
+                        <a href="{% url athletelog.views.settings.user_edit_image %}" title="Upravit obrázek" >Upravit</a>
+                        <a href="{% url athletelog.views.settings.user_remove_image %}" title="Smazat obrázek" >Smazat</a>
+                        {% else %}
+                        <a href="{% url athletelog.views.settings.user_edit_image %}" title="Nahrát obrázek">Nahrát obrázek</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row"><label>Heslo</label></th>
+                    <td><a href="{% url athletelog.views.settings.user_change_password %}" title="Změnit heslo">Změnit heslo</a></td>
+                </tr>
+                {% if athlete %}
+                <tr {% if user_form.errors.club %}class="error"{% endif %}>
+                    <th scope="row"><label for="user_club">Klub</label></th>
+                    <td>{{user_form.club}}</td>
+                </tr>
+                <tr {% if user_form.errors.athlete_group %}class="error"{% endif %}>
+                    <th scope="row"><label for="user_athlete_group">Tréninková skupina</label></th>
+                    <td>
+                        {{user_form.athlete_group}}
+                    </td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </fieldset>
+    <fieldset class="button_set">
+        <legend class="textversion">Uložit</legend>
+        <input type="submit" name="submit_ok" class="ok button" value="Uložit">
+        <input type="submit" name="submit_cancel" class="cancel button" value="Hotovo">
+    </fieldset>
+</form>
+
+</div>
+{% endblock %}

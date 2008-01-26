@@ -1,40 +1,37 @@
-{% extends 'athletelog/workout_base.html' %}
+{% extends 'athletelog/base.html' %}
 {% load athletelog_filters %}
 
 {% block javascripts %}
     <script type="text/javascript" src="/site_media/athletelog/js/change_view_form.js"></script>
     <script type="text/javascript" src="/site_media/athletelog/js/athlete_selection.js"></script>
+    <script type="text/javascript" src="/site_media/athletelog/js/competition.js"></script>
+    <script type="text/javascript" src="/site_media/athletelog/js/competition_form.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function () {
+        $('.edit_competition').click(athletelog.ui.competition.load_edit_form);
+    });
+    </script>
 {% endblock %}
 
 {% block title %}
-Závody - 
 {% ifequal competition_view_type "monthly" %}
-{{first_day|date:"F Y"}}
+{{first_day|date:"F Y"|capfirst}}
 {% else %}
     {% ifequal competition_view_type "yearly" %}
     {{first_day|date:"Y"}}
     {% else %}
-    vše
+        Vše
     {% endifequal %}
 {% endifequal %}
-:: Tréninkový deník
-{% endblock %}
-
-{% block main_menu %}
-    <li>
-        {% if first_day %}
-        <a href="{% url athletelog.views.workout.monthly_view athlete_id=athlete.person.user.username,year=first_day.year,month=first_day.month %}">
-        {% else %}
-        <a href="{% url athletelog.views.workout.index athlete_id=athlete.person.user.username %}">
-        {% endif %}
-        <span class="corner_tl"><span class="corner_tr"><span class="content">Deník</span></span></span></a></li>
-    <li class="active"><a><span class="corner_tl"><span class="corner_tr"><span class="content">Závody</span></span></span></a></li>
+| Závody
 {% endblock %}
 
 {% block content %}
+{% with "competition" as active_menu_item %}
+    {% include 'athletelog/header.html' %}
+{% endwith %}
+
 <div id="view_selection">
-<div class="corner_tl"><div class="corner_tr"><div class="corner_bl"><div class="corner_br">
-<div class="content">
 
     <div id="athlete_selection" class="athlete_{{ athlete.person.user.username }}">
         <h2 class="textversion">Zobrazený atlet</h2>
@@ -77,10 +74,9 @@ Závody -
 </form>
 
 </div>
-</div></div></div></div>
-</div>
 
-<div id="competition_summary" class="summary"><div class="content">
+<div id="competition_summary" class="summary">
+<div class="content">
 <h2>
 {% ifequal competition_view_type "monthly" %}
 Měsíční souhrn
@@ -97,7 +93,7 @@ Měsíční souhrn
 </div>
 </div>
 
-<div id="competition_view">
+<div id="competition_view" class="main_view">
 {% include 'athletelog/include/competition_view.html' %}
 </div>
 

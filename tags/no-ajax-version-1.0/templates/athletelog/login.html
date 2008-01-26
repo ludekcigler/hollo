@@ -1,0 +1,52 @@
+{% extends 'athletelog/base.html' %}
+{% block title %}
+Přihlášení :: Tréninkový deník
+{% endblock %}
+
+{% block page_body %}
+<div id="login_header">
+<h1>Deník atleta<span></span></h1>
+</div>
+
+<div id="login_form">
+{% if login_failed %}
+<div class="info_box error">
+<p class="content">
+Špatné přihlášení
+</p>
+</div>
+{% endif %}
+<div class="corner_tl login_content"><div class="corner_tr"><div class="corner_bl"><div class="corner_br">
+<h2>Přihlášení</h2>
+<form action="{% url athletelog.views.user.auth %}{% if continue_url %}?continue={{continue_url|urlencode}}{% endif %}" method="post">
+<fieldset>
+<label for="username">Uživatelské jméno</label>
+<input type="text" id="username" name="username" />
+<label for="password">Heslo</label>
+<input type="password" id="password" name="password" />
+</fieldset>
+<fieldset>
+<button type="submit">Přihlásit se</button>
+</fieldset>
+</form>
+
+</div></div></div></div>
+
+</div>
+
+<div id="version_number">
+<p class="textversion"> 
+Verze 0.1
+</p>
+</div>
+
+<div id="welcome">
+    <h2>
+    Vítejte v tréninkovém deníku!
+    </h2>
+    <p>Pokud ještě nemáte vaše uživatelské jméno a heslo, napište si o ně na <strong>luigi</strong>
+    (zavináč) <strong>ackovosrot</strong> (tečka) <strong>cz</strong>.
+    Nebo můžete zkusit uživatelské jméno <strong>host</strong>, heslo taktéž <strong>host</strong> a tréninkový
+    deník si můžete jednoduše vyzkoušet.
+</div>
+{% endblock %}

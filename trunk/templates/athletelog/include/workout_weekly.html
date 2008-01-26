@@ -1,13 +1,11 @@
 {% load athletelog_filters %}
 {% load athletelog_tags %}
-<h2>{{first_day|date:"W"}}. týden {{first_day|date:"Y"}} :: Tréninky</h2>
+<h2>{{first_day|date:"W"}}. týden {{year}} | Tréninky</h2>
 <ul class="pager_menu">
-    <li class="previous"><a href="{% url athletelog.views.workout.weekly_view athlete_id=athlete.person.user.username,year=previous_year,week=previous_week %}">Předchozí týden</a></li>
-    <li class="next"><a href="{% url athletelog.views.workout.weekly_view athlete_id=athlete.person.user.username,year=next_year,week=next_week %}">Další týden</a></li>
+    <li class="previous"><a href="{% url athletelog.views.workout.weekly_view athlete_id=athlete.person.user.username,year=previous_year,week=previous_week %}" class="week_{{previous_year}}_{{previous_week}}">Předchozí týden</a></li>
+    <li class="next"><a href="{% url athletelog.views.workout.weekly_view athlete_id=athlete.person.user.username,year=next_year,week=next_week %}" class="week_{{next_year}}_{{next_week}}">Další týden</a></li>
 </ul>
 <div id="weekly_view">
-
-<div class="table_header_bg"><div class="corner_tl"><div class="corner_tr">
 
 <table cellspacing="0">
     <thead>
@@ -71,11 +69,9 @@
     </tbody>
 </table>
 
-</div></div></div>
-
 </div>
 
 <ul class="pager_menu">
-    <li class="previous"><a href="{% url athletelog.views.workout.weekly_view athlete_id=athlete.person.user.username,year=previous_year,week=previous_week %}">Předchozí týden</a></li>
-    <li class="next"><a href="{% url athletelog.views.workout.weekly_view athlete_id=athlete.person.user.username,year=next_year,week=next_week %}">Další týden</a></li>
+    <li class="previous"><a href="{% url athletelog.views.workout.weekly_view athlete_id=athlete.person.user.username,year=previous_year,week=previous_week %}" class="week_{{previous_year}}_{{previous_week}}">Předchozí týden</a></li>
+    <li class="next"><a href="{% url athletelog.views.workout.weekly_view athlete_id=athlete.person.user.username,year=next_year,week=next_week %}" class="week_{{next_year}}_{{next_week}}">Další týden</a></li>
 </ul>

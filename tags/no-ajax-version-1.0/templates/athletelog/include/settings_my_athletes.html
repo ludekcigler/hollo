@@ -1,0 +1,17 @@
+{% extends 'athletelog/include/settings_base.html' %}
+{% load athletelog_tags %}
+{% block settings_content %}
+{% settings_submenu "my_athletes" %}
+
+<div class="settings_content">
+<h3 class="textversion">Moji svěřenci</h3>
+{% for group in coach.athletegroups.all %}
+<h4 class="group_name">{{ group.name }}</h4>
+    <ul id="my_group_athletes">
+    {% for athlete in group.athletes.all %}
+        <li><a href="{% url athletelog.views.workout.index athlete_id=athlete.person.user.username %}">{{ athlete }}</a></li>
+    {% endfor %}
+    </ul>
+{% endfor %}
+</div>
+{% endblock %}

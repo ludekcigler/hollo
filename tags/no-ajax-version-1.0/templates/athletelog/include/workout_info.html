@@ -1,0 +1,149 @@
+{% load athletelog_filters %}
+<h2>{{day|date:"j"}}. {{day|date:"F Y"|lower}}</h2>
+{% ifequal view_type "weekly" %}
+<a href="{% url athletelog.views.workout.weekly_view athlete_id=athlete.person.user.username,year=year,week=week %}"
+    class="workout_info_jump_back">
+    <span>Zpět</span>
+</a>
+{% else %}
+    {% ifequal view_type "monthly" %}
+<a href="{% url athletelog.views.workout.monthly_view athlete_id=athlete.person.user.username,year=year,month=month %}"
+    class="workout_info_jump_back">
+    <span>Zpět</span>
+</a>
+    {% else %}
+<a href=""
+    class="workout_info_jump_back">
+    <span>Zpět</span>
+</a>
+    {% endifequal %}
+{% endifequal %}
+
+{% for w in workouts %}
+<div class="workout">
+{% ifnotequal num_workouts 1 %}
+<h3>{{forloop.counter}}. fáze</h3>
+{% endifnotequal %}
+{% if w.workout_items.all|length_is:"0" %}
+<p>Tato fáze nemá žádné položky</p>
+{% else %}
+<div class="corner_tl table_header_bg"><div class="corner_tr">
+<table cellspacing="0">
+    <thead>
+        <tr>
+        <th class="type">Typ</th>
+        <th class="desc">Popis</th>
+        <th class="num_data">km/kg</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for i in w.workout_items.all|dictsort:"sequence" %}
+    <tr>
+        <td class="type">{{i.type}}</td>
+        <td class="desc">{{i.desc}}</td>
+        <td class="num_data">{{i.num_data}}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div></div>
+{% endif %}
+
+<ul class="workout_additional_info">
+    {% if w.total_km %}
+    <li class="total_km"><span class="textversion">Celková kilometráž: </span>{{w.total_km}} km</li>
+    {% endif %}
+    {% if w.total_kg %}
+    <li class="total_kg"><span class="textversion">Nazvedaná váha: </span>{{w.total_kg}} kg</li>
+    {% endif %}
+    {% if w.weather %}
+    <li class="weather"><span class="textversion">Počasí: </span>{{w.weather}}</li>
+    {% endif %}
+    <li class="satisfaction">
+        <span class="textversion">Spokojenost: {{w.rating_satisfaction}} </span>
+        {% with w.rating_satisfaction as rating %}
+        {% with "yellow" as color %}
+        {% include 'athletelog/widgets/rating.html' %}
+        {% endwith %}
+        {% endwith %}
+    </li>
+    <li class="difficulty">
+        <span class="textversion">Obtížnost: {{w.rating_difficulty}} </span>
+        {% with w.rating_difficulty as rating %}
+        {% with "red" as color %}
+        {% include 'athletelog/widgets/rating.html' %}
+        {% endwith %}
+        {% endwith %}
+    </li>
+</ul>
+
+{% if athlete_edit_allowed %}
+<p class="workout_info_buttons">
+    <a href="{% url athletelog.views.workout.edit_form athlete_id=athlete.person.user.username,year=w.day.year,month=w.day.month,day=w.day.day,workout_id=w.id %}" class="edit_workout"
+        id="editWorkout_{{ w.day|date:"Y-m-d" }}_{{ w.id }}">Upravit fázi</a>
+    <a href="{% url athletelog.views.workout.remove_workout athlete_id=athlete.person.user.username,workout_id=w.id %}" class="remove_workout"
+        id="removeWorkout_{{ w.day|date:"Y-m-d" }}_{{ w.id }}">Odstranit fázi</a>
+</p>
+{% endif %}
+</div>
+{% endfor %}
+{% if athlete_edit_allowed %}
+<p class="workout_info_buttons">
+    <a href="{% url athletelog.views.workout.add_form athlete_id=athlete.person.user.username,year=day.year,month=day.month,day=day.day %}" class="add_workout"
+        id="add_workout_{{ day|date:"Y-m-d" }}">Přidat fázi</a>
+</p>
+{% endif %}
+{% if competitions|length_is:"0"|is_not %}
+<h3>Závody</h3>
+<div class="competition">
+<div class="table_header_bg corner_tl"><div class="corner_tr">
+
+<table cellspacing="0" class="competition">
+    <thead>
+        <tr>
+            <th scope="col">Disciplína</th>
+            <th scope="col">Výkon</th>
+            <th scope="col">Místo</th>
+            {% if athlete_edit_allowed %}
+            <th scope="col">&nbsp;</th>
+            <th scope="col">&nbsp;</th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+{% for c in competitions %}
+        <tr>
+            <td>
+            {% if c.event.has_additional_info %}
+            {{c.event_info}}
+            {% else %}
+            {{c.event.name}}
+            {% endif %}
+            </td>
+            <td>{{ c.result }}</td>
+            <td>{{ c.place }}</td>
+            {% if athlete_edit_allowed %}
+            <td>
+                <a href="{% url athletelog.views.competition.edit_form athlete_id=athlete.person.user.username,year=c.day.year,month=c.day.month,day=c.day.day,competition_id=c.id %}" class="edit_competition" 
+                id="edit_competition_{{ c.day|date:"Y-m-d" }}_{{ c.id }}" title="Upravit závod">
+                <span>Upravit závod</span></a>
+            </td>
+            <td>
+                <a href="{% url athletelog.views.competition.remove_competition athlete_id=athlete.person.user.username,competition_id=c.id %}" class="remove_competition" 
+                    id="remove_competition_{{ c.day|date:"Y-m-d" }}_{{ c.id }}" title="Odstranit závod">
+                    <span>Odstranit závod</span></a>
+            </td>
+            {% endif %}
+        </tr>
+{% endfor %}
+    </tbody>
+</table>
+</div></div>
+</div>
+{% endif %}
+{% if athlete_edit_allowed %}
+<p class="workout_info_buttons">
+    <a href="{% url athletelog.views.competition.add_form athlete_id=athlete.person.user.username,year=day.year,month=day.month,day=day.day %}" class="add_competition"
+        id="add_competition_{{ day|date:"Y-m-d" }}">Přidat závod</a>
+</p>
+{% endif %}

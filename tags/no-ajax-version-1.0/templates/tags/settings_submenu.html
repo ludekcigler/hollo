@@ -1,0 +1,13 @@
+<ul id="settings_menu">
+    <li {% ifequal active_item "user" %}class="active"{% endifequal %}>
+        <a href="{% url athletelog.views.settings.user %}" title="Obecné nastavení">Obecné</a>
+    </li>
+    {% if coach %}
+    <li {% ifequal active_item "my_athletes" %}class="active"{% endifequal %}>
+        <a href="{% url athletelog.views.settings.my_athletes %}" title="Moji svěřenci">Svěřenci</a>
+    </li>
+    {% endif %}
+    <li {% ifequal active_item "friends" %}class="active"{% endifequal %}>
+        <a href="{% url athletelog.views.settings.friends %}" title="Moji kamarádi">Kamarádi</a>
+    </li>
+</ul>

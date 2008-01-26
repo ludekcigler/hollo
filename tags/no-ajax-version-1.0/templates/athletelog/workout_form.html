@@ -1,0 +1,26 @@
+{% extends 'athletelog/base.html' %}
+
+{% block title %}
+{% ifequal form_action "add" %}
+Nový trénink :: Tréninkový deník
+{% else %}
+{% ifequal form_action "edit" %}
+Upravit trénink :: Tréninkový deník
+{% endifequal %}
+{% endifequal %}
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="/site_media/athletelog/js/star_picker.js"></script>
+    <script type="text/javascript" src="{% url athletelog.views.js_workout_type_info %}"></script>
+
+    <script type="text/javascript" src="/site_media/athletelog/js/workout_form.js"></script>
+{% endblock %}
+
+{% block page_body %}
+{% include 'athletelog/include/workout_form.html' %}
+{% endblock %}
+
+{% block custom_meta_tags %}
+    <meta http-equiv="Cache-Control" content="no-cache">
+{% endblock %}

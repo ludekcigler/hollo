@@ -137,7 +137,7 @@ function StarPicker () {
             $(aElems[i]).removeClass(aClass);
         }
     }
-}
+};
 
 var selectListener = 
 {
@@ -145,7 +145,7 @@ var selectListener =
     {
         $('#selected_item').html('' + aIndex);
     }
-}
+};
 
 $(document).ready(function () {
     var starPicker = new StarPicker();

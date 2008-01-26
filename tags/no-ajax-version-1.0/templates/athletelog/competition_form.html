@@ -1,0 +1,21 @@
+{% extends 'athletelog/base.html' %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="{% url athletelog.views.js_event_info %}"></script>
+    <script type="text/javascript" src="/site_media/athletelog/js/competition_form.js"></script>
+{% endblock %}
+
+{% block title %}
+{% ifequal form_action "add" %}
+Nový závod :: Tréninkový deník
+{% else %}
+Upravit závod :: Tréninkový deník
+{% endifequal %}
+{% endblock %}
+{% block page_body %}
+{% include 'athletelog/include/competition_form.html' %}
+{% endblock %}
+
+{% block custom_meta_tags %}
+    <meta http-equiv="Cache-Control" content="no-cache">
+{% endblock %}

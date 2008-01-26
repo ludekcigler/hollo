@@ -1,12 +1,10 @@
 {% load athletelog_filters %}
-<h2>{{first_day|date:"F Y"|capfirst}} :: Tréninky</h2>
+<h2>{{first_day|date:"F Y"|capfirst}} | Tréninky</h2>
 <ul class="pager_menu">
-    <li class="previous"><a href="{% url athletelog.views.workout.monthly_view athlete_id=athlete.person.user.username,year=previous_year,month=previous_month %}">Předchozí měsíc</a></li>
-    <li class="next"><a href="{% url athletelog.views.workout.monthly_view athlete_id=athlete.person.user.username,year=next_year,month=next_month %}">Další měsíc</a></li>
+    <li class="previous"><a href="{% url athletelog.views.workout.monthly_view athlete_id=athlete.person.user.username,year=previous_year,month=previous_month %}" class="month_{{previous_year}}_{{previous_month}}">Předchozí měsíc</a></li>
+    <li class="next"><a href="{% url athletelog.views.workout.monthly_view athlete_id=athlete.person.user.username,year=next_year,month=next_month %}" class="month_{{next_year}}_{{next_month}}">Další měsíc</a></li>
 </ul>
 <div id="monthly_view">
-
-<div class="table_header_bg corner_tl"><div class="corner_tr">
 
 <table cellspacing="0">
     <thead>
@@ -25,7 +23,7 @@
         {% for week_data in month_data %}
             <tr>
                 <th>
-                    <a href="{% url athletelog.views.workout.weekly_view athlete_id=athlete.person.user.username,year=first_day.year,week=week_data.week %}" title="{{week_data.week}}. týden">{{week_data.week}}</a>
+                    <a href="{% url athletelog.views.workout.weekly_view athlete_id=athlete.person.user.username,year=first_day.year,week=week_data.week %}" title="{{week_data.week}}. týden" class="week_{{first_day.year}}_{{week_data.week}}">{{week_data.week}}</a>
                 </th>
                 {% for day_data in week_data.days %}
 
@@ -80,11 +78,9 @@
     </tbody>
 </table>
 
-</div></div>
-
 </div>
 
 <ul class="pager_menu">
-    <li class="previous"><a href="{% url athletelog.views.workout.monthly_view athlete_id=athlete.person.user.username,year=previous_year,month=previous_month %}">Předchozí měsíc</a></li>
-    <li class="next"><a href="{% url athletelog.views.workout.monthly_view athlete_id=athlete.person.user.username,year=next_year,month=next_month %}">Další měsíc</a></li>
+    <li class="previous"><a href="{% url athletelog.views.workout.monthly_view athlete_id=athlete.person.user.username,year=previous_year,month=previous_month %}" class="month_{{previous_year}}_{{previous_month}}">Předchozí měsíc</a></li>
+    <li class="next"><a href="{% url athletelog.views.workout.monthly_view athlete_id=athlete.person.user.username,year=next_year,month=next_month %}" class="month_{{next_year}}_{{next_month}}">Další měsíc</a></li>
 </ul>

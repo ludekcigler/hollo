@@ -1,6 +1,12 @@
 {% load athletelog_filters %}
 {% load athletelog_tags %}
 <td class="phase">Z {{ forloop.counter }}</td>
-<td class="event">{{ competition.event }}</td>
+<td class="event">
+            {% if competition.event.has_additional_info %}
+            {{competition.event_info}}
+            {% else %}
+            {{competition.event.name}}
+            {% endif %}
+</td>
 <td class="result">{{ competition.result }}</td>
 <td class="place">{{ competition.place }}</td>

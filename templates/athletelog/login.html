@@ -3,7 +3,15 @@
 Přihlášení :: Tréninkový deník
 {% endblock %}
 
-{% block page_body %}
+{% block javascripts %}
+    <script type="text/javascript" language="Javascript">
+    $(document).ready(function () {
+        $('div.login_content').corner("6px");
+    });
+    </script>
+{% endblock %}
+
+{% block content %}
 <div id="login_header">
 <h1>Deník atleta<span></span></h1>
 </div>
@@ -16,7 +24,7 @@ Přihlášení :: Tréninkový deník
 </p>
 </div>
 {% endif %}
-<div class="corner_tl login_content"><div class="corner_tr"><div class="corner_bl"><div class="corner_br">
+<div class="login_content">
 <h2>Přihlášení</h2>
 <form action="{% url athletelog.views.user.auth %}{% if continue_url %}?continue={{continue_url|urlencode}}{% endif %}" method="post">
 <fieldset>
@@ -30,7 +38,7 @@ Přihlášení :: Tréninkový deník
 </fieldset>
 </form>
 
-</div></div></div></div>
+</div>
 
 </div>
 

@@ -135,6 +135,8 @@ class Athlete(models.Model):
 
         try:
             coach = Coach.objects.get(person__user=user)
+            if not coach or not self.group or not self.group.coaches:
+                return False
             return coach in self.group.coaches.all()
         except ObjectDoesNotExist:
             return False
@@ -253,6 +255,7 @@ class Competition(models.Model):
     """
     A competition where the athlete took part
     """
+    id = models.AutoField(primary_key=True)
     athlete = models.ForeignKey('Athlete')
     day = models.DateField()
     place = models.CharField(max_length = 100, default='')
@@ -291,10 +294,14 @@ class Competition(models.Model):
     class Admin:
         pass
 
+    class Meta:
+        ordering = ['id']
+
 class Workout(models.Model):
     """
     One workout phase; consists of multiple workout items
     """
+    id = models.AutoField(primary_key=True)
     day = models.DateField()
     athlete = models.ForeignKey('Athlete')
     weather = models.CharField(max_length=100, blank=True, default='')
@@ -337,6 +344,9 @@ class Workout(models.Model):
 
     class Admin:
         list_display = ('day', 'athlete', 'weather')
+
+    class Meta:
+        ordering = ['id']
 
 class WorkoutType(models.Model):
     """

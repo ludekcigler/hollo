@@ -11,7 +11,7 @@
     cursor: pointer;
 }
 
-#workout_view div.table_header_bg, #competition_view div.table_header_bg {
+#workout_view table, #competition_view table {
     width: 99%;
 }
 
@@ -36,3 +36,6 @@
     background-image: url(/site_media/athletelog/images/icons/workout_form_large.gif);
 }
 
+#progress_display {
+    position: absolute;
+}

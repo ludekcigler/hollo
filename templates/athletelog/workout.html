@@ -1,4 +1,4 @@
-{% extends 'athletelog/workout_base.html' %}
+{% extends 'athletelog/base.html' %}
 {% load athletelog_tags %}
 {% load athletelog_filters %}
 
@@ -10,8 +10,11 @@
 {% endblock %}
 
 {% block content %}
-<div id="view_selection" class="corner_tl">
-<div class="corner_tr"><div class="corner_bl"><div class="corner_br content">
+{% with "workout" as active_menu_item %}
+    {% include 'athletelog/header.html' %}
+{% endwith %}
+
+<div id="view_selection">
     <div id="athlete_selection" class="athlete_{{ athlete.person.user.username }}">
         <h2 class="textversion">Zobrazený atlet</h2>
         {% with "workout" as view_type %}
@@ -55,7 +58,6 @@
 </fieldset>
 </form>
 
-</div></div></div>
 </div>
 
 <div id="workout_summary" class="summary"><div class="content">
@@ -63,7 +65,7 @@
 {% endblock %}
 </div></div>
 
-<div id="workout_view">
+<div id="workout_view" class="main_view">
 {% block workout_view %}
 {% endblock %}
 </div>

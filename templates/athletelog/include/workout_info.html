@@ -27,6 +27,7 @@
 {% if w.workout_items.all|length_is:"0" %}
 <p>Tato fáze nemá žádné položky</p>
 {% else %}
+<div class="corner_tl table_header_bg"><div class="corner_tr">
 <table cellspacing="0">
     <thead>
         <tr>
@@ -45,6 +46,7 @@
     {% endfor %}
     </tbody>
 </table>
+</div></div>
 {% endif %}
 
 <ul class="workout_additional_info">
@@ -94,6 +96,7 @@
 {% if competitions|length_is:"0"|is_not %}
 <h3>Závody</h3>
 <div class="competition">
+<div class="table_header_bg corner_tl"><div class="corner_tr">
 
 <table cellspacing="0" class="competition">
     <thead>
@@ -135,6 +138,7 @@
 {% endfor %}
     </tbody>
 </table>
+</div></div>
 </div>
 {% endif %}
 {% if athlete_edit_allowed %}

@@ -30,7 +30,6 @@ from django.template import loader, Context, RequestContext
 import django.shortcuts
 
 from athletelog import models
-import athletelog
 
 __all__ = ['user', 'workout', 'competition', 'settings']
 
@@ -115,9 +114,7 @@ def index(request):
             else:
                 #TODO: show error page
                 athlete_id = None
-
-        #return http.HttpResponseRedirect(urlresolvers.reverse('athletelog.views.workout.index', kwargs = {'athlete_id': athlete_id}))
-        return athletelog.views.workout.index(request, athlete_id)
+        return http.HttpResponseRedirect(urlresolvers.reverse('athletelog.views.workout.index', kwargs = {'athlete_id': athlete_id}))
     else:
         return http.HttpResponseRedirect(urlresolvers.reverse('athletelog.views.user.login'))
 

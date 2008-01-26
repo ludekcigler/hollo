@@ -1,5 +1,6 @@
 {% load athletelog_tags %}
-<div id="competition_form" {% if form_errors %}class="error"{% endif %}>
+<div id="competition_form">
+<div class="corner_tl"><div class="corner_tr"><div class="corner_bl"><div class="corner_br content">
 {% ifequal form_action "add" %}
 <h2>Nový závod</h2>
 {% else %}
@@ -8,11 +9,13 @@
 {% endifequal %}
 {% endifequal %}
 
+{% if form_errors %}
 <div class="info_box error">
 <p class="content">
 Některé Vámi zadané hodnoty jsou špatně - mrkněte se na ně znovu
 </p>
 </div>
+{% endif %}
 
 {% ifequal form_action "add" %}
 <form id="competition_edit" action="{% url athletelog.views.competition.add_form athlete_id=athlete.person.user.username,year=day.year,month=day.month,day=day.day %}?continue={{ continue|urlencode }}" method="post">
@@ -58,4 +61,5 @@ Některé Vámi zadané hodnoty jsou špatně - mrkněte se na ně znovu
         {{ competition_form.id }}
     </fieldset>
 </form>
+</div></div></div></div>
 </div>

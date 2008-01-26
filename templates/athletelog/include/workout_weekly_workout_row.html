@@ -22,7 +22,7 @@
         <td class="phase" rowspan="{{ workout.workout_items.count }}">{{ forloop.parentloop.counter }}</td>
         {% endif %}
         <td class="type">{{ item.type }}</td>
-        <td class="desc">{{ item.desc }} <em>({{ item.num_data }} {{ item|workout_item_num_data_desc|lower }})</em></td>
+        <td class="desc">{{ item.desc }}</td>
         {% if forloop.first %}
         <td rowspan="{{ workout.workout_items.count }}" class="num_data">
         {% with workout.total_km as total %}

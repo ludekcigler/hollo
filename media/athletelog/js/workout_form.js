@@ -8,7 +8,7 @@ function WorkoutFormStarPickerListener (aFormField) {
     };
 };
 
-athletelog.ui.workout_form = {
+var workoutForm = {
     satisfactionPicker: null,
     difficultyPicker: null,
 
@@ -49,12 +49,12 @@ athletelog.ui.workout_form = {
         this.difficultyPicker.selectIndex(difficulty - 1);
 
         // Bind change events for workout types
-        $('.workout_items .type select').bind('change', athletelog.ui.workout_form.changeNumDataLabel, false).trigger('change');
+        $('.workout_items .type select').bind('change', workoutForm.changeNumDataLabel, false).trigger('change');
 
-        $(window).bind('unload', athletelog.ui.workout_form.finalize, false);
+        $(window).bind('unload', workoutForm.finalize, false);
 
-        $('input.remove_workout_item').click(athletelog.ui.workout_form.removeWorkoutItem);
-        $('#add_workout_item').click(athletelog.ui.workout_form.addWorkoutItem);
+        $('input.remove_workout_item').click(workoutForm.removeWorkoutItem);
+        $('#add_workout_item').click(workoutForm.addWorkoutItem);
     },
 
     finalize: function () {
@@ -98,10 +98,10 @@ athletelog.ui.workout_form = {
         for (var i = removedItem + 1; i < workoutItemCount; ++i) {
             for (var j = 0; j < changedProperties.length; ++j) {
                 $('#workout_item_' + i + '_' + changedProperties[j])
-                    .attr('id', 'workout_item_' + (i - 1) + '_' + changedProperties[j])
-                    .attr('name', 'workout_item_' + (i - 1) + '_' + changedProperties[j])
+                    .attr('id', 'workout_item_' + (i - 1) + '_' + changedProperties[i])
+                    .attr('name', 'workout_item_' + (i - 1) + '_' + changedProperties[i])
                     .prev('label')
-                        .attr('for', 'workout_item_' + (i - 1) + '_' + changedProperties[j]);
+                        .attr('for', 'workout_item_' + (i - 1) + '_' + changedProperties[i]);
             }
         }
 
@@ -127,7 +127,7 @@ athletelog.ui.workout_form = {
         // Rename the input fields
         var changedProperties = ['type', 'desc', 'num_data'];
         for (var i = 0; i < changedProperties.length; ++i) {
-            $(itemRow).children().filter('td.' + changedProperties[i]).removeClass('error').children()
+            $(itemRow).children().filter('td.' + changedProperties[i]).children()
              .filter('#workout_item_0_' + changedProperties[i])
                 .attr('id', 'workout_item_' + workoutItemCount + '_' + changedProperties[i])
                 .attr('name', 'workout_item_' + workoutItemCount + '_' + changedProperties[i])
@@ -144,40 +144,9 @@ athletelog.ui.workout_form = {
         $('.workout_items tbody').append(itemRow);
 
         $('#workout_num_workout_items').val(workoutItemCount + 1);
-    },
-
-    submit: function (aEvent, aAction) {
-        data = {}
-        $('#workout_form input').add('#workout_form select')
-                    .map(function (aIndex, aElem) {
-                            data[aElem.name] = aElem.value;
-                        });
-
-        athletelog.events.trigger("ajax-request-start");
-        $.post(
-            athletelog.utils.get_server_root() + '/log/api/workout/' + athletelog.utils.get_athlete_id() + '/' + aAction + '/',
-            data,
-            athletelog.ui.workout_form.on_submit_response,
-            'json');
-
-        aEvent.preventDefault();
-    },
-
-    on_submit_response: function (aResponse) {
-        athletelog.events.trigger("ajax-request-stop");
-        if (aResponse.response == 'ok') {
-            athletelog.ui.workout.reload();
-        } else if (aResponse.response == 'failed') {
-            $('#workout_form').addClass('error');
-            $('#workout_form td').removeClass('error');
-
-            for (var i = 0; i < aResponse.errors.length; ++i) {
-                $('#' + aResponse.errors[i]).parents('td').addClass('error');
-            }
-        }
     }
 };
 
 $(document).ready(function () {
-    athletelog.ui.workout_form.init();
+    workoutForm.init();
 });

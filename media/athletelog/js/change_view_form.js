@@ -42,7 +42,7 @@ athletelog.ui.change_view_form =
                 break;
         }
     }
-};
+}
 
 $(document).ready(function() {
     athletelog.ui.change_view_form.init();

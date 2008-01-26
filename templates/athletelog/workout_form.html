@@ -11,12 +11,10 @@ Upravit trénink :: Tréninkový deník
 {% endblock %}
 
 {% block javascripts %}
+    <script type="text/javascript" src="/site_media/athletelog/js/star_picker.js"></script>
+    <script type="text/javascript" src="{% url athletelog.views.js_workout_type_info %}"></script>
+
     <script type="text/javascript" src="/site_media/athletelog/js/workout_form.js"></script>
-    <script type="text/javascript">
-    $(document).ready(function () {
-        athletelog.ui.workout_form.init();
-    });
-    </script>
 {% endblock %}
 
 {% block page_body %}

@@ -1,12 +1,8 @@
 {% extends 'athletelog/base.html' %}
 
 {% block javascripts %}
+    <script type="text/javascript" src="{% url athletelog.views.js_event_info %}"></script>
     <script type="text/javascript" src="/site_media/athletelog/js/competition_form.js"></script>
-    <script type="text/javascript">
-    $(document).ready(function () {
-        athletelog.ui.competition_form.init();
-    });
-    </script>
 {% endblock %}
 
 {% block title %}

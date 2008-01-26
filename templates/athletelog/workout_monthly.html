@@ -2,7 +2,7 @@
 {% extends 'athletelog/workout.html' %}
 
 {% block title %}
-{{first_day|date:"F Y"|capfirst}} | Tréninky
+Tréninky - {{first_day|date:"F Y"}} :: Tréninkový deník
 {% endblock %}
 
 {% block javascripts %}
@@ -10,10 +10,6 @@
     <script type="text/javascript" src="/site_media/athletelog/js/athlete_selection.js"></script>
 
     <script type="text/javascript" src="/site_media/athletelog/js/workout.js"></script>
-    <script type="text/javascript" src="/site_media/athletelog/js/competition.js"></script>
-    <script type="text/javascript" src="/site_media/athletelog/js/workout_form.js"></script>
-    <script type="text/javascript" src="/site_media/athletelog/js/competition_form.js"></script>
-    <script type="text/javascript" src="/site_media/athletelog/js/workout_weekly_view.js"></script>
     <script type="text/javascript" src="/site_media/athletelog/js/workout_monthly_view.js"></script>
 {% endblock %}
 

@@ -25,8 +25,6 @@ from django.utils import simplejson
 
 import athletelog.common
 
-from athletelog.models import WORKOUT_TYPE_NUM_CHOICES
-
 """
 Custom filters for the Log application
 """
@@ -115,11 +113,3 @@ def trunc_unicode(value, length):
 @register.filter
 def jsonify(object):
     return athletelog.common.jsonify(object)
-
-@register.filter
-def workout_item_num_data_desc(workout_item):
-    t = workout_item.type.num_type
-    for workout_num_type, value in WORKOUT_TYPE_NUM_CHOICES:
-        if workout_num_type == t:
-            return value
-    return ''

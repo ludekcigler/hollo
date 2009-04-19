@@ -20,7 +20,7 @@
 
 import time
 
-from django import newforms as forms
+from django import forms
 from django.utils.dates import MONTHS
 
 from athletelog import models

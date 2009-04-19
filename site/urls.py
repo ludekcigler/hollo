@@ -22,13 +22,16 @@ import os
 from hollo_settings import PROJECT_DIR
 
 from django.conf.urls.defaults import *
+from django.contrib import admin
 import athletelog.views
+
+admin.autodiscover()
 
 urlpatterns = patterns('',
     (r'^$', athletelog.views.index),
 
     # Uncomment this for admin:
-    (r'^admin/', include('django.contrib.admin.urls')),
+    (r'^admin/(.*)', admin.site.root),
 
     # Log URLs
     (r'^log/', include('athletelog.urls')),

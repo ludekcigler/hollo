@@ -42,7 +42,7 @@ class Person(models.Model):
     """
     Single user of the log
     """
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, primary_key=True)
     # An avatar of the user
     image = models.FileField(upload_to=PERSON_IMAGE_UPLOAD_DIR, blank=True, null=True)
     # List of athletes which the person is allowed to watch
@@ -101,15 +101,12 @@ class Person(models.Model):
 
         return view_status
 
-    class Admin:
-        list_display = ('user',)
-
 
 class Athlete(models.Model):
     """
     Single athlete
     """
-    person = models.OneToOneField(Person)
+    person = models.OneToOneField(Person, primary_key=True)
     # Name of the club
     club = models.CharField(max_length = 100, blank=True)
     # Group of athletes this person belongs to
@@ -154,14 +151,11 @@ class Athlete(models.Model):
         except ValueError:
             return None
 
-    class Admin:
-        pass
-
 class Coach(models.Model):
     """
     Coach of an athlete group
     """
-    person = models.OneToOneField(Person)
+    person = models.OneToOneField(Person, primary_key=True)
 
     def athletes(self):
         """
@@ -176,9 +170,6 @@ class Coach(models.Model):
     def __unicode__(self):
         return unicode(self.person)
 
-    class Admin:
-        pass
-
 class AthleteGroup(models.Model):
     """
     Group of athletes
@@ -192,9 +183,6 @@ class AthleteGroup(models.Model):
     def jsonify(self):
         ret = {'name': self.name, 'coaches': [c.pk for c in self.coaches.all()]}
         return ret
-
-    class Admin:
-        pass
 
 class AuthorizationRequest(models.Model):
     """
@@ -211,9 +199,6 @@ class AuthorizationRequest(models.Model):
 
     def __unicode__(self):
         return "Authorization request from %s to %s" % (self.person, self.athlete)
-
-    class Admin:
-        pass
 
 class TrackEvent(models.Model):
     """
@@ -244,9 +229,6 @@ class TrackEvent(models.Model):
             return bool(POINTS_RESULT_PATTERN.match(result))
         return False
         
-
-    class Admin:
-        list_display = ('name', 'result_type')
 
     class Meta:
         ordering = ['order']
@@ -290,9 +272,6 @@ class Competition(models.Model):
     def jsonify(self):
         return {'athlete': self.athlete.jsonify(), 'day': unicode(self.day), 'place': self.place,
                 'event': self.event, 'event_info': self.event_info, 'result': self.result}
-
-    class Admin:
-        pass
 
     class Meta:
         ordering = ['id']
@@ -342,9 +321,6 @@ class Workout(models.Model):
                 'rating_difficulty': self.rating_difficulty, 'total_km': self.total_km,
                 'total_kg': self.total_kg, 'workout_items': [i.jsonify() for i in self.workout_items]}
 
-    class Admin:
-        list_display = ('day', 'athlete', 'weather')
-
     class Meta:
         ordering = ['id']
 
@@ -363,9 +339,6 @@ class WorkoutType(models.Model):
 
     def jsonify(self):
         return {'abbr': self.abbr, 'name': self.name, 'num_type': self.num_type}
-
-    class Admin:
-        pass
 
     class Meta:
         ordering = ['order']
@@ -386,9 +359,6 @@ class WorkoutItem(models.Model):
     def jsonify(self):
         return {'workout': self.workout.pk, 'sequence': self.sequence, 'type': self.type.jsonify(),
                 'desc': self.desc, 'num_data': self.num_data}
-
-    class Admin:
-        pass
 
     class Meta:
         pass

@@ -25,6 +25,8 @@ import os
 BASE_DIR = os.path.split(os.path.dirname(os.path.abspath(__file__)))[0] 
 PROJECT_DIR = BASE_DIR
 
+from hollo_settings_local import *
+
 SITE_ID = 1
 
 # If you set this to False, Django will make some optimizations so as not
@@ -71,4 +73,3 @@ INSTALLED_APPS = (
     'athletelog',
 )
 
-from hollo_settings_local import *

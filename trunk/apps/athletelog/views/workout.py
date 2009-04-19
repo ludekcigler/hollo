@@ -265,10 +265,10 @@ def day_info(athlete, year, month, day):
 def add_form(request, athlete_id, year, month, day, template = 'athletelog/workout_form.html'):
     athlete = get_object_or_404(models.Athlete, person__user__username=athlete_id)
     year, month, day = int(year), int(month), int(day)
-    date = datetime.date(year, month, day)
-    workout_data = {'num_workout_items': 3, 'rating_satisfaction': 3, 'rating_difficulty': 3, 'day': date}
+    d = datetime.date(year, month, day)
+    workout_data = {'num_workout_items': 3, 'rating_satisfaction': 3, 'rating_difficulty': 3, 'day': d}
 
-    return display_form(request, 'add', athlete, date, workout_data, 3, {}, add_submit, template)
+    return display_form(request, 'add', athlete, d, workout_data, 3, {}, add_submit, template)
 
 @login_required
 @athlete_edit_allowed
@@ -294,7 +294,7 @@ def edit_form(request, athlete_id, year, month, day, workout_id, template = 'ath
                         num_workout_items, workout_items_data, edit_submit, template)
     
 
-def display_form(request, action, athlete, date, workout_data, num_workout_items, workout_items_data, save_func, template):
+def display_form(request, action, athlete, day, workout_data, num_workout_items, workout_items_data, save_func, template):
     """
     Return HTML add/edit form for given workout
     @param action               Either "add" or "edit"
@@ -305,7 +305,7 @@ def display_form(request, action, athlete, date, workout_data, num_workout_items
     @param save_func            Function to save data to
     """
     context = {}
-    context['day'] = date, 
+    context['day'] = day 
     context['form_action'] = action
     context['athlete'] = athlete
 

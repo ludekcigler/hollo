@@ -1,0 +1,1 @@
+Web based application which allow track'n'field athletes to manage their personal workout records, as well as their competition achievements.
